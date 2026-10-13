@@ -1,31 +1,29 @@
-# Laravel + Livewire Starter Kit
+# Tutorials and Assignments
 
-## Introduction
+Website for live online tuition (classes 1 to 12) and academic services for Bachelors, Masters and PhD students.
 
-Our Laravel + [Livewire](https://livewire.laravel.com) starter kit provides a robust, modern starting point for building Laravel applications with a Livewire frontend.
+- What to build: [docs/spec.md](docs/spec.md)
+- How to build it: [CLAUDE.md](CLAUDE.md)
+- Decisions so far: [docs/decisions.md](docs/decisions.md)
 
-Livewire is a powerful way of building dynamic, reactive, frontend UIs using just PHP. It's a great fit for teams that primarily use Blade templates and are looking for a simpler alternative to JavaScript-driven SPA frameworks like React and Vue.
+The current rollout phase is `APP_PHASE` in `.env` (0 = static marketing site).
 
-This Livewire starter kit utilizes Livewire 4, TypeScript, Tailwind, and the [Flux UI](https://fluxui.dev) component library.
+## Run it locally (Phases 0 and 1)
 
-If you are looking for the alternate configurations of this starter kit, they can be found in the following branches:
+Needs PHP 8.4+, Composer and Node.js 24.
 
-- [workos](https://github.com/laravel/livewire-starter-kit/tree/workos) - if WorkOS is selected for authentication
+```bash
+composer setup                 # install, create .env, migrate SQLite, build assets
+composer run dev               # http://localhost:8000
+```
 
-## Official Documentation
+## Checks
 
-Documentation for all Laravel starter kits can be found on the [Laravel website](https://laravel.com/docs/starter-kits).
+```bash
+./vendor/bin/pint --test       # code style
+php artisan test               # Pest
+npx playwright install chromium   # once
+npx playwright test            # browser tests (desktop and 360 px phone)
+```
 
-## Contributing
-
-Thank you for considering contributing to our starter kit! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-All contributions to the Starter Kits from now on should be made through [Maestro](https://github.com/laravel/maestro).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## License
-
-The Laravel + Livewire starter kit is open-sourced software licensed under the MIT license.
+`composer test` runs Pint, Larastan and Pest together. GitHub Actions runs all of the above on every push.

@@ -1,13 +1,14 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/livewire-starter-kit",
+    "name": "ashimghose/tutorials-assignments",
     "type": "project",
-    "description": "The official Laravel starter kit for Livewire.",
+    "description": "Online tuition (classes 1 to 12) and academic services platform.",
     "keywords": [
         "laravel",
-        "framework"
+        "livewire",
+        "tuition"
     ],
-    "license": "MIT",
+    "license": "proprietary",
     "require": {
         "php": "^8.3",
         "laravel/chisel": "^0.1.0",
@@ -97,8 +98,7 @@
         "laravel": {
             "dont-discover": [],
             "installer": {
-                "post-create-project": [
-                ]
+                "post-create-project": []
             }
         }
     },
