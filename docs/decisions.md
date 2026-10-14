@@ -9,3 +9,12 @@ One short entry per notable technical decision, newest at the bottom.
 - **CI.** One GitHub Actions workflow (`.github/workflows/tests.yml`) runs on every push to any branch: Pint, Larastan (kept from the starter kit), Pest, then Playwright. CI uses PHP 8.4 and Node 24 as in CLAUDE.md; `composer.json` still allows PHP 8.3.
 - **Rollout flags.** `config/features.php` reads `APP_PHASE` and the `FEATURE_*` flags from `.env`; everything defaults to phase 0 with every module off.
 - **Spec in the repo.** `docs/spec.md` is a Markdown export of the v1 spec document; its two diagrams are in `docs/images/`. Re-export it when the source document changes.
+
+## 2026-10-14 · M1 marketing site
+
+- **Content as files.** Section content (prices, FAQs, steps, waitlists) lives in `resources/content/*.php` and guides in `resources/content/resources/*.md`, read by `App\Support\SiteContent`. M4 seeds the CMS tables from these files. Prices are whole paise, shown with `App\Support\Money`.
+- **Public layout.** The marketing pages use their own layout (`x-site.layout`), stylesheet (`resources/css/site.css`) and script (`resources/js/site.js`), with system fonts and no Flux or Livewire, so they stay small and exportable. The phone menu is a `<details>` element (no JavaScript).
+- **UTM capture in Phase 0 is client-side.** A static page can't run the `CaptureUtm` middleware, so `site.js` keeps `utm_source/medium/campaign` in `sessionStorage` for the visit and adds them to Google Form pre-fill links; the page and interest are pre-filled on the server. `CaptureUtm` arrives with the leads table in M4. Form entry ids are `.env` values (`FORM_*_ENTRY_*`); see `docs/google-forms.md`.
+- **Fallbacks.** A form button opens the section's WhatsApp chat until its form URL is set. Teacher, expert and testimonial sections stay hidden until real entries are added; nothing is invented.
+- **Export and deploy are separate.** `spatie/laravel-export` and the Cloudflare Pages workflow are left for the deploy thread; routes here are GET-only and read no session or database.
+- **Playwright server.** `php artisan serve --no-reload` so the fake form settings in `playwright.config.js` reach the app for the UTM test.
