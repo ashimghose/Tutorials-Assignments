@@ -25,7 +25,15 @@ export default defineConfig({
         },
     ],
     webServer: {
-        command: `php artisan serve --host=127.0.0.1 --port=${port}`,
+        command: `php artisan serve --no-reload --host=127.0.0.1 --port=${port}`,
+        // A fake academic form, so the UTM test can check the pre-filled link.
+        env: {
+            FORM_URL_ACADEMIC: 'https://docs.google.com/forms/d/e/e2e-test/viewform',
+            FORM_ACADEMIC_ENTRY_SOURCE: 'entry.101',
+            FORM_ACADEMIC_ENTRY_MEDIUM: 'entry.102',
+            FORM_ACADEMIC_ENTRY_CAMPAIGN: 'entry.103',
+            FORM_ACADEMIC_ENTRY_PAGE: 'entry.104',
+        },
         url: baseURL,
         reuseExistingServer: !process.env.CI,
         timeout: 60_000,
