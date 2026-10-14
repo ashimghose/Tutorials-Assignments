@@ -3,6 +3,7 @@
     'description',
     'section' => 'general',
     'type' => 'website',
+    'robots' => null,
 ])
 
 @php
@@ -32,6 +33,9 @@
         <title>{{ $fullTitle }}</title>
         <meta name="description" content="{{ $description }}">
         <link rel="canonical" href="{{ $canonical }}">
+        @if ($robots)
+            <meta name="robots" content="{{ $robots }}">
+        @endif
 
         <meta property="og:type" content="{{ $type }}">
         <meta property="og:site_name" content="{{ $appName }}">

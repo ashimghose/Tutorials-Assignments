@@ -20,6 +20,9 @@ Route::view('privacy', 'site.privacy')->name('privacy');
 Route::view('terms', 'site.terms')->name('terms');
 Route::view('refund-policy', 'site.refunds')->name('refunds');
 
+// Cloudflare Pages shows /404.html for any address it doesn't have.
+Route::view('404.html', 'site.not-found')->name('not-found');
+
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::view('dashboard', 'dashboard')->name('dashboard');
 });

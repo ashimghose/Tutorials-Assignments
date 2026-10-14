@@ -18,3 +18,10 @@ One short entry per notable technical decision, newest at the bottom.
 - **Fallbacks.** A form button opens the section's WhatsApp chat until its form URL is set. Teacher, expert and testimonial sections stay hidden until real entries are added; nothing is invented.
 - **Export and deploy are separate.** `spatie/laravel-export` and the Cloudflare Pages workflow are left for the deploy thread; routes here are GET-only and read no session or database.
 - **Playwright server.** `php artisan serve --no-reload` so the fake form settings in `playwright.config.js` reach the app for the UTM test.
+
+## 2026-10-14 · Phase 0 deploy
+
+- **Export.** `spatie/laravel-export` (dev dependency) crawls the public pages from `APP_URL` into `dist/`, plus `sitemap.xml` and a `404.html` that Cloudflare Pages serves for unknown addresses. Links are absolute, so the export must run with the live `APP_URL`.
+- **PHP 8.4.** laravel-export 1.5 needs PHP 8.4 and pulled in some Symfony 8 components and Guzzle 7, so `composer.json` now requires PHP `^8.4` (CI already used 8.4).
+- **Deploy.** `.github/workflows/deploy.yml` runs after the tests workflow passes on `main` (or by hand), exports and uploads with `npx wrangler@4 pages deploy`; it creates the Pages project on first run. No new npm dependency. Without the `CLOUDFLARE_*` secrets it exports and warns instead of failing.
+- **Site settings in CI.** Public site values (contact, WhatsApp, form URLs and entry ids, analytics token, `APP_NAME`) come from GitHub Actions repository variables, allow-listed by name; unset ones keep the `.env.example` defaults. `APP_URL` and the project name are fixed in the workflow. Steps for the owner: `docs/deploy.md`.

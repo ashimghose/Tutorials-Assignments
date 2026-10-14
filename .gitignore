@@ -40,3 +40,4 @@ yarn-error.log
 /test-results
 /blob-report
 /playwright/.cache
+/dist

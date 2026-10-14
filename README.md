@@ -27,3 +27,7 @@ npx playwright test            # browser tests (desktop and 360 px phone)
 ```
 
 `composer test` runs Pint, Larastan and Pest together. GitHub Actions runs all of the above on every push.
+
+## Going live (Phase 0)
+
+`php artisan export` saves the public pages as static HTML in `dist/`. After the tests pass on `main`, GitHub Actions publishes them to Cloudflare Pages at https://indianassignments.com. One-time setup: [docs/deploy.md](docs/deploy.md).

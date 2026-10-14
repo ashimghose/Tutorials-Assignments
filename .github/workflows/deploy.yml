@@ -1,0 +1,103 @@
+name: deploy
+
+# Phase 0–1: export the marketing pages to static HTML and publish them on
+# Cloudflare Pages. Runs after the tests workflow passes on main, or by hand
+# from the Actions tab. Setup steps: docs/deploy.md.
+on:
+  workflow_run:
+    workflows: [tests]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy
+  cancel-in-progress: true
+
+env:
+  # The live address. Links in the exported pages are absolute, so this
+  # must match the custom domain set up in Cloudflare Pages.
+  APP_URL: https://indianassignments.com
+  # The Cloudflare Pages project; created on the first deploy if missing.
+  PAGES_PROJECT: indianassignments
+
+jobs:
+  deploy:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+          persist-credentials: false
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2
+        with:
+          php-version: '8.4'
+          tools: composer:v2
+          coverage: none
+
+      - name: Setup Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '24'
+
+      - name: Install and build assets
+        run: |
+          composer install --no-interaction --no-progress
+          npm ci
+          npm run build
+
+      # Contact details, WhatsApp number, Google Form links and the analytics
+      # token come from the repository's Actions variables (Settings > Secrets
+      # and variables > Actions > Variables). Unset ones keep the .env.example
+      # default, so the site falls back to its placeholders.
+      - name: Load site settings
+        env:
+          REPO_VARS: ${{ toJSON(vars) }}
+        run: |
+          cp .env.example .env
+          php artisan key:generate --no-interaction
+          {
+            echo "APP_ENV=production"
+            echo "APP_DEBUG=false"
+            echo "SESSION_DRIVER=array"
+            echo "CACHE_STORE=array"
+            jq -r 'to_entries[]
+              | select(.key | test("^(APP_NAME|WHATSAPP_[A-Z_]+|CONTACT_EMAIL|OFFICE_HOURS|BUSINESS_CITY|FORM_[A-Z_]+|CF_ANALYTICS_TOKEN)$"))
+              | select(.value != "")
+              | "\(.key)<<SITE_VAR_EOF\n\(.value)\nSITE_VAR_EOF"' <<< "$REPO_VARS"
+          } >> "$GITHUB_ENV"
+
+      - name: Export static site
+        run: php artisan export
+
+      - name: Check Cloudflare secrets
+        id: secrets
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ] || [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "::warning::CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID are not set, so the site was exported but not published. See docs/deploy.md."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Publish to Cloudflare Pages
+        if: steps.secrets.outputs.ready == 'true'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          if ! npx --yes wrangler@4 pages project list | grep -qw "$PAGES_PROJECT"; then
+            npx --yes wrangler@4 pages project create "$PAGES_PROJECT" --production-branch=main
+          fi
+          npx --yes wrangler@4 pages deploy dist --project-name="$PAGES_PROJECT" --branch=main --commit-dirty=true
