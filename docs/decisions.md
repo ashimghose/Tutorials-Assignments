@@ -40,3 +40,8 @@ One short entry per notable technical decision, newest at the bottom.
 
 - **Logo.** The owner chose a line-drawn diya with no background and asked for an image-only logo. `public/logo.svg` (same drawing as `favicon.svg`) is the header logo as an `<img>`; the site name is no longer shown beside it but stays in the link's label, the page title and the footer. `apple-touch-icon.png` puts the diya on white, because iOS fills transparent areas with black.
 - **WhatsApp numbers.** `WHATSAPP_NUMBER_TUITION` and `WHATSAPP_NUMBER_ACADEMIC` send each section's chats to its own number; general pages and any section left blank use `WHATSAPP_NUMBER`. The numbers are public on the site, so `.env.example` carries the owner's numbers as defaults, and GitHub Actions variables of the same names override them.
+
+## 2026-10-27 · Owner's "Indian Assignments" logo
+
+- The owner supplied their own logo. `public/images/brand/indian-assignments-logo.svg` (book, pencil and graduation cap with the words "Indian Assignments") replaces the diya in the header. `indian-assignments-icon.svg` (no text) is kept beside it for small places such as the footer. The PNG versions they sent are stored in `resources/brand/` and are not published.
+- The colours (#075B45 green, #C9570B orange) are close to the Calm Scholar tokens, so the theme is unchanged. The favicon is still the diya until the owner says otherwise.
