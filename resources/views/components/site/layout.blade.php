@@ -57,10 +57,9 @@
 
         <header class="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur">
             <div class="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
-                <a href="{{ route('home') }}" class="flex items-center gap-2 font-bold text-brand-900">
-                    {{-- Diya (lamp of learning), same drawing as public/favicon.svg. --}}
-                    <svg class="size-9 shrink-0" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#0b5d45"/><path fill="#ffd56b" d="M32 7c7 9 9 16 0 24-9-8-7-15 0-24z"/><path fill="#fff" d="M32 17c3 4 3 8 0 11-3-3-3-7 0-11z"/><path fill="#e8833a" d="M7 35h50c-2 12-13 18-25 18S9 47 7 35z"/></svg>
-                    <span class="text-base leading-tight sm:text-lg">{{ $appName }}</span>
+                <a href="{{ route('home') }}" class="flex items-center" aria-label="{{ $appName }} home">
+                    {{-- The logo is an image only (public/logo.svg); the name stays in the page title and footer. --}}
+                    <img src="/logo.svg" alt="" width="40" height="40" class="size-10">
                 </a>
 
                 <nav class="hidden items-center gap-1 lg:flex" aria-label="Main">

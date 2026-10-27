@@ -28,6 +28,7 @@ test('CMS-2 every public page exports to static HTML', function () {
         '404.html',
         'favicon.ico',
         'favicon.svg',
+        'logo.svg',
         'apple-touch-icon.png',
         'robots.txt',
     ] as $file) {
@@ -37,12 +38,14 @@ test('CMS-2 every public page exports to static HTML', function () {
     expect($disk->get('tuition/index.html'))->toContain('Live online tuition for classes 1 to 12');
 });
 
-test('the site icon is the diya in the brand green, not the Laravel logo or the old monogram', function () {
+test('the site icon and logo are the line-drawn diya with no background or text', function () {
     $svg = file_get_contents(public_path('favicon.svg'));
 
-    expect($svg)->toContain('#0b5d45')
+    expect($svg)->toContain('#e8833a')
+        ->and($svg)->not->toContain('<rect')
+        ->and($svg)->not->toContain('<text')
         ->and($svg)->not->toContain('#FF2D20')
-        ->and($svg)->not->toContain('#1f3c8f');
+        ->and(file_get_contents(public_path('logo.svg')))->toBe($svg);
 });
 
 test('the export leaves out PHP files and pages behind a login', function () {

@@ -50,16 +50,18 @@ test('MKT-1 tuition and academic sections show their prices and FAQs', function 
 test('CHAT-6 the WhatsApp button carries the message for the section', function () {
     config([
         'site.whatsapp.number' => '919876543210',
+        'site.whatsapp.numbers.tuition' => '919888727082',
+        'site.whatsapp.numbers.academic' => '919958067504',
         'site.whatsapp.text.tuition' => 'Tuition hello',
         'site.whatsapp.text.academic' => 'Academic hello',
         'site.whatsapp.text.general' => 'General hello',
     ]);
 
-    $this->get('/tuition')->assertSee('wa.me/919876543210?text=Tuition%20hello', false);
-    $this->get('/academic')->assertSee('wa.me/919876543210?text=Academic%20hello', false);
+    $this->get('/tuition')->assertSee('wa.me/919888727082?text=Tuition%20hello', false);
+    $this->get('/academic')->assertSee('wa.me/919958067504?text=Academic%20hello', false);
     $this->get('/')->assertSee('wa.me/919876543210?text=General%20hello', false);
-    $this->get('/resources/how-to-structure-a-synopsis')->assertSee('text=Academic%20hello', false);
-    $this->get('/resources/board-exam-90-day-plan')->assertSee('text=Tuition%20hello', false);
+    $this->get('/resources/how-to-structure-a-synopsis')->assertSee('wa.me/919958067504?text=Academic%20hello', false);
+    $this->get('/resources/board-exam-90-day-plan')->assertSee('wa.me/919888727082?text=Tuition%20hello', false);
 });
 
 test('MKT-3 MKT-4 enquiry and waitlist buttons link to their Google Forms with campaign entries', function () {
@@ -118,4 +120,12 @@ test('CMS-4 the sitemap lists every public page and guide', function () {
     foreach (['/tuition', '/academic', '/resources', '/privacy', '/terms', '/resources/how-to-structure-a-synopsis'] as $path) {
         $response->assertSee('<loc>'.url($path).'</loc>', false);
     }
+});
+
+test('the header logo is the SVG image, linked home with the site name as its label', function () {
+    config(['app.name' => 'Tutorials and Assignments']);
+
+    $this->get('/')
+        ->assertSee('<img src="/logo.svg" alt=""', false)
+        ->assertSee('aria-label="Tutorials and Assignments home"', false);
 });

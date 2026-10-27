@@ -35,3 +35,8 @@ One short entry per notable technical decision, newest at the bottom.
 - **Colours.** Chosen by the owner from three researched options. Brand is forest green (`#0b5d45`), tuition is saffron (`#b4561a` for text and buttons), academic uses the brand greens. Only the `@theme` tokens in `resources/css/site.css` changed, so the pages' classes stay the same.
 - **Fonts.** Source Serif 4 for `h1`–`h3` and Source Sans 3 for text (both SIL OFL). They are self-hosted in `resources/fonts` and bundled by Vite, so the static site makes no request to Google and adds about 80 KB on English pages. The Latin Extended files load only when a page uses those characters.
 - **Icon.** A diya (lamp of learning) replaces the "TA" monogram, so the icon no longer depends on the brand name. `public/favicon.svg` is the source; the header draws the same SVG inline; `favicon.ico` (16/32/48 px) and `apple-touch-icon.png` (180 px, square) are rendered from it with Playwright.
+
+## 2026-10-27 · Logo file and WhatsApp numbers per section
+
+- **Logo.** The owner chose a line-drawn diya with no background and asked for an image-only logo. `public/logo.svg` (same drawing as `favicon.svg`) is the header logo as an `<img>`; the site name is no longer shown beside it but stays in the link's label, the page title and the footer. `apple-touch-icon.png` puts the diya on white, because iOS fills transparent areas with black.
+- **WhatsApp numbers.** `WHATSAPP_NUMBER_TUITION` and `WHATSAPP_NUMBER_ACADEMIC` send each section's chats to its own number; general pages and any section left blank use `WHATSAPP_NUMBER`. The numbers are public on the site, so `.env.example` carries the owner's numbers as defaults, and GitHub Actions variables of the same names override them.
