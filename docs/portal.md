@@ -131,6 +131,19 @@ India time by default) the chat shows when you'll reply and posts one automatic
 note. Anyone who hasn't read a new message after 15 minutes gets an email. The email
 doesn't include the message itself. Emails go to Mailpit at http://localhost:8025.
 
+## What to click through (M8): reports and teacher payouts
+
+| Where | What to try |
+| --- | --- |
+| Admin → Teachers and experts → edit | Under "Pay": a rate per class or per hour, and per academic order (a fixed amount or a % of the service price). |
+| Admin → Batches → a batch → Classes → "Class taken" | Enter the start time when a teacher forgot to press Join, or the end time if a class ended early. A class counts for pay when it started and ran at least 30 minutes. |
+| Admin → Tuition → Enrolments → "Fee received", and an order's "Payment received" | Now also ask how much arrived, how, the reference and any Razorpay fee. That is what the money report adds up. |
+| An order → More → "Add printing or courier cost", or Admin → Reports → Costs | Printing, courier and other costs. |
+| Admin → Reports → Teacher payouts | Pick a month: each teacher's classes and completed orders at their rates. "Mark paid" records the date and reference and keeps the amounts as they were. |
+| Admin → Reports → Money report | Choose dates: received, gateway fees, paid to teachers and experts, printing and courier, other costs and the net, for Tuition and Academic separately. |
+| Admin → Reports → Orders report, Subscriptions | Orders by status, service and expert; students per batch by status with the next paid-through date. |
+| Admin → People | Filter "Active" or "Past" and "Download CSV" for the list as filtered. |
+
 ## Stopping
 
 ```bash

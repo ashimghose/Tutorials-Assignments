@@ -2,15 +2,19 @@
 
 namespace App\Filament\Resources\AcademicOrders\Pages;
 
+use App\Actions\Money\RecordPayment;
 use App\Actions\Orders\ChangeOrderStatus;
 use App\Actions\Orders\MarkOrderPaid;
 use App\Actions\Orders\SendQuote;
+use App\Enums\ExpenseCategory;
 use App\Enums\Offering;
 use App\Enums\OrderFileKind;
 use App\Filament\Resources\AcademicOrders\AcademicOrderResource;
 use App\Filament\Support\MoneyInput;
+use App\Filament\Support\PaymentFields;
 use App\Models\AcademicOrder;
 use App\Models\AuditLog;
+use App\Models\Expense;
 use App\Models\OrderFile;
 use App\Models\OrderStatus;
 use App\Models\Teacher;
@@ -29,6 +33,7 @@ use Filament\Resources\Pages\ViewRecord;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 /**
@@ -52,8 +57,30 @@ class ViewAcademicOrder extends ViewRecord
             ActionGroup::make([
                 $this->assignAction(),
                 $this->uploadAction(),
+                $this->addCostAction(),
             ])->label('More')->button()->color('gray'),
         ];
+    }
+
+    /**
+     * ADM-4: what printing, binding or the courier cost for this order.
+     */
+    private function addCostAction(): Action
+    {
+        return Action::make('addCost')
+            ->label('Add printing or courier cost')
+            ->icon(Heroicon::OutlinedReceiptPercent)
+            ->schema([
+                Select::make('category')->options(ExpenseCategory::options())->required()->default(ExpenseCategory::Printing->value),
+                MoneyInput::make('amount')->required()->minValue(1),
+                DatePicker::make('spent_on')->required()->default(fn (): string => now(config('app.display_timezone'))->toDateString()),
+                TextInput::make('note')->maxLength(255),
+            ])
+            ->action(function (array $data): void {
+                $expense = new Expense([...$data, 'offering' => Offering::Academic, 'academic_order_id' => $this->record->id]);
+                $expense->forceFill(['recorded_by' => Auth::id()])->save();
+                Notification::make()->success()->title('Cost added')->send();
+            });
     }
 
     /**
@@ -66,10 +93,13 @@ class ViewAcademicOrder extends ViewRecord
             ->icon(Heroicon::OutlinedBanknotes)
             ->color('success')
             ->visible(fn (): bool => ! $this->record->isPaid() && $this->record->total !== null && ! $this->record->isClosed())
-            ->requiresConfirmation()
             ->modalDescription(fn (): string => 'Use this after '.Money::format((int) $this->record->total).' has reached the bank account. The order moves on to "'.OrderStatus::afterPayment()->name.'".')
-            ->action(function (MarkOrderPaid $markPaid): void {
-                $markPaid->handle($this->record, Auth::user());
+            ->schema(PaymentFields::make(fn (): int => (int) $this->record->total))
+            ->action(function (array $data, MarkOrderPaid $markPaid, RecordPayment $recordPayment): void {
+                DB::transaction(function () use ($data, $markPaid, $recordPayment) {
+                    PaymentFields::record($recordPayment, $this->record, $data, Auth::user());
+                    $markPaid->handle($this->record, Auth::user());
+                });
                 Notification::make()->success()->title('Marked as paid')->send();
             });
     }

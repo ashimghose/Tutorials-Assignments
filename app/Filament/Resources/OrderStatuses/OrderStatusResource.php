@@ -44,6 +44,7 @@ class OrderStatusResource extends Resource
             ]),
             Toggle::make('notify_student')->label('Email the student when an order reaches it'),
             Toggle::make('is_final')->label('Final: the order is finished or cancelled')->helperText('Files are deleted after the retention period from here.'),
+            Toggle::make('is_cancelled')->label('Means cancelled: no expert payout, not counted as completed'),
             Toggle::make('expert_can_set')->label('Experts may set it'),
             Toggle::make('is_revision')->label('Students reach it by asking for a revision'),
             Toggle::make('needs_tracking')->label('Ask for the courier and tracking number'),

@@ -29,8 +29,9 @@ use Livewire\Livewire;
 beforeEach(function () {
     Notification::fake();
     Storage::fake('local');
-    // Office open all week unless a test says otherwise.
-    config(['chat.office_hours' => ['days' => [1, 2, 3, 4, 5, 6, 7], 'opens' => '00:00', 'closes' => '23:59']]);
+    // A weekday morning in India, during office hours, unless a test says otherwise.
+    config(['chat.office_hours' => ['days' => [1, 2, 3, 4, 5, 6], 'opens' => '10:00', 'closes' => '19:00']]);
+    $this->travelTo(CarbonImmutable::parse('2026-10-28 11:00', 'Asia/Kolkata'));
 
     $this->admin = User::factory()->admin()->create();
     $this->child = tuitionChild(['class_level' => 10]);

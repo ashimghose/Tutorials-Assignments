@@ -98,3 +98,13 @@ One short entry per notable technical decision, newest at the bottom.
 - **Limits.** 10 messages a minute per person. Reported messages are flagged in the admin inbox, which shows a red count.
 - **Notices** (NOT-2) are emailed on publish and shown on the parent's and academic student's home page for 60 days. A published notice can't be edited.
 - **Marketing emails** (NOT-3) go only to users who ticked the opt-in at sign-up (stored in `users.marketing_opt_in_at`, unticked by default) or leads who ticked it on a form. Each email has a signed one-click unsubscribe link plus `List-Unsubscribe` and `List-Unsubscribe-Post` headers. The unsubscribe route accepts the mail app's POST without a CSRF token, and the signature protects it.
+
+## 2026-10-27 · M8 reports and payouts (payments still by hand)
+
+- **Money received is recorded.** `payments` holds every fee and order payment with its method, reference and gateway fee. "Fee received" and "Payment received" now ask for these, and the payments module will write the same rows with Razorpay's fee after verifying a payment (PAY-2). Printing, courier and other costs go in `expenses`.
+- **Pay rates** sit on `teachers`: `class_rate` per class or per hour, and `order_rate` as a fixed amount (paise) or a whole percentage of the order's service price (subtotal without GST and add-ons).
+- **Which classes count** (ADM-2): not cancelled, started (the teacher's first Join click, or a time the admin enters), and at least 30 minutes from the start to the recorded end or, without one, the scheduled end. Google Meet doesn't tell us when a class really ended. Hourly pay uses the scheduled length. Months are India months.
+- **Which orders count** (ACA-10): paid, completed in the month, and not in a status marked "means cancelled" (a new `is_cancelled` flag on order statuses).
+- **Payouts** are snapshots: "Mark paid" stores the classes, orders and amounts as calculated then, so later corrections don't change a paid month. In the money report, class pay counts to Tuition and order pay to Academic, on the date paid.
+- **Active and past people** (ADM-5): an active account and still with us: teachers without a past end date, school students and their parents with an active or pending place, academic students with an order still open.
+- **Times in tests** must be saved in UTC: Eloquent writes a Carbon's wall-clock time without converting its timezone.

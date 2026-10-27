@@ -4,7 +4,9 @@ namespace App\Filament\Resources\Enrolments;
 
 use App\Actions\Enrolments\ActivateEnrolment;
 use App\Actions\Enrolments\RemoveFromBatch;
+use App\Actions\Money\RecordPayment;
 use App\Enums\EnrolmentStatus;
+use App\Filament\Support\PaymentFields;
 use App\Models\Enrolment;
 use Carbon\CarbonImmutable;
 use Filament\Actions\Action;
@@ -12,6 +14,8 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Textarea;
 use Filament\Notifications\Notification;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Admin actions on an enrolment, shared by the enrolments list and the
@@ -34,9 +38,13 @@ class EnrolmentActions
             ->schema([
                 DatePicker::make('paid_through')->label('Paid until')->required()
                     ->default(fn (Enrolment $record): string => self::nextPaidThrough($record)->toDateString()),
+                ...PaymentFields::make(fn (Enrolment $record): int => $record->batch->monthly_fee),
             ])
-            ->action(function (Enrolment $record, array $data, ActivateEnrolment $activate): void {
-                $activate->handle($record, CarbonImmutable::parse($data['paid_through']));
+            ->action(function (Enrolment $record, array $data, ActivateEnrolment $activate, RecordPayment $recordPayment): void {
+                DB::transaction(function () use ($record, $data, $activate, $recordPayment) {
+                    PaymentFields::record($recordPayment, $record, $data, Auth::user());
+                    $activate->handle($record, CarbonImmutable::parse($data['paid_through']));
+                });
                 Notification::make()->success()->title('Enrolment active')->send();
             });
     }

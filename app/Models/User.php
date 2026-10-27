@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\AccountStatus;
+use App\Enums\EnrolmentStatus;
 use App\Enums\Role;
 use Database\Factories\UserFactory;
 use Filament\Models\Contracts\FilamentUser;
@@ -97,6 +98,29 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail, Pas
     public function scopeAdmins(Builder $query): void
     {
         $query->where('role', Role::Admin)->where('status', AccountStatus::Active);
+    }
+
+    /**
+     * ADM-5: active people are those with an active account who are still
+     * with us: teachers without an end date in the past, school students
+     * (and their parents) with a current or pending place, and academic
+     * students with an order still open. Everyone else is "past".
+     *
+     * @param  Builder<User>  $query
+     */
+    public function scopeStanding(Builder $query, bool $active): void
+    {
+        $current = [EnrolmentStatus::Active, EnrolmentStatus::Pending];
+        $today = now(config('app.display_timezone'))->toDateString();
+
+        $isActive = fn (Builder $query) => $query->where('status', AccountStatus::Active)->where(fn (Builder $query) => $query
+            ->where('role', Role::Admin)
+            ->orWhere(fn (Builder $q) => $q->where('role', Role::Teacher)->whereHas('teacher', fn (Builder $t) => $t->whereNull('active_to')->orWhere('active_to', '>=', $today)))
+            ->orWhere(fn (Builder $q) => $q->where('role', Role::Student)->whereHas('student.enrolments', fn (Builder $e) => $e->whereIn('status', $current)))
+            ->orWhere(fn (Builder $q) => $q->where('role', Role::Parent)->whereHas('parentProfile.students.enrolments', fn (Builder $e) => $e->whereIn('status', $current)))
+            ->orWhere(fn (Builder $q) => $q->where('role', Role::AcademicStudent)->whereHas('academicStudent.orders.status', fn (Builder $s) => $s->where('is_final', false))));
+
+        $active ? $query->where($isActive) : $query->whereNot($isActive);
     }
 
     public function hasRole(Role ...$roles): bool

@@ -19,9 +19,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property bool $expert_can_set
  * @property bool $is_revision
  * @property bool $needs_tracking
+ * @property bool $is_cancelled
  */
 #[ObservedBy(AuditAdminChanges::class)]
-#[Fillable(['name', 'sort_order', 'color', 'notify_student', 'is_final', 'expert_can_set', 'is_revision', 'needs_tracking'])]
+#[Fillable(['name', 'sort_order', 'color', 'notify_student', 'is_final', 'expert_can_set', 'is_revision', 'needs_tracking', 'is_cancelled'])]
 class OrderStatus extends Model
 {
     public const COLORS = ['gray' => 'Grey', 'warning' => 'Amber', 'info' => 'Blue', 'primary' => 'Green', 'success' => 'Bright green', 'danger' => 'Red'];
@@ -34,6 +35,7 @@ class OrderStatus extends Model
             'expert_can_set' => 'boolean',
             'is_revision' => 'boolean',
             'needs_tracking' => 'boolean',
+            'is_cancelled' => 'boolean',
         ];
     }
 

@@ -50,6 +50,7 @@ class AcademicCatalogueSeeder extends Seeder
                     'expert_can_set' => $expert,
                     'is_revision' => $revision,
                     'needs_tracking' => $tracking,
+                    'is_cancelled' => $name === 'Cancelled',
                 ]);
             }
         }

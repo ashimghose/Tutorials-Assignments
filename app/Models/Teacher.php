@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Enums\ClassRatePer;
 use App\Enums\Offering;
+use App\Enums\OrderRateType;
 use App\Observers\AuditAdminChanges;
 use Database\Factories\TeacherFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
@@ -20,9 +22,13 @@ use Illuminate\Support\Carbon;
  * @property list<string>|null $subjects
  * @property Carbon|null $active_from
  * @property Carbon|null $active_to
+ * @property int|null $class_rate
+ * @property ClassRatePer $class_rate_per
+ * @property OrderRateType|null $order_rate_type
+ * @property int|null $order_rate
  */
 #[ObservedBy(AuditAdminChanges::class)]
-#[Fillable(['offering', 'subjects', 'bio', 'photo_path', 'active_from', 'active_to'])]
+#[Fillable(['offering', 'subjects', 'bio', 'photo_path', 'active_from', 'active_to', 'class_rate', 'class_rate_per', 'order_rate_type', 'order_rate'])]
 class Teacher extends Model
 {
     /** @use HasFactory<TeacherFactory> */
@@ -35,6 +41,10 @@ class Teacher extends Model
             'subjects' => 'array',
             'active_from' => 'date',
             'active_to' => 'date',
+            'class_rate' => 'integer',
+            'class_rate_per' => ClassRatePer::class,
+            'order_rate_type' => OrderRateType::class,
+            'order_rate' => 'integer',
         ];
     }
 

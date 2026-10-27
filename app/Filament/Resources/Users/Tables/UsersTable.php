@@ -11,6 +11,7 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class UsersTable
 {
@@ -49,6 +50,15 @@ class UsersTable
             ->filters([
                 SelectFilter::make('role')
                     ->options(collect(Role::cases())->mapWithKeys(fn (Role $role) => [$role->value => $role->label()])),
+                // ADM-5: active and past teachers and students.
+                SelectFilter::make('standing')
+                    ->options(['active' => 'Active', 'past' => 'Past'])
+                    ->query(function (Builder $query, array $data): void {
+                        /** @var Builder<User> $query */
+                        if (filled($data['value'] ?? null)) {
+                            $query->standing($data['value'] === 'active');
+                        }
+                    }),
                 SelectFilter::make('status')
                     ->options([AccountStatus::Active->value => 'Active', AccountStatus::Deactivated->value => 'Deactivated']),
             ])

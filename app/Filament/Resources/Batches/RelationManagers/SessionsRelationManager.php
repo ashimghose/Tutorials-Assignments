@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Batches\RelationManagers;
 use App\Actions\Batches\ChangeClass;
 use App\Actions\Batches\ScheduleSessions;
 use App\Enums\ClassSessionStatus;
+use App\Models\AuditLog;
 use App\Models\Batch;
 use App\Models\ClassSession;
 use Carbon\CarbonImmutable;
@@ -44,6 +45,7 @@ class SessionsRelationManager extends RelationManager
                     ->formatStateUsing(fn (ClassSessionStatus $state): string => $state->label())
                     ->color(fn (ClassSessionStatus $state): string => $state === ClassSessionStatus::Cancelled ? 'gray' : 'success'),
                 TextColumn::make('started_at')->label('Teacher joined')->dateTime('g:i a', $tz)->placeholder('—'),
+                TextColumn::make('ended_at')->label('Ended')->dateTime('g:i a', $tz)->placeholder('—')->toggleable(isToggledHiddenByDefault: true),
                 IconColumn::make('recording_on')->label('Record')->boolean(),
             ])
             ->filters([
@@ -83,6 +85,21 @@ class SessionsRelationManager extends RelationManager
                         'minutes' => (int) $record->starts_at->diffInMinutes($record->ends_at),
                     ])
                     ->action(fn (ClassSession $record, array $data, ChangeClass $change) => $change->move($record, CarbonImmutable::parse($data['starts_at']), (int) $data['minutes'])),
+                // ADM-2: fix the record when the teacher forgot to press Join, or the class ended early.
+                Action::make('times')
+                    ->label('Class taken')
+                    ->icon(Heroicon::OutlinedCheckBadge)
+                    ->visible(fn (ClassSession $record): bool => ! $record->isCancelled() && $record->starts_at->isPast())
+                    ->modalDescription('Classes count for the teacher\'s pay when they started and ran at least 30 minutes.')
+                    ->fillForm(fn (ClassSession $record): array => ['started_at' => $record->started_at, 'ended_at' => $record->ended_at])
+                    ->schema([
+                        DateTimePicker::make('started_at')->label('Started (India time)')->seconds(false)->timezone(config('app.display_timezone')),
+                        DateTimePicker::make('ended_at')->label('Ended (India time, if early)')->seconds(false)->timezone(config('app.display_timezone'))->after('started_at'),
+                    ])
+                    ->action(function (ClassSession $record, array $data): void {
+                        $record->forceFill(['started_at' => $data['started_at'] ?: null, 'ended_at' => $data['ended_at'] ?: null])->save();
+                        AuditLog::record('class.times_recorded', $record);
+                    }),
                 Action::make('cancel')
                     ->label('Cancel')
                     ->icon(Heroicon::OutlinedXCircle)
