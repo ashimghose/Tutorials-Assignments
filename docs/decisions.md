@@ -25,3 +25,7 @@ One short entry per notable technical decision, newest at the bottom.
 - **PHP 8.4.** laravel-export 1.5 needs PHP 8.4 and pulled in some Symfony 8 components and Guzzle 7, so `composer.json` now requires PHP `^8.4` (CI already used 8.4).
 - **Deploy.** `.github/workflows/deploy.yml` runs after the tests workflow passes on `main` (or by hand), exports and uploads with `npx wrangler@4 pages deploy`; it creates the Pages project on first run. No new npm dependency. Without the `CLOUDFLARE_*` secrets it exports and warns instead of failing.
 - **Site settings in CI.** Public site values (contact, WhatsApp, form URLs and entry ids, analytics token, `APP_NAME`) come from GitHub Actions repository variables, allow-listed by name; unset ones keep the `.env.example` defaults. `APP_URL` and the project name are fixed in the workflow. Steps for the owner: `docs/deploy.md`.
+
+## 2026-10-27 · Site icon
+
+- **Favicon.** The Laravel logo is replaced by the header's monogram ("TA", white on brand-800 `#1f3c8f`): `public/favicon.svg` draws the letters as paths so no font is needed, `favicon.ico` (16/32/48 px) and `apple-touch-icon.png` (180 px, square, iOS rounds it) are rendered from it. Redraw all three when the brand name is chosen.
