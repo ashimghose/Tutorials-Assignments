@@ -63,7 +63,7 @@ class DemoSeeder extends Seeder
 
         Batch::query()->each(fn (Batch $batch) => $schedule->handle($batch));
 
-        $this->command?->info('Demo logins (password "password"): parent@example.com, teacher@example.com, student username riyademo.');
+        $this->command->info('Demo logins (password "password"): parent@example.com, teacher@example.com, student username riyademo.');
     }
 
     private function user(string $email, string $name, Role $role): User
