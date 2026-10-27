@@ -27,12 +27,21 @@ test('CMS-2 every public page exports to static HTML', function () {
         'sitemap.xml',
         '404.html',
         'favicon.ico',
+        'favicon.svg',
+        'apple-touch-icon.png',
         'robots.txt',
     ] as $file) {
         expect($disk->exists($file))->toBeTrue("{$file} was not exported");
     }
 
     expect($disk->get('tuition/index.html'))->toContain('Live online tuition for classes 1 to 12');
+});
+
+test('the site icon is the brand monogram, not the Laravel logo', function () {
+    $svg = file_get_contents(public_path('favicon.svg'));
+
+    expect($svg)->toContain('#1f3c8f')
+        ->and($svg)->not->toContain('#FF2D20');
 });
 
 test('the export leaves out PHP files and pages behind a login', function () {
