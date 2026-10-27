@@ -19,9 +19,15 @@ return [
         'city' => env('BUSINESS_CITY'),
     ],
 
-    // CHAT-6: a different pre-filled message per section.
+    // CHAT-6: a different pre-filled message per section. Tuition and
+    // academic chats can go to their own numbers; a section without one, and
+    // the general pages, use WHATSAPP_NUMBER.
     'whatsapp' => [
         'number' => env('WHATSAPP_NUMBER'),
+        'numbers' => [
+            'tuition' => env('WHATSAPP_NUMBER_TUITION'),
+            'academic' => env('WHATSAPP_NUMBER_ACADEMIC'),
+        ],
         'text' => [
             'general' => env('WHATSAPP_TEXT_GENERAL', 'Hi, I have a question'),
             'tuition' => env('WHATSAPP_TEXT_TUITION', "Hi, I'm asking about tuition"),

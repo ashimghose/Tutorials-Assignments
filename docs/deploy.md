@@ -125,7 +125,8 @@ WhatsApp.
 
    | Name | Example |
    |---|---|
-   | `WHATSAPP_NUMBER` | `919876543210` (country code, no + or spaces) |
+   | `WHATSAPP_NUMBER` | `919876543210` (country code, no + or spaces); used on the home, contact and other general pages |
+   | `WHATSAPP_NUMBER_TUITION`, `WHATSAPP_NUMBER_ACADEMIC` | the same format; used on the tuition and academic pages and their guides. Left unset, `.env.example` gives `919888727082` and `919958067504` |
    | `CONTACT_EMAIL` | `hello@indianassignments.com` |
    | `BUSINESS_CITY` | `Kolkata` |
    | `FORM_URL_TUITION`, `FORM_URL_ACADEMIC`, `FORM_URL_WAITLIST` and the `FORM_*_ENTRY_*` ids | see `docs/google-forms.md` |

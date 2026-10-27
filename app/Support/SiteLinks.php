@@ -11,11 +11,12 @@ final class SiteLinks
     public const UTM_FIELDS = ['source', 'medium', 'campaign'];
 
     /**
-     * CHAT-6: click-to-chat with a different pre-filled message per section.
+     * CHAT-6: click-to-chat with a different pre-filled message per section,
+     * sent to the section's own number when it has one.
      */
     public static function whatsapp(string $section): string
     {
-        $number = preg_replace('/\D/', '', (string) config('site.whatsapp.number'));
+        $number = preg_replace('/\D/', '', (string) (config("site.whatsapp.numbers.{$section}") ?: config('site.whatsapp.number')));
         $text = (string) (config("site.whatsapp.text.{$section}") ?? config('site.whatsapp.text.general'));
 
         return 'https://wa.me/'.$number.'?text='.rawurlencode($text);
