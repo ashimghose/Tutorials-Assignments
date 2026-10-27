@@ -10,11 +10,6 @@
     $appName = config('app.name');
     $fullTitle = filled($title) ? $title.' | '.$appName : $appName;
     $canonical = url()->current();
-    $initials = collect(preg_split('/\s+/', $appName))
-        ->reject(fn ($word) => in_array(strtolower($word), ['and', 'of', 'the', '&']))
-        ->map(fn ($word) => mb_strtoupper(mb_substr($word, 0, 1)))
-        ->take(2)
-        ->implode('');
     $nav = [
         ['label' => 'Tuition', 'route' => 'tuition'],
         ['label' => 'Academic services', 'route' => 'academic'],
@@ -44,7 +39,7 @@
         <meta property="og:url" content="{{ $canonical }}">
         <meta property="og:locale" content="en_IN">
         <meta name="twitter:card" content="summary">
-        <meta name="theme-color" content="#1f3c8f">
+        <meta name="theme-color" content="#0b5d45">
 
         <link rel="icon" href="/favicon.ico" sizes="any">
         <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -63,7 +58,8 @@
         <header class="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur">
             <div class="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
                 <a href="{{ route('home') }}" class="flex items-center gap-2 font-bold text-brand-900">
-                    <span class="grid size-9 place-items-center rounded-lg bg-brand-800 text-sm text-white" aria-hidden="true">{{ $initials }}</span>
+                    {{-- Diya (lamp of learning), same drawing as public/favicon.svg. --}}
+                    <svg class="size-9 shrink-0" viewBox="0 0 64 64" aria-hidden="true"><rect width="64" height="64" rx="14" fill="#0b5d45"/><path fill="#ffd56b" d="M32 7c7 9 9 16 0 24-9-8-7-15 0-24z"/><path fill="#fff" d="M32 17c3 4 3 8 0 11-3-3-3-7 0-11z"/><path fill="#e8833a" d="M7 35h50c-2 12-13 18-25 18S9 47 7 35z"/></svg>
                     <span class="text-base leading-tight sm:text-lg">{{ $appName }}</span>
                 </a>
 

@@ -29,3 +29,9 @@ One short entry per notable technical decision, newest at the bottom.
 ## 2026-10-27 · Site icon
 
 - **Favicon.** The Laravel logo is replaced by the header's monogram ("TA", white on brand-800 `#1f3c8f`): `public/favicon.svg` draws the letters as paths so no font is needed, `favicon.ico` (16/32/48 px) and `apple-touch-icon.png` (180 px, square, iOS rounds it) are rendered from it. Redraw all three when the brand name is chosen.
+
+## 2026-10-27 · Site look: "Calm Scholar" and the diya icon
+
+- **Colours.** Chosen by the owner from three researched options. Brand is forest green (`#0b5d45`), tuition is saffron (`#b4561a` for text and buttons), academic uses the brand greens. Only the `@theme` tokens in `resources/css/site.css` changed, so the pages' classes stay the same.
+- **Fonts.** Source Serif 4 for `h1`–`h3` and Source Sans 3 for text (both SIL OFL). They are self-hosted in `resources/fonts` and bundled by Vite, so the static site makes no request to Google and adds about 80 KB on English pages. The Latin Extended files load only when a page uses those characters.
+- **Icon.** A diya (lamp of learning) replaces the "TA" monogram, so the icon no longer depends on the brand name. `public/favicon.svg` is the source; the header draws the same SVG inline; `favicon.ico` (16/32/48 px) and `apple-touch-icon.png` (180 px, square) are rendered from it with Playwright.
