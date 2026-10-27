@@ -16,6 +16,7 @@ use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
+use Filament\Schemas\Components\Text;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
@@ -136,7 +137,11 @@ class SiteSectionResource extends Resource
                 self::heroTab(),
                 Tab::make('Price list')->schema([
                     TagsInput::make('content.levels')->label('Levels')->required(),
+                    // M6: with online orders on, services and add-ons have their own screens.
+                    Text::make('Services, prices and add-ons are edited under Academic → Services and Add-ons.')
+                        ->visible(fn (): bool => (bool) config('features.academic_orders')),
                     Repeater::make('content.services')->label('Services')
+                        ->hidden(fn (): bool => (bool) config('features.academic_orders'))
                         ->schema([
                             TextInput::make('name')->required()->maxLength(120),
                             Textarea::make('body')->label('Description')->required()->rows(3),
@@ -153,6 +158,7 @@ class SiteSectionResource extends Resource
                         ->itemLabel(fn (array $state): ?string => $state['name'] ?? null)
                         ->collapsible()->reorderable(),
                     Repeater::make('content.addons')->label('Add-ons')
+                        ->hidden(fn (): bool => (bool) config('features.academic_orders'))
                         ->schema([
                             Grid::make(3)->schema([
                                 TextInput::make('name')->required()->maxLength(80),

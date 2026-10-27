@@ -53,4 +53,14 @@ class Teacher extends Model
     {
         return $this->hasMany(Batch::class);
     }
+
+    /**
+     * Academic orders assigned to this expert (ACA-9).
+     *
+     * @return HasMany<AcademicOrder, $this>
+     */
+    public function academicOrders(): HasMany
+    {
+        return $this->hasMany(AcademicOrder::class, 'expert_id');
+    }
 }

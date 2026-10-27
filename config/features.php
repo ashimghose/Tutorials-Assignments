@@ -32,7 +32,8 @@ return [
     // admin until online checkout is switched on).
     'batches' => filter_var(env('FEATURE_BATCHES', false), FILTER_VALIDATE_BOOL),
     'checkout' => (bool) env('FEATURE_CHECKOUT', false),
-    'academic_orders' => (bool) env('FEATURE_ACADEMIC_ORDERS', false),
+    // M6: academic orders, price list and order statuses in the admin panel.
+    'academic_orders' => filter_var(env('FEATURE_ACADEMIC_ORDERS', false), FILTER_VALIDATE_BOOL),
     'chat' => (bool) env('FEATURE_CHAT', false),
     'live_classroom' => (bool) env('FEATURE_LIVE_CLASSROOM', false),
     'recordings' => (bool) env('FEATURE_RECORDINGS', false),

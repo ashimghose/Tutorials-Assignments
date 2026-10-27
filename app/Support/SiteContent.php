@@ -2,8 +2,11 @@
 
 namespace App\Support;
 
+use App\Enums\AcademicLevel;
 use App\Enums\Offering;
 use App\Models\Article;
+use App\Models\Service;
+use App\Models\ServiceAddon;
 use App\Models\SiteSection;
 use App\Models\Teacher;
 use App\Models\Testimonial;
@@ -42,7 +45,29 @@ final class SiteContent
             $content['testimonials'] = self::testimonials($name);
         }
 
+        // M6: with online orders on, the academic price list comes from the
+        // services and add-ons the admin manages (ACA-1, ACA-2).
+        if ($name === 'academic' && config('features.academic_orders') && Service::query()->exists()) {
+            $content['services'] = self::priceList();
+            $content['addons'] = array_values(ServiceAddon::query()->where('is_active', true)->orderBy('sort_order')->orderBy('id')->get()
+                ->map(fn (ServiceAddon $addon) => ['name' => $addon->name, 'price' => $addon->price, 'unit' => $addon->unit->label()])->all());
+        }
+
         return $content;
+    }
+
+    /**
+     * @return list<array{name: string, body: string, prices: list<int|null>, turnaround: string, revisions: int|null}>
+     */
+    private static function priceList(): array
+    {
+        return array_values(Service::query()->active()->get()->map(fn (Service $service) => [
+            'name' => $service->title,
+            'body' => (string) $service->description,
+            'prices' => array_map(fn (AcademicLevel $level) => $service->priceFor($level), AcademicLevel::cases()),
+            'turnaround' => (string) $service->turnaround,
+            'revisions' => $service->free_revisions,
+        ])->all());
     }
 
     /**

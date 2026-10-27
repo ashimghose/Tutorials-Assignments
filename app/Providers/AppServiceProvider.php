@@ -28,6 +28,9 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->configureDefaults();
         $this->configureRateLimiting();
+
+        // ACA-4: order files may be up to 25 MB (Livewire's default is 12 MB).
+        config(['livewire.temporary_file_upload.rules' => ['required', 'file', 'max:'.config('academic.max_upload_kb')]]);
     }
 
     /**

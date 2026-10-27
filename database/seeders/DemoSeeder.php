@@ -7,6 +7,7 @@ use App\Enums\ConsentPurpose;
 use App\Enums\EnrolmentStatus;
 use App\Enums\Offering;
 use App\Enums\Role;
+use App\Models\AcademicStudent;
 use App\Models\Batch;
 use App\Models\Consent;
 use App\Models\Enrolment;
@@ -63,7 +64,19 @@ class DemoSeeder extends Seeder
 
         Batch::query()->each(fn (Batch $batch) => $schedule->handle($batch));
 
-        $this->command->info('Demo logins (password "password"): parent@example.com, teacher@example.com, student username riyademo.');
+        // M6: an academic student, an expert and the price list.
+        $this->call(AcademicCatalogueSeeder::class);
+        $studentUser = $this->user('student@example.com', 'Priya Sen (demo)', Role::AcademicStudent);
+        if (! AcademicStudent::query()->whereBelongsTo($studentUser)->exists()) {
+            $profile = AcademicStudent::query()->make(['mobile' => '9123456780', 'university' => 'University of Calcutta', 'course' => 'MA English', 'level' => 'masters']);
+            $profile->forceFill(['adult_declared_at' => now()])->user()->associate($studentUser)->save();
+        }
+        $expertUser = $this->user('expert@example.com', 'Arjun Rao (demo)', Role::Teacher);
+        if (! Teacher::query()->whereBelongsTo($expertUser)->exists()) {
+            Teacher::query()->make(['offering' => Offering::Academic, 'subjects' => ['Editing', 'Formatting']])->user()->associate($expertUser)->save();
+        }
+
+        $this->command->info('Demo logins (password "password"): parent@example.com, teacher@example.com, student username riyademo, student@example.com (academic), expert@example.com.');
     }
 
     private function user(string $email, string $name, Role $role): User

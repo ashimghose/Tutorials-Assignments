@@ -12,3 +12,6 @@ Artisan::command('inspire', function () {
 // reminders and pause unpaid enrolments (PAY-4). Times are India time.
 Schedule::command('app:schedule-classes')->dailyAt('05:30')->timezone(config('app.display_timezone'));
 Schedule::command('app:check-enrolments')->dailyAt('09:00')->timezone(config('app.display_timezone'));
+
+// M6: delete order files after the retention period (privacy).
+Schedule::command('app:prune-order-files')->dailyAt('03:00')->timezone(config('app.display_timezone'));

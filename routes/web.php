@@ -3,6 +3,7 @@
 use App\Http\Controllers\ClassJoinController;
 use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\LeadController;
+use App\Http\Controllers\OrderFileController;
 use App\Http\Controllers\SiteController;
 use App\Support\LeadForms;
 use Illuminate\Http\Request;
@@ -53,12 +54,23 @@ Route::middleware(['feature:accounts', 'auth', 'verified'])->group(function () {
     });
 
     Route::middleware('role:academic_student')->prefix('my-orders')->name('academic.')->group(function () {
-        Route::view('/', 'portal.academic.home')->name('home');
+        Route::livewire('/', 'pages::portal.academic.orders')->name('home');
+        Route::middleware('feature:academic_orders')->group(function () {
+            Route::livewire('new', 'pages::portal.academic.new-order')->name('orders.create');
+            Route::livewire('{order}', 'pages::portal.academic.order')->whereNumber('order')->name('orders.show');
+        });
     });
 
     Route::middleware('role:teacher')->prefix('teacher')->name('teacher.')->group(function () {
         Route::livewire('/', 'pages::portal.teacher.home')->name('home');
+        Route::middleware('feature:academic_orders')->group(function () {
+            Route::livewire('orders', 'pages::portal.teacher.orders')->name('orders');
+            Route::livewire('orders/{order}', 'pages::portal.teacher.order')->whereNumber('order')->name('orders.show');
+        });
     });
+
+    // ACA-8, ACA-9: private order files, through a short-lived signed link.
+    Route::get('order-files/{orderFile}', OrderFileController::class)->middleware(['feature:academic_orders', 'signed'])->name('orders.files.download');
 
     // CLS-2, CLS-3: every Join click is checked on the server.
     Route::get('classes/{classSession}/join', ClassJoinController::class)->middleware('feature:batches')->name('classes.join');

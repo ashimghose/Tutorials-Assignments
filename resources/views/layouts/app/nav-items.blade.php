@@ -16,7 +16,7 @@
         </flux:sidebar.item>
         @break
     @case(\App\Enums\Role::AcademicStudent)
-        <flux:sidebar.item icon="document-text" :href="route('academic.home')" :current="request()->routeIs('academic.home')" wire:navigate>
+        <flux:sidebar.item icon="document-text" :href="route('academic.home')" :current="request()->routeIs('academic.*')" wire:navigate>
             {{ __('My orders') }}
         </flux:sidebar.item>
         @break
@@ -24,6 +24,11 @@
         <flux:sidebar.item icon="home" :href="route('teacher.home')" :current="request()->routeIs('teacher.home')" wire:navigate>
             {{ __('Teacher home') }}
         </flux:sidebar.item>
+        @if (config('features.academic_orders'))
+            <flux:sidebar.item icon="document-text" :href="route('teacher.orders')" :current="request()->routeIs('teacher.orders*')" wire:navigate>
+                {{ __('Assigned orders') }}
+            </flux:sidebar.item>
+        @endif
         @break
     @case(\App\Enums\Role::Admin)
         <flux:sidebar.item icon="cog-6-tooth" href="/admin">

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * An adult who orders academic services (ACA-3). The 18+ declaration time
@@ -31,5 +32,13 @@ class AcademicStudent extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * @return HasMany<AcademicOrder, $this>
+     */
+    public function orders(): HasMany
+    {
+        return $this->hasMany(AcademicOrder::class);
     }
 }

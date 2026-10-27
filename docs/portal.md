@@ -1,8 +1,8 @@
 # Trying the Phase 2 portal on your laptop
 
 The logins, portal and admin panel are built behind `FEATURE_ACCOUNTS`, website
-editing and on-site enquiry forms behind `FEATURE_CMS`, and tuition batches and
-enrolments behind `FEATURE_BATCHES`. They stay
+editing and on-site enquiry forms behind `FEATURE_CMS`, tuition batches and
+enrolments behind `FEATURE_BATCHES`, and academic orders behind `FEATURE_ACADEMIC_ORDERS`. They stay
 switched off on the live site (indianassignments.com) until M9. To try them on your
 laptop you need **Docker Desktop** (free for a business your size) once.
 
@@ -21,6 +21,7 @@ In `.env`, change these lines:
 FEATURE_ACCOUNTS=true
 FEATURE_CMS=true
 FEATURE_BATCHES=true
+FEATURE_ACADEMIC_ORDERS=true
 DB_CONNECTION=pgsql
 DB_HOST=pgsql
 DB_PORT=5432
@@ -38,13 +39,14 @@ Then start everything and create the database tables and your admin login:
 ```bash
 ./vendor/bin/sail up -d
 ./vendor/bin/sail artisan migrate
-./vendor/bin/sail artisan db:seed        # copies today's website text into the database
+./vendor/bin/sail artisan db:seed        # copies today's website text and price list into the database
 ./vendor/bin/sail artisan app:make-admin
 ./vendor/bin/sail artisan db:seed --class=DemoSeeder   # optional: made-up parent, child, teacher and batches
 ```
 
 The demo data's logins all use the password `password`: `parent@example.com`,
-`teacher@example.com`, and the child logs in with the username `riyademo`. It has a
+`teacher@example.com`, `student@example.com` (academic student), `expert@example.com`
+(academic expert), and the child logs in with the username `riyademo`. It has a
 Maths class running "now" each time you run the seeder, so you can try Join. Never run
 it on the live server (it refuses to).
 
@@ -89,6 +91,24 @@ send the fee link yourself, as now, and press "Fee received" in the admin.
 Every morning the site emails fee reminders 5 days and 1 day before the paid-until
 date, and pauses a child's access 3 days after it. On the live server this needs the
 scheduler (`php artisan schedule:run` every minute), set up in M9.
+
+## What to click through (M6): academic orders
+
+Online payment is not built yet. You send the payment link yourself and press
+"Payment received" in the admin. Prices show GST at `ACADEMIC_GST_PERCENT` (18 until
+your accountant says otherwise).
+
+| Where | What to try |
+| --- | --- |
+| Admin → Academic → Services, Add-ons | The price list from the website, now one screen per service: prices per level in rupees (empty = quote), free revisions, and which add-ons each service offers. |
+| Admin → Academic → Order statuses | The status list. Drag to reorder; tick which ones email the student, which are final, which experts may set, and which asks for a tracking number. |
+| http://localhost/my-orders/new | As `student@example.com`: choose a service and level, add copies or courier (the address form appears), upload a PDF, and see the itemised total with GST. Tick "send me a quote instead" for a large job. |
+| Admin → Academic → Orders | Open the order: "Payment received" moves it on; "Send quote" prices a quote request; "More → Assign expert" emails the expert; "Change status" (Shipped asks for the tracking number). |
+| http://localhost/teacher/orders | As `expert@example.com` after you assign them: read the brief, upload a draft, set "Draft shared". |
+| The student's order page | Download the draft, ask for a revision, and see the timeline. |
+
+Order files are private. Each download link works for 10 minutes and checks who is
+asking. Files are deleted 180 days after the order is finished or cancelled.
 
 ## Stopping
 

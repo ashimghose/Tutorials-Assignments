@@ -40,6 +40,8 @@ test('CMS-1 the admin edits a page and the change is live and audited', function
 });
 
 test('CMS-1 academic prices round-trip between rupees in the form and paise in storage', function () {
+    // Before online orders (M6) the price list is edited with the page.
+    config(['features.academic_orders' => false]);
     Repeater::fake();
     $academic = SiteSection::where('key', 'academic')->sole();
     $before = $academic->content['services'];
