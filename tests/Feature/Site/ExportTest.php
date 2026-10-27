@@ -37,11 +37,12 @@ test('CMS-2 every public page exports to static HTML', function () {
     expect($disk->get('tuition/index.html'))->toContain('Live online tuition for classes 1 to 12');
 });
 
-test('the site icon is the brand monogram, not the Laravel logo', function () {
+test('the site icon is the diya in the brand green, not the Laravel logo or the old monogram', function () {
     $svg = file_get_contents(public_path('favicon.svg'));
 
-    expect($svg)->toContain('#1f3c8f')
-        ->and($svg)->not->toContain('#FF2D20');
+    expect($svg)->toContain('#0b5d45')
+        ->and($svg)->not->toContain('#FF2D20')
+        ->and($svg)->not->toContain('#1f3c8f');
 });
 
 test('the export leaves out PHP files and pages behind a login', function () {
