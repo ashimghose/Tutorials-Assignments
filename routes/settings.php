@@ -2,13 +2,16 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['auth'])->group(function () {
-    Route::redirect('settings', 'settings/profile');
+Route::middleware(['feature:accounts', 'auth'])->group(function () {
+    Route::get('settings', fn () => redirect()->route(auth()->user()->isStudent() ? 'security.edit' : 'profile.edit'));
 
-    Route::livewire('settings/profile', 'pages::settings.profile')->name('profile.edit');
+    // A school student's details and account belong to their parent.
+    Route::livewire('settings/profile', 'pages::settings.profile')
+        ->middleware('role:parent,academic_student,teacher,admin')
+        ->name('profile.edit');
 });
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['feature:accounts', 'auth', 'verified'])->group(function () {
     Route::livewire('settings/appearance', 'pages::settings.appearance')->name('appearance.edit');
 
     Route::livewire('settings/security', 'pages::settings.security')

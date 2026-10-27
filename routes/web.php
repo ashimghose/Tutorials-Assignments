@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\SiteController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 // Phase 0 public marketing site (MKT-1, MKT-6, CMS-2, CMS-4). Keep these
@@ -23,8 +25,32 @@ Route::view('refund-policy', 'site.refunds')->name('refunds');
 // Cloudflare Pages shows /404.html for any address it doesn't have.
 Route::view('404.html', 'site.not-found')->name('not-found');
 
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::view('dashboard', 'dashboard')->name('dashboard');
+// Phase 2 portal (M3). Each role reaches only its own pages (AUTH-5).
+Route::middleware(['feature:accounts', 'auth', 'verified'])->group(function () {
+    Route::get('dashboard', fn (Request $request) => redirect()->route($request->user()->homeRoute()))
+        ->name('dashboard');
+
+    Route::middleware('role:parent')->prefix('parent')->name('parent.')->group(function () {
+        Route::livewire('children', 'pages::portal.parent.children')->name('children');
+    });
+
+    Route::middleware('role:student')->prefix('student')->name('student.')->group(function () {
+        Route::view('/', 'portal.student.home')->name('home');
+    });
+
+    Route::middleware('role:academic_student')->prefix('my-orders')->name('academic.')->group(function () {
+        Route::view('/', 'portal.academic.home')->name('home');
+    });
+
+    Route::middleware('role:teacher')->prefix('teacher')->name('teacher.')->group(function () {
+        Route::view('/', 'portal.teacher.home')->name('home');
+    });
+});
+
+// AUTH-4: a teacher sets their password from the emailed, signed invitation link.
+Route::middleware(['feature:accounts', 'guest', 'signed'])->controller(InvitationController::class)->group(function () {
+    Route::get('invitation/{user}', 'show')->name('invitation.show');
+    Route::post('invitation/{user}', 'accept')->name('invitation.accept');
 });
 
 require __DIR__.'/settings.php';

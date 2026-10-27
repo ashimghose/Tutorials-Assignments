@@ -24,7 +24,7 @@ return [
     |
     */
 
-    'accounts' => (bool) env('FEATURE_ACCOUNTS', false),
+    'accounts' => filter_var(env('FEATURE_ACCOUNTS', false), FILTER_VALIDATE_BOOL),
     'checkout' => (bool) env('FEATURE_CHECKOUT', false),
     'academic_orders' => (bool) env('FEATURE_ACADEMIC_ORDERS', false),
     'chat' => (bool) env('FEATURE_CHAT', false),

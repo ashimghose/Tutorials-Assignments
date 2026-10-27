@@ -160,8 +160,9 @@ return [
     |
     */
 
+    // Self sign-up opens with the accounts module (FEATURE_ACCOUNTS, M3).
     'features' => [
-        Features::registration(),
+        ...(filter_var(env('FEATURE_ACCOUNTS', false), FILTER_VALIDATE_BOOL) ? [Features::registration()] : []),
         Features::resetPasswords(),
         Features::emailVerification(),
         Features::twoFactorAuthentication([
