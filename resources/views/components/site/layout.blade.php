@@ -57,9 +57,9 @@
 
         <header class="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur">
             <div class="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
-                <a href="{{ route('home') }}" class="flex items-center" aria-label="{{ $appName }} home">
-                    {{-- The logo is an image only (public/logo.svg); the name stays in the page title and footer. --}}
-                    <img src="/logo.svg" alt="" width="40" height="40" class="size-10">
+                <a href="{{ route('home') }}" class="flex items-center">
+                    {{-- The owner's logo artwork; its text is the alt text. Icon-only version: indian-assignments-icon.svg. --}}
+                    <img src="/images/brand/indian-assignments-logo.svg" alt="Indian Assignments" width="123" height="48" class="h-11 w-auto sm:h-12">
                 </a>
 
                 <nav class="hidden items-center gap-1 lg:flex" aria-label="Main">

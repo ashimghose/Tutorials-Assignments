@@ -122,10 +122,10 @@ test('CMS-4 the sitemap lists every public page and guide', function () {
     }
 });
 
-test('the header logo is the SVG image, linked home with the site name as its label', function () {
-    config(['app.name' => 'Tutorials and Assignments']);
-
+test('the header logo is the Indian Assignments SVG, linked home', function () {
     $this->get('/')
-        ->assertSee('<img src="/logo.svg" alt=""', false)
-        ->assertSee('aria-label="Tutorials and Assignments home"', false);
+        ->assertSee('<a href="'.route('home').'" class="flex items-center">', false)
+        ->assertSee('<img src="/images/brand/indian-assignments-logo.svg" alt="Indian Assignments"', false);
+
+    expect(file_get_contents(public_path('images/brand/indian-assignments-logo.svg')))->not->toContain('<script');
 });
