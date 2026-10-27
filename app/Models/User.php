@@ -10,6 +10,7 @@ use Filament\Panel;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -83,6 +84,16 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail, Pas
         return Str::length($initials) > 1
             ? Str::substr($initials, 0, 1).Str::substr($initials, -1)
             : $initials;
+    }
+
+    /**
+     * Active admin accounts, for business emails such as a new enrolment.
+     *
+     * @param  Builder<User>  $query
+     */
+    public function scopeAdmins(Builder $query): void
+    {
+        $query->where('role', Role::Admin)->where('status', AccountStatus::Active);
     }
 
     public function hasRole(Role ...$roles): bool

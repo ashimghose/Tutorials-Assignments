@@ -68,3 +68,12 @@ One short entry per notable technical decision, newest at the bottom.
 - **Campaign pages** at `/c/{slug}` carry their own form; a lead from one records the campaign even without UTM tags.
 - **Marketing list.** The CSV export holds only leads who ticked the news-and-offers box, and each download is audited.
 - **Audit.** Admin edits to pages, guides, testimonials, campaigns and teachers are logged by the `AuditAdminChanges` observer with the names of the changed fields, not their values.
+
+## 2026-10-27 · M5 batches, timetables and enrolment (payments held back)
+
+- **No payments yet.** The owner's GST registration is in progress, so no Razorpay code. An enrolment waits as "pending" until the admin presses "Fee received" (after a Payment Link, UPI or cash). That button calls `App\Actions\Enrolments\ActivateEnrolment`, which the payments module will call after verifying the signature or webhook (PAY-2). `FEATURE_BATCHES` switches M5 on.
+- **Classes table.** Scheduled classes live in `class_sessions` (model `ClassSession`) because Laravel's login sessions use `sessions`.
+- **Timetable.** A batch's weekly slots are stored in India time as JSON (`day`, `start`, `minutes`). `app:schedule-classes` runs daily and keeps four weeks of classes; each class remembers its slot in `scheduled_for`, so a moved or cancelled class isn't added again. Changing a batch's timetable replaces only future classes that came from the old timetable and weren't changed by hand.
+- **Access.** A child may join when the enrolment is active and `paid_through` plus 3 grace days is today or later in India (PAY-4). `app:check-enrolments` runs daily: reminders 5 and 1 days before, then "expired" after the grace period. Seats are held by pending and active enrolments; the batch row is locked while a seat is taken.
+- **Join.** The Meet link never appears on the page. Join goes to `/classes/{id}/join`, which checks the role, batch, access and the time window (10 minutes before to the end) and then redirects. The teacher's first click records `started_at`, for the payout report later.
+- **Demo data.** `DemoSeeder` makes a parent, child, teacher and two batches for trying the portal and for the Playwright tests. It refuses to run in production.

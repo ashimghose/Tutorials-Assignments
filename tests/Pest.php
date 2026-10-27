@@ -1,5 +1,8 @@
 <?php
 
+use App\Enums\ConsentPurpose;
+use App\Models\Consent;
+use App\Models\Student;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -44,7 +47,13 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function something()
+/**
+ * A school student whose parent has given consent for the child's data.
+ */
+function tuitionChild(array $attributes = []): Student
 {
-    // ..
+    $student = Student::factory()->create($attributes);
+    Consent::record($student->parent->user, ConsentPurpose::ChildData, $student);
+
+    return $student;
 }

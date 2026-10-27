@@ -1,6 +1,6 @@
 <?php
 
-$modules = ['accounts', 'cms', 'checkout', 'academic_orders', 'chat', 'live_classroom', 'recordings'];
+$modules = ['accounts', 'cms', 'batches', 'checkout', 'academic_orders', 'chat', 'live_classroom', 'recordings'];
 
 test('defaults to phase 0 with every phase 2+ module off', function () use ($modules) {
     // phpunit.xml switches modules on for the feature tests; read the

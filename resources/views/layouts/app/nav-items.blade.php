@@ -4,6 +4,11 @@
         <flux:sidebar.item icon="users" :href="route('parent.children')" :current="request()->routeIs('parent.children')" wire:navigate>
             {{ __('My children') }}
         </flux:sidebar.item>
+        @if (config('features.batches'))
+            <flux:sidebar.item icon="calendar-days" :href="route('parent.classes')" :current="request()->routeIs('parent.classes')" wire:navigate>
+                {{ __('Classes') }}
+            </flux:sidebar.item>
+        @endif
         @break
     @case(\App\Enums\Role::Student)
         <flux:sidebar.item icon="academic-cap" :href="route('student.home')" :current="request()->routeIs('student.home')" wire:navigate>

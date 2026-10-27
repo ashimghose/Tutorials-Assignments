@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ClassJoinController;
 use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\LeadController;
 use App\Http\Controllers\SiteController;
@@ -44,10 +45,11 @@ Route::middleware(['feature:accounts', 'auth', 'verified'])->group(function () {
 
     Route::middleware('role:parent')->prefix('parent')->name('parent.')->group(function () {
         Route::livewire('children', 'pages::portal.parent.children')->name('children');
+        Route::livewire('classes', 'pages::portal.parent.classes')->middleware('feature:batches')->name('classes');
     });
 
     Route::middleware('role:student')->prefix('student')->name('student.')->group(function () {
-        Route::view('/', 'portal.student.home')->name('home');
+        Route::livewire('/', 'pages::portal.student.home')->name('home');
     });
 
     Route::middleware('role:academic_student')->prefix('my-orders')->name('academic.')->group(function () {
@@ -55,8 +57,11 @@ Route::middleware(['feature:accounts', 'auth', 'verified'])->group(function () {
     });
 
     Route::middleware('role:teacher')->prefix('teacher')->name('teacher.')->group(function () {
-        Route::view('/', 'portal.teacher.home')->name('home');
+        Route::livewire('/', 'pages::portal.teacher.home')->name('home');
     });
+
+    // CLS-2, CLS-3: every Join click is checked on the server.
+    Route::get('classes/{classSession}/join', ClassJoinController::class)->middleware('feature:batches')->name('classes.join');
 });
 
 // AUTH-4: a teacher sets their password from the emailed, signed invitation link.

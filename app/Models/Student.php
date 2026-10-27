@@ -50,6 +50,14 @@ class Student extends Model
         return $this->hasMany(Consent::class);
     }
 
+    /**
+     * @return HasMany<Enrolment, $this>
+     */
+    public function enrolments(): HasMany
+    {
+        return $this->hasMany(Enrolment::class);
+    }
+
     public function hasActiveConsent(): bool
     {
         return $this->consents()->whereNull('withdrawn_at')->exists();

@@ -1,7 +1,8 @@
 # Trying the Phase 2 portal on your laptop
 
-The logins, portal and admin panel are built behind `FEATURE_ACCOUNTS`, and website
-editing and on-site enquiry forms behind `FEATURE_CMS`. They stay
+The logins, portal and admin panel are built behind `FEATURE_ACCOUNTS`, website
+editing and on-site enquiry forms behind `FEATURE_CMS`, and tuition batches and
+enrolments behind `FEATURE_BATCHES`. They stay
 switched off on the live site (indianassignments.com) until M9. To try them on your
 laptop you need **Docker Desktop** (free for a business your size) once.
 
@@ -19,6 +20,7 @@ In `.env`, change these lines:
 ```
 FEATURE_ACCOUNTS=true
 FEATURE_CMS=true
+FEATURE_BATCHES=true
 DB_CONNECTION=pgsql
 DB_HOST=pgsql
 DB_PORT=5432
@@ -38,7 +40,13 @@ Then start everything and create the database tables and your admin login:
 ./vendor/bin/sail artisan migrate
 ./vendor/bin/sail artisan db:seed        # copies today's website text into the database
 ./vendor/bin/sail artisan app:make-admin
+./vendor/bin/sail artisan db:seed --class=DemoSeeder   # optional: made-up parent, child, teacher and batches
 ```
+
+The demo data's logins all use the password `password`: `parent@example.com`,
+`teacher@example.com`, and the child logs in with the username `riyademo`. It has a
+Maths class running "now" each time you run the seeder, so you can try Join. Never run
+it on the live server (it refuses to).
 
 ## What to click through (M3)
 
@@ -63,6 +71,24 @@ Then start everything and create the database tables and your admin login:
 | Admin → Marketing → Leads | Mark a lead as contacted or converted; the dashboard counts leads and customers by source. "Download marketing list" gives only people who agreed to news. |
 
 Every change made in the admin is recorded under Audit log.
+
+## What to click through (M5): batches, timetables and enrolment
+
+Online fee payment is not built yet (it waits for GST registration). Until then you
+send the fee link yourself, as now, and press "Fee received" in the admin.
+
+| Where | What to try |
+| --- | --- |
+| Admin → Tuition → Batches → New | Make a batch: subject, class, board, teacher, weekly times (India time), seats, monthly fee and the Google Meet link. Four weeks of classes are added at once, and kept topped up every morning. |
+| A batch → Classes | Move or cancel one class; the teacher and parents get an email. "Add an extra class" for a one-off. |
+| http://localhost/parent/classes | As a parent, "Ask for a place" for your child. The admins get an email. |
+| Admin → Tuition → Enrolments | The request shows as "Waiting for fee". After the money arrives, choose "Fee received" and the paid-until date. The parent gets an email and the child can join. |
+| http://localhost/student | As the child: the timetable for two weeks. Join opens 10 minutes before each class and opens the Meet link. |
+| http://localhost/teacher | As the teacher: their classes and the students in each batch. |
+
+Every morning the site emails fee reminders 5 days and 1 day before the paid-until
+date, and pauses a child's access 3 days after it. On the live server this needs the
+scheduler (`php artisan schedule:run` every minute), set up in M9.
 
 ## Stopping
 
