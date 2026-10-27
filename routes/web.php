@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\InvitationController;
+use App\Http\Controllers\LeadController;
 use App\Http\Controllers\SiteController;
+use App\Support\LeadForms;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -24,6 +26,16 @@ Route::view('refund-policy', 'site.refunds')->name('refunds');
 
 // Cloudflare Pages shows /404.html for any address it doesn't have.
 Route::view('404.html', 'site.not-found')->name('not-found');
+
+// M4 (FEATURE_CMS): the site's own forms and campaign pages replace the
+// Phase 0 Google Forms (CMS-3, MKT-2 to MKT-4).
+Route::middleware('feature:cms')->controller(LeadController::class)->group(function () {
+    Route::get('enquire/thanks', 'thanks')->name('enquire.thanks');
+    Route::get('enquire/{form}', 'show')->whereIn('form', LeadForms::FORMS)->name('enquire.show');
+    Route::post('enquire/{form}', 'store')->whereIn('form', LeadForms::FORMS)->middleware('throttle:leads')->name('enquire.store');
+    Route::get('c/{campaign}', 'campaign')->name('campaign.show');
+    Route::post('c/{campaign}', 'storeCampaign')->middleware('throttle:leads')->name('campaign.store');
+});
 
 // Phase 2 portal (M3). Each role reaches only its own pages (AUTH-5).
 Route::middleware(['feature:accounts', 'auth', 'verified'])->group(function () {

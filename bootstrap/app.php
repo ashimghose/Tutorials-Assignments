@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\CaptureUtm;
 use App\Http\Middleware\EnsureAccountActive;
 use App\Http\Middleware\EnsureFeatureEnabled;
 use App\Http\Middleware\EnsureRole;
@@ -17,6 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->web(append: [
+            CaptureUtm::class,
             EnsureAccountActive::class,
             ThrottleAccountForms::class,
         ]);

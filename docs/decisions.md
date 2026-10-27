@@ -58,3 +58,13 @@ One short entry per notable technical decision, newest at the bottom.
 - **Look.** The portal and admin use the Calm Scholar greens, Source Sans 3 / Source Serif 4 (now in `resources/css/fonts.css`, shared with the public site) and the Indian Assignments logo. The starter kit's forced dark mode and Bunny Fonts request are gone.
 - **Portal pages** follow the starter kit's Livewire single-file components in `resources/views/pages/` rather than classes in `app/Livewire/`.
 - **Sail.** `compose.yaml` runs PHP 8.4, PostgreSQL 18 and Mailpit. `.env.example` keeps SQLite for Phases 0–1 and lists the Sail values; steps for the owner are in `docs/portal.md`.
+
+## 2026-10-27 · M4 website editing and lead tracking
+
+- **Two content sources.** `App\Support\SiteContent` reads page text from `resources/content/*.php` while `FEATURE_CMS` is off (the static Phase 0 site keeps working) and from the `site_sections` table when it is on, falling back to the file for a page not yet in the database. `php artisan db:seed` (`ContentSeeder`) copies the files into the database once and never overwrites edits.
+- **Page content as JSON.** Each page (home, tuition, academic) is one `site_sections` row with a JSON `content` column, edited by a tabbed Filament form. This keeps the page layouts unchanged; the academic price list moves into proper tables in M6, when orders need it.
+- **Money in the admin.** Prices are typed in whole rupees and stored in paise (`App\Filament\Support\MoneyInput`).
+- **Leads.** With `FEATURE_CMS` on, the "Enquire", "Book a demo" and waitlist buttons go to the site's own form (`/enquire/{form}`) instead of Google Forms. `CaptureUtm` keeps the first UTM tags of the visit in the session (or the referring site, or "direct") and each lead stores them. Forms are limited to 5 posts a minute per IP and have a hidden honeypot field. A new lead emails the contact address.
+- **Campaign pages** at `/c/{slug}` carry their own form; a lead from one records the campaign even without UTM tags.
+- **Marketing list.** The CSV export holds only leads who ticked the news-and-offers box, and each download is audited.
+- **Audit.** Admin edits to pages, guides, testimonials, campaigns and teachers are logged by the `AuditAdminChanges` observer with the names of the changed fields, not their values.

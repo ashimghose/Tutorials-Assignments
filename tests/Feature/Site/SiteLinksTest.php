@@ -65,7 +65,7 @@ test('form links skip entries that are not configured', function () {
     ]);
 
     expect(SiteLinks::form('tuition', 'tuition', 'tuition', 'Free demo class'))
-        ->toBe(['href' => 'https://docs.google.com/forms/d/e/xyz/viewform', 'is_form' => true, 'utm_entries' => []]);
+        ->toBe(['href' => 'https://docs.google.com/forms/d/e/xyz/viewform', 'is_form' => true, 'external' => true, 'utm_entries' => []]);
 });
 
 test('form links fall back to the section WhatsApp chat until the form URL is set', function () {

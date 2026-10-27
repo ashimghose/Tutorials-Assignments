@@ -15,6 +15,7 @@ class SiteController extends Controller
     public function home(): View
     {
         return view('site.home', [
+            'content' => SiteContent::section('home'),
             'articles' => array_slice(SiteContent::articles(), 0, 3),
         ]);
     }

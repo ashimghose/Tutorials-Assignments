@@ -44,3 +44,6 @@ yarn-error.log
 /blob-report
 /playwright/.cache
 /dist
+
+# SQLite file made when DB_DATABASE=testing leaks into a SQLite run
+/testing

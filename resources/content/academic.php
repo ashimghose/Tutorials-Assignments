@@ -132,6 +132,14 @@ return [
         ],
     ],
 
+    // MKT-3 price question on the enquiry form, to test what people will pay.
+    // PLACEHOLDER ranges.
+    'price_ranges' => [
+        'Up to ₹3,000',
+        '₹3,000 to ₹8,000',
+        'More than ₹8,000',
+    ],
+
     'waitlist' => [
         'title' => 'Printing and delivery in your city',
         'body' => 'We are adding printing partners city by city. Join the waitlist and we will tell you when we deliver near you.',

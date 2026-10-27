@@ -7,7 +7,8 @@
 ])
 
 {{-- MKT-3, MKT-4: link to a Google Form, pre-filled with the page, the
-     interest and (in the browser) the visitor's campaign source. --}}
+     interest and (in the browser) the visitor's campaign source; with
+     FEATURE_CMS, to the site's own form. --}}
 @php
     $link = \App\Support\SiteLinks::form($form, $section, $page, $interest);
     $classes = match ($variant) {
@@ -20,7 +21,7 @@
 @endphp
 
 <a href="{{ $link['href'] }}"
-   target="_blank" rel="noopener"
+   @if ($link['external']) target="_blank" rel="noopener" @endif
    data-form="{{ $form }}"
    @if ($link['utm_entries'] !== []) data-utm-entries="{{ json_encode($link['utm_entries']) }}" @endif
    {{ $attributes->class(['inline-flex min-h-12 items-center justify-center gap-2 rounded-lg px-5 py-3 text-center font-semibold', $classes]) }}>

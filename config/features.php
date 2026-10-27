@@ -25,6 +25,9 @@ return [
     */
 
     'accounts' => filter_var(env('FEATURE_ACCOUNTS', false), FILTER_VALIDATE_BOOL),
+    // M4: site content and leads in the database, edited at /admin; site
+    // forms replace Google Forms.
+    'cms' => filter_var(env('FEATURE_CMS', false), FILTER_VALIDATE_BOOL),
     'checkout' => (bool) env('FEATURE_CHECKOUT', false),
     'academic_orders' => (bool) env('FEATURE_ACADEMIC_ORDERS', false),
     'chat' => (bool) env('FEATURE_CHAT', false),
