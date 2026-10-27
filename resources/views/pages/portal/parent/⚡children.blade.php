@@ -172,6 +172,8 @@ new #[Title('My children')] class extends Component {
         </flux:modal.trigger>
     </div>
 
+    <x-portal.notices />
+
     @forelse ($this->children as $child)
         <flux:card class="flex flex-wrap items-start justify-between gap-4" wire:key="child-{{ $child->id }}">
             <div class="space-y-1">

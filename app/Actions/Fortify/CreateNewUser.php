@@ -37,6 +37,7 @@ class CreateNewUser implements CreatesNewUsers
             'password' => $this->passwordRules(),
             'adult' => $academic ? ['accepted'] : ['prohibited'],
             'consent' => ['accepted'],
+            'marketing' => ['nullable', 'boolean'],
         ], [
             'adult.accepted' => __('Academic services are for students aged 18 or over. School students join through a parent on our Tuition page.'),
             'consent.accepted' => __('Please agree to the privacy policy to create an account.'),
@@ -49,7 +50,10 @@ class CreateNewUser implements CreatesNewUsers
                 'email' => $input['email'],
                 'password' => $input['password'],
             ]);
-            $user->forceFill(['role' => $academic ? Role::AcademicStudent : Role::Parent])->save();
+            $user->forceFill([
+                'role' => $academic ? Role::AcademicStudent : Role::Parent,
+                'marketing_opt_in_at' => filter_var($input['marketing'] ?? false, FILTER_VALIDATE_BOOL) ? now() : null,
+            ])->save();
 
             if ($academic) {
                 $user->academicStudent()->make(['mobile' => $this->normaliseMobile($input['mobile'])])

@@ -2,7 +2,7 @@
 
 The logins, portal and admin panel are built behind `FEATURE_ACCOUNTS`, website
 editing and on-site enquiry forms behind `FEATURE_CMS`, tuition batches and
-enrolments behind `FEATURE_BATCHES`, and academic orders behind `FEATURE_ACADEMIC_ORDERS`. They stay
+enrolments behind `FEATURE_BATCHES`, academic orders behind `FEATURE_ACADEMIC_ORDERS`, and messages, notices and marketing emails behind `FEATURE_CHAT`. They stay
 switched off on the live site (indianassignments.com) until M9. To try them on your
 laptop you need **Docker Desktop** (free for a business your size) once.
 
@@ -22,6 +22,7 @@ FEATURE_ACCOUNTS=true
 FEATURE_CMS=true
 FEATURE_BATCHES=true
 FEATURE_ACADEMIC_ORDERS=true
+FEATURE_CHAT=true
 DB_CONNECTION=pgsql
 DB_HOST=pgsql
 DB_PORT=5432
@@ -109,6 +110,26 @@ your accountant says otherwise).
 
 Order files are private. Each download link works for 10 minutes and checks who is
 asking. Files are deleted 180 days after the order is finished or cancelled.
+
+## What to click through (M7): messages, notices and marketing emails
+
+Messages refresh every few seconds on their own. There is no paid real-time
+service; this is enough for a few dozen conversations.
+
+| Where | What to try |
+| --- | --- |
+| http://localhost/messages | As `riyademo` (the child): "New message". The parent is added automatically, so there is no private chat between a teacher and a child. |
+| The same page as `parent@example.com` | The child's message is there. Reply, attach a PDF or photo, or report a message. Your own last message shows "Seen" once someone has read it. |
+| Admin → Messages → Inbox | Every conversation with unread and reported counts. Click one to reply, assign it to a teacher or expert, or close it. |
+| `teacher@example.com` → Messages | Only conversations assigned to them or about their own batches. Teachers can reply but can't start a conversation. |
+| `student@example.com` → Messages | Start one about an order. It goes straight to the order's expert as well as you. |
+| Admin → Messages → Notices | Write a notice for all parents, one batch's parents, or all academic students, then "Publish". It is emailed and shows on their home page. |
+| Admin → Marketing → Marketing emails | Write a newsletter and "Send". Only people who ticked "news and offers" (at sign-up or on an enquiry form) get it, each with a one-click unsubscribe link. |
+
+Outside office hours (`CHAT_OFFICE_*` in `.env`, Monday to Saturday 10:00 to 19:00
+India time by default) the chat shows when you'll reply and posts one automatic
+note. Anyone who hasn't read a new message after 15 minutes gets an email. The email
+doesn't include the message itself. Emails go to Mailpit at http://localhost:8025.
 
 ## Stopping
 

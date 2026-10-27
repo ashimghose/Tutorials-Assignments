@@ -99,6 +99,12 @@
                 <flux:error name="consent" />
             </flux:field>
 
+            {{-- NOT-3: marketing email only with an explicit opt-in, unticked by default. --}}
+            <flux:field variant="inline">
+                <flux:checkbox name="marketing" value="1" :checked="old('marketing')" />
+                <flux:label>{{ __('Send me occasional news and offers by email. I can unsubscribe at any time.') }}</flux:label>
+            </flux:field>
+
             <div class="flex items-center justify-end">
                 <flux:button type="submit" variant="primary" class="w-full" data-test="register-user-button">
                     {{ __('Create account') }}

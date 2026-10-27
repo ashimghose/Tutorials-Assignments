@@ -36,3 +36,9 @@
         </flux:sidebar.item>
         @break
 @endswitch
+@if (config('features.chat'))
+    @php($unread = \App\Models\Conversation::query()->visibleTo(auth()->user())->whereNull('closed_at')->withUnreadFor(auth()->user())->get()->sum('unread_count'))
+    <flux:sidebar.item icon="chat-bubble-left-right" :href="route('messages.index')" :current="request()->routeIs('messages.*')" :badge="$unread ?: null" wire:navigate>
+        {{ __('Messages') }}
+    </flux:sidebar.item>
+@endif

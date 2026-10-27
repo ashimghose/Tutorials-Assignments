@@ -3,9 +3,12 @@
 use App\Http\Controllers\ClassJoinController;
 use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\LeadController;
+use App\Http\Controllers\MessageAttachmentController;
 use App\Http\Controllers\OrderFileController;
 use App\Http\Controllers\SiteController;
+use App\Http\Controllers\UnsubscribeController;
 use App\Support\LeadForms;
+use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -72,6 +75,13 @@ Route::middleware(['feature:accounts', 'auth', 'verified'])->group(function () {
     // ACA-8, ACA-9: private order files, through a short-lived signed link.
     Route::get('order-files/{orderFile}', OrderFileController::class)->middleware(['feature:academic_orders', 'signed'])->name('orders.files.download');
 
+    // M7 (CHAT-1 to CHAT-5): messages with the team. Admins use the same pages as their inbox.
+    Route::middleware('feature:chat')->group(function () {
+        Route::livewire('messages', 'pages::portal.messages.index')->name('messages.index');
+        Route::livewire('messages/{conversation}', 'pages::portal.messages.show')->whereNumber('conversation')->name('messages.show');
+        Route::get('message-files/{message}', MessageAttachmentController::class)->middleware('signed')->name('messages.attachment');
+    });
+
     // CLS-2, CLS-3: every Join click is checked on the server.
     Route::get('classes/{classSession}/join', ClassJoinController::class)->middleware('feature:batches')->name('classes.join');
 });
@@ -81,5 +91,11 @@ Route::middleware(['feature:accounts', 'guest', 'signed'])->controller(Invitatio
     Route::get('invitation/{user}', 'show')->name('invitation.show');
     Route::post('invitation/{user}', 'accept')->name('invitation.accept');
 });
+
+// NOT-3: one-click unsubscribe from the signed link in each marketing email.
+// POST is the mail app's own one-click request (RFC 8058), so it has no CSRF token.
+Route::match(['get', 'post'], 'unsubscribe/{type}/{id}', UnsubscribeController::class)
+    ->middleware(['feature:chat', 'signed'])->withoutMiddleware(PreventRequestForgery::class)
+    ->whereIn('type', ['user', 'lead'])->whereNumber('id')->name('unsubscribe');
 
 require __DIR__.'/settings.php';

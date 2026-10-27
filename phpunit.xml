@@ -28,6 +28,7 @@
         <env name="FEATURE_ACCOUNTS" value="true"/>
         <env name="FEATURE_BATCHES" value="true"/>
         <env name="FEATURE_ACADEMIC_ORDERS" value="true"/>
+        <env name="FEATURE_CHAT" value="true"/>
         <env name="MAIL_MAILER" value="array"/>
         <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="SESSION_DRIVER" value="array"/>

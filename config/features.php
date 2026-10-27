@@ -34,7 +34,8 @@ return [
     'checkout' => (bool) env('FEATURE_CHECKOUT', false),
     // M6: academic orders, price list and order statuses in the admin panel.
     'academic_orders' => filter_var(env('FEATURE_ACADEMIC_ORDERS', false), FILTER_VALIDATE_BOOL),
-    'chat' => (bool) env('FEATURE_CHAT', false),
+    // M7: in-app messages, dashboard notices and opt-in marketing emails.
+    'chat' => filter_var(env('FEATURE_CHAT', false), FILTER_VALIDATE_BOOL),
     'live_classroom' => (bool) env('FEATURE_LIVE_CLASSROOM', false),
     'recordings' => (bool) env('FEATURE_RECORDINGS', false),
 

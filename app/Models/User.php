@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -30,6 +31,7 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property AccountStatus $status
  * @property Carbon|null $locked_until
  * @property Carbon|null $last_login_at
+ * @property Carbon|null $marketing_opt_in_at
  */
 #[Fillable(['name', 'email', 'password'])]
 #[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
@@ -74,6 +76,7 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail, Pas
             'status' => AccountStatus::class,
             'locked_until' => 'datetime',
             'last_login_at' => 'datetime',
+            'marketing_opt_in_at' => 'datetime',
         ];
     }
 
@@ -138,6 +141,16 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail, Pas
     public function homeRoute(): string
     {
         return $this->role?->homeRoute() ?? 'home';
+    }
+
+    /**
+     * CHAT-1: conversations this person belongs to or has read.
+     *
+     * @return BelongsToMany<Conversation, $this>
+     */
+    public function conversations(): BelongsToMany
+    {
+        return $this->belongsToMany(Conversation::class)->withPivot('is_member', 'last_read_at', 'notified_at')->withTimestamps();
     }
 
     /**
