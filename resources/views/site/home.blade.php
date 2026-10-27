@@ -1,8 +1,11 @@
 <x-site.layout description="Live online tuition for classes 1 to 12 in small batches, and guidance, editing, formatting and printing for Bachelors, Masters and PhD students' research work.">
     <section class="bg-gradient-to-b from-brand-50 to-white">
-        <div class="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
-            <h1 class="max-w-3xl text-3xl font-bold tracking-tight text-slate-900 sm:text-5xl">Learning support for school and beyond</h1>
-            <p class="mt-5 max-w-2xl text-lg text-slate-600">Live online classes for school children, and expert help for college students to make their own research work clearer, correctly formatted and ready to submit.</p>
+        <div class="mx-auto grid max-w-6xl items-center gap-10 px-4 py-14 sm:px-6 sm:py-20 lg:grid-cols-[1.1fr_1fr]">
+            <div>
+                <h1 class="max-w-3xl text-3xl font-bold tracking-tight text-slate-900 sm:text-5xl">Learning support for school and beyond</h1>
+                <p class="mt-5 max-w-2xl text-lg text-slate-600">Live online classes for school children, and expert help for college students to make their own research work clearer, correctly formatted and ready to submit.</p>
+            </div>
+            <x-site.hero-image name="home-hero" alt="A live online class on a laptop beside an open book, a graduation cap and bound theses" />
         </div>
     </section>
 
