@@ -39,12 +39,14 @@ test('CMS-2 every public page exports to static HTML', function () {
     expect($disk->get('tuition/index.html'))->toContain('Live online tuition for classes 1 to 12');
 });
 
-test('the site icon is the line-drawn diya with no background or text', function () {
+test('the site icon is the Indian Assignments icon, square and without text', function () {
     $svg = file_get_contents(public_path('favicon.svg'));
 
-    expect($svg)->toContain('#e8833a')
-        ->and($svg)->not->toContain('<rect')
+    expect($svg)->toContain('#075B45')
+        ->and($svg)->toContain('#C9570B')
+        ->and($svg)->toContain('viewBox="166 149 924 924"')
         ->and($svg)->not->toContain('<text')
+        ->and($svg)->not->toContain('<script')
         ->and($svg)->not->toContain('#FF2D20');
 });
 

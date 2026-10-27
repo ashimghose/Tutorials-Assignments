@@ -44,4 +44,4 @@ One short entry per notable technical decision, newest at the bottom.
 ## 2026-10-27 · Owner's "Indian Assignments" logo
 
 - The owner supplied their own logo. `public/images/brand/indian-assignments-logo.svg` (book, pencil and graduation cap with the words "Indian Assignments") replaces the diya in the header. `indian-assignments-icon.svg` (no text) is kept beside it for small places such as the footer. The PNG versions they sent are stored in `resources/brand/` and are not published.
-- The colours (#075B45 green, #C9570B orange) are close to the Calm Scholar tokens, so the theme is unchanged. The favicon is still the diya until the owner says otherwise.
+- The colours (#075B45 green, #C9570B orange) are close to the Calm Scholar tokens, so the theme is unchanged. The favicon is now the icon too: `favicon.svg` is `indian-assignments-icon.svg` with a square viewBox, and `favicon.ico` (16/32/48) and `apple-touch-icon.png` (180, on white) are rendered from it.
