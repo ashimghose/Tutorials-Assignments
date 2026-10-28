@@ -2,15 +2,18 @@
 
 <x-site.layout title="Live online tuition for classes 1 to 12" description="Live online tuition for classes 1 to 12 in small batches of up to 15. {{ implode(' and ', $content['boards']) }} syllabus, monthly fees per subject, free demo class." section="tuition">
     <section class="bg-gradient-to-b from-tuition-50 to-white">
-        <div class="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
-            <p class="text-sm font-semibold uppercase tracking-wide text-tuition-700">Tuition for parents of classes 1 to 12</p>
-            <h1 class="mt-2 max-w-3xl text-3xl font-bold tracking-tight text-slate-900 sm:text-5xl">{{ $content['hero']['title'] }}</h1>
-            <p class="mt-5 max-w-2xl text-lg text-slate-600">{{ $content['hero']['lead'] }}</p>
-            <div class="mt-8 flex flex-col gap-3 sm:flex-row">
-                <x-site.form-link form="tuition" section="tuition" :page="$page" interest="Free demo class" variant="tuition">Book a free demo class</x-site.form-link>
-                <x-site.form-link form="tuition" section="tuition" :page="$page" interest="General enquiry" variant="outline">Ask a question</x-site.form-link>
+        <div class="mx-auto grid max-w-6xl items-center gap-10 px-4 py-14 sm:px-6 sm:py-20 lg:grid-cols-[1.1fr_1fr]">
+            <div>
+                <p class="text-sm font-semibold uppercase tracking-wide text-tuition-700">Tuition for parents of classes 1 to 12</p>
+                <h1 class="mt-2 max-w-3xl text-3xl font-bold tracking-tight text-slate-900 sm:text-5xl">{{ $content['hero']['title'] }}</h1>
+                <p class="mt-5 max-w-2xl text-lg text-slate-600">{{ $content['hero']['lead'] }}</p>
+                <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+                    <x-site.form-link form="tuition" section="tuition" :page="$page" interest="Free demo class" variant="tuition">Book a free demo class</x-site.form-link>
+                    <x-site.form-link form="tuition" section="tuition" :page="$page" interest="General enquiry" variant="outline">Ask a question</x-site.form-link>
+                </div>
+                <p class="mt-4 text-sm text-slate-500">Boards: {{ implode(', ', $content['boards']) }}</p>
             </div>
-            <p class="mt-4 text-sm text-slate-500">Boards: {{ implode(', ', $content['boards']) }}</p>
+            <x-site.hero-image name="tuition-live-class" alt="A live online class: a teacher at a whiteboard and students on a video call" />
         </div>
     </section>
 

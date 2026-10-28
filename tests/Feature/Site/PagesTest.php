@@ -129,3 +129,20 @@ test('the header logo is the Indian Assignments SVG, linked home', function () {
 
     expect(file_get_contents(public_path('images/brand/indian-assignments-logo.svg')))->not->toContain('<script');
 });
+
+test('each landing page shows its own hero illustration with alt text', function (string $path, string $name) {
+    $this->get($path)
+        ->assertOk()
+        ->assertSee('<img src="/images/illustrations/'.$name.'.svg" alt="', false);
+
+    $svg = file_get_contents(public_path("images/illustrations/{$name}.svg"));
+
+    expect($svg)->toContain('#0B5D45')
+        ->not->toContain('<script')
+        ->not->toContain('href=')
+        ->and(strlen($svg))->toBeLessThan(10_000);
+})->with([
+    'home' => ['/', 'home-hero'],
+    'tuition' => ['/tuition', 'tuition-live-class'],
+    'academic' => ['/academic', 'academic-services'],
+]);

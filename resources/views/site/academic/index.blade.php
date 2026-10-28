@@ -2,15 +2,18 @@
 
 <x-site.layout title="Thesis, dissertation and research paper editing, formatting and printing" description="Guidance, editing, proofreading, formatting, similarity checks, printing and delivery for Bachelors, Masters and PhD students' synopses, research papers, theses and dissertations." section="academic">
     <section class="bg-gradient-to-b from-academic-50 to-white">
-        <div class="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
-            <p class="text-sm font-semibold uppercase tracking-wide text-academic-700">Academic services for students aged 18 and over</p>
-            <h1 class="mt-2 max-w-3xl text-3xl font-bold tracking-tight text-slate-900 sm:text-5xl">{{ $content['hero']['title'] }}</h1>
-            <p class="mt-5 max-w-2xl text-lg text-slate-600">{{ $content['hero']['lead'] }}</p>
-            <div class="mt-8 flex flex-col gap-3 sm:flex-row">
-                <x-site.form-link form="academic" section="academic" :page="$page" interest="General enquiry" variant="academic">Get a price for your work</x-site.form-link>
-                <a href="#prices" class="inline-flex min-h-12 items-center justify-center rounded-lg border border-slate-300 bg-white px-5 py-3 font-semibold text-slate-800 hover:bg-slate-50">See the price list</a>
+        <div class="mx-auto grid max-w-6xl items-center gap-10 px-4 py-14 sm:px-6 sm:py-20 lg:grid-cols-[1.1fr_1fr]">
+            <div>
+                <p class="text-sm font-semibold uppercase tracking-wide text-academic-700">Academic services for students aged 18 and over</p>
+                <h1 class="mt-2 max-w-3xl text-3xl font-bold tracking-tight text-slate-900 sm:text-5xl">{{ $content['hero']['title'] }}</h1>
+                <p class="mt-5 max-w-2xl text-lg text-slate-600">{{ $content['hero']['lead'] }}</p>
+                <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+                    <x-site.form-link form="academic" section="academic" :page="$page" interest="General enquiry" variant="academic">Get a price for your work</x-site.form-link>
+                    <a href="#prices" class="inline-flex min-h-12 items-center justify-center rounded-lg border border-slate-300 bg-white px-5 py-3 font-semibold text-slate-800 hover:bg-slate-50">See the price list</a>
+                </div>
+                <p class="mt-4 text-sm text-slate-500">In school? Academic services are for students aged 18 or older. See <a href="{{ route('tuition') }}" class="font-medium text-slate-700 underline">Tuition</a> instead.</p>
             </div>
-            <p class="mt-4 text-sm text-slate-500">In school? Academic services are for students aged 18 or older. See <a href="{{ route('tuition') }}" class="font-medium text-slate-700 underline">Tuition</a> instead.</p>
+            <x-site.hero-image name="academic-services" alt="A thesis with editing marks, a similarity check result, bound copies and a courier parcel" />
         </div>
     </section>
 

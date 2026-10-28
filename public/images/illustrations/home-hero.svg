@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 360" role="img" aria-labelledby="t"><title id="t">A live online class on a laptop beside an open book, a graduation cap and a stack of bound theses</title>
+<path d="M30,190 C30,90 130,28 250,34 C380,40 470,110 455,210 C440,312 330,350 220,344 C100,338 30,290 30,190 z" fill="#EEF7F3"/>
+<path d="M30,190 C30,90 130,28 250,34 L240,344 C100,338 30,290 30,190 z" fill="#FDF5EC"/>
+<circle cx="452" cy="60" r="8" fill="#E8833A" opacity=".5"/><circle cx="46" cy="76" r="8" fill="#0B5D45" opacity=".25"/>
+<rect x="16" y="314" width="448" height="8" rx="4" fill="#E2E8F0"/>
+<rect x="64" y="86" width="180" height="164" rx="12" fill="#1E293B"/>
+<rect x="74" y="96" width="160" height="142" rx="4" fill="#fff"/>
+<rect x="74" y="96" width="140" height="92" rx="4" fill="#FDF5EC"/>
+<rect x="146" y="106" width="60" height="42" rx="3" fill="#fff" stroke="#E2E8F0"/>
+<text x="154" y="126" font-family="Georgia,serif" font-size="11" fill="#0B5D45">½ + ¼</text>
+<path d="M154,136 h34" stroke="#E8833A" stroke-width="2.5" stroke-linecap="round"/>
+<rect x="78" y="112" width="70" height="76" rx="5" fill="none"/>
+<path d="M93.7,188 q0,-28.3 19.3,-28.3 h0.0 q19.3,0 19.3,28.3 z" fill="#127A5C"/>
+<circle cx="113.0" cy="147.0" r="14.9" fill="#8D5524"/>
+<path d="M98.1,147.0 a14.9,14.9 0 0 1 29.8,0 q-6.0,-10.4 -14.9,-10.4 q-10.4,0 -14.9,10.4 z" fill="#1F1A17"/>
+<rect x="74" y="192" width="44" height="36" rx="5" fill="#D5EBE2"/>
+<path d="M88.0,228 q0,-11.6 8.0,-11.6 h0.0 q8.0,0 8.0,11.6 z" fill="#fff"/>
+<circle cx="96.0" cy="208.6" r="6.1" fill="#C68642"/>
+<rect x="88.3" y="208.6" width="2.4" height="9.2" rx="1.2" fill="#1F1A17"/>
+<rect x="101.2" y="208.6" width="2.4" height="9.2" rx="1.2" fill="#1F1A17"/>
+<path d="M89.9,208.6 a6.1,6.1 0 0 1 12.2,0 q-3.1,-3.1 -6.1,-3.1 q-3.1,0 -6.1,3.1 z" fill="#1F1A17"/>
+<rect x="122" y="192" width="44" height="36" rx="5" fill="#FBE6D0"/>
+<path d="M136.0,228 q0,-11.6 8.0,-11.6 h0.0 q8.0,0 8.0,11.6 z" fill="#DBEAFE"/>
+<circle cx="144.0" cy="208.6" r="6.1" fill="#A0673D"/>
+<path d="M137.9,208.6 a6.1,6.1 0 0 1 12.2,0 q-2.4,-4.3 -6.1,-4.3 q-4.3,0 -6.1,4.3 z" fill="#1F1A17"/>
+<rect x="170" y="192" width="44" height="36" rx="5" fill="#EEF7F3"/>
+<path d="M184.0,228 q0,-11.6 8.0,-11.6 h0.0 q8.0,0 8.0,11.6 z" fill="#fff"/>
+<circle cx="192.0" cy="208.6" r="6.1" fill="#7A4A2A"/>
+<path d="M185.3,215.9 v-7.3 a6.7,6.7 0 0 1 13.5,0 v7.3 h-2.1 v-6.1 q-4.6,-4.6 -9.2,-4.6 v10.7 z" fill="#1F1A17"/>
+<path d="M42,250 h224 l-14,18 h-196 z" fill="#CBD5E1"/>
+<rect x="126.0" y="250" width="56" height="5" rx="2.5" fill="#94A3B8"/>
+<rect x="250" y="302" width="150" height="12" rx="2" fill="#0B5D45"/>
+<rect x="256" y="307" width="138" height="2" rx="1" fill="#fff" opacity=".55"/>
+<rect x="254" y="290" width="142" height="12" rx="2" fill="#B4561A"/>
+<rect x="260" y="295" width="130" height="2" rx="1" fill="#fff" opacity=".55"/>
+<rect x="250" y="278" width="150" height="12" rx="2" fill="#127A5C"/>
+<rect x="256" y="283" width="138" height="2" rx="1" fill="#fff" opacity=".55"/>
+<rect x="254" y="266" width="144" height="12" rx="2" fill="#0B5D45"/>
+<rect x="260" y="271" width="132" height="2" rx="1" fill="#fff" opacity=".55"/>
+<g transform="translate(262,182)"><path d="M0,24 c22,-14 48,-14 64,0 c16,-14 42,-14 64,0 v40 c-22,-12 -48,-12 -64,2 c-16,-14 -42,-14 -64,-2 z" fill="#fff" stroke="#0B5D45" stroke-width="3" stroke-linejoin="round"/><path d="M64,24 v42" stroke="#0B5D45" stroke-width="3"/>
+<path d="M12,34 c12,-6 28,-6 40,0 M12,44 c12,-6 28,-6 40,0 M76,34 c12,-6 28,-6 40,0 M76,44 c12,-6 28,-6 40,0" stroke="#E2E8F0" stroke-width="3" fill="none" stroke-linecap="round"/></g>
+<g transform="translate(290,112)"><path d="M0,22 l40,-20 l40,20 l-40,20 z" fill="#0B5D45"/><path d="M16,30 v18 q24,12 48,0 v-18 l-24,12 z" fill="#127A5C"/><path d="M74,25 v24" stroke="#E8833A" stroke-width="3"/><circle cx="74" cy="52" r="4.5" fill="#E8833A"/></g>
+<g transform="translate(404,150) rotate(30)"><rect width="12" height="80" rx="2" fill="#E8833A"/><rect width="12" height="10" fill="#F6D9A8"/><path d="M0,80 l6,16 l6,-16 z" fill="#F6D9A8"/><path d="M4,90 l2,6 l2,-6 z" fill="#1E293B"/></g>
+</svg>

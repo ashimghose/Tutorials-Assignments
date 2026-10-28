@@ -45,3 +45,6 @@ One short entry per notable technical decision, newest at the bottom.
 
 - The owner supplied their own logo. `public/images/brand/indian-assignments-logo.svg` (book, pencil and graduation cap with the words "Indian Assignments") replaces the diya in the header. `indian-assignments-icon.svg` (no text) is kept beside it for small places such as the footer. The PNG versions they sent are stored in `resources/brand/` and are not published.
 - The colours (#075B45 green, #C9570B orange) are close to the Calm Scholar tokens, so the theme is unchanged. The favicon is now the icon too: `favicon.svg` is `indian-assignments-icon.svg` with a square viewBox, and `favicon.ico` (16/32/48) and `apple-touch-icon.png` (180, on white) are rendered from it.
+
+## 2026-10-27 · Hero illustrations
+Home, Tuition and Academic heroes show original flat SVG illustrations (public/images/illustrations, about 5 KB each) drawn for this site in the Calm Scholar colours. They belong to the business outright, so there is no licence to track, and they add almost nothing to page weight on 4G. Real photos can be added later by the owner (Unsplash/Pexels licence, WebP, lazy-loaded below the fold); stock photos are never captioned as our students or teachers.
