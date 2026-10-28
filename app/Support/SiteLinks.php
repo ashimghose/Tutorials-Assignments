@@ -28,14 +28,23 @@ final class SiteLinks
      * added in the browser (see resources/js/site.js) so the page stays static.
      * Falls back to WhatsApp while the form URL isn't set.
      *
-     * @return array{href: string, is_form: bool, utm_entries: array<string, string>}
+     * With FEATURE_CMS on (M4) the link opens the site's own form instead,
+     * and the campaign is recorded on the server (CaptureUtm).
+     *
+     * @return array{href: string, is_form: bool, external: bool, utm_entries: array<string, string>}
      */
     public static function form(string $form, string $section, string $page, ?string $interest = null): array
     {
+        if (config('features.cms')) {
+            $query = array_filter(['section' => $section, 'page' => $page, 'interest' => $interest], 'filled');
+
+            return ['href' => route('enquire.show', ['form' => $form, ...$query]), 'is_form' => true, 'external' => false, 'utm_entries' => []];
+        }
+
         $url = (string) config("site.forms.{$form}.url");
 
         if ($url === '') {
-            return ['href' => self::whatsapp($section), 'is_form' => false, 'utm_entries' => []];
+            return ['href' => self::whatsapp($section), 'is_form' => false, 'external' => true, 'utm_entries' => []];
         }
 
         /** @var array<string, string|null> $entries */
@@ -63,6 +72,6 @@ final class SiteLinks
         $url = explode('?', $url, 2)[0];
         $href = $prefill === [] ? $url : $url.'?'.http_build_query($prefill, '', '&', PHP_QUERY_RFC3986);
 
-        return ['href' => $href, 'is_form' => true, 'utm_entries' => $utmEntries];
+        return ['href' => $href, 'is_form' => true, 'external' => true, 'utm_entries' => $utmEntries];
     }
 }

@@ -67,6 +67,9 @@ return [
 
     'timezone' => 'UTC',
 
+    // Dates are stored in UTC and shown and scheduled in India time.
+    'display_timezone' => env('DISPLAY_TIMEZONE', 'Asia/Kolkata'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Locale Configuration

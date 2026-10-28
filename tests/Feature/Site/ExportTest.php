@@ -54,6 +54,9 @@ test('the site icon is the Indian Assignments icon, square and without text', fu
 });
 
 test('the export leaves out PHP files and pages behind a login', function () {
+    // The static export is the Phase 0–1 site, built with the Phase 2 modules off.
+    config(['features.academic_orders' => false, 'features.batches' => false, 'features.cms' => false, 'features.chat' => false]);
+
     app(Exporter::class)->export();
 
     $disk = Storage::disk('export');

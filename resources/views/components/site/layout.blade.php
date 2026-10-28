@@ -10,6 +10,7 @@
     $appName = config('app.name');
     $fullTitle = filled($title) ? $title.' | '.$appName : $appName;
     $canonical = url()->current();
+    $banner = \App\Support\SiteContent::section('home')['banner'] ?? [];
     $nav = [
         ['label' => 'Tuition', 'route' => 'tuition'],
         ['label' => 'Academic services', 'route' => 'academic'],
@@ -54,6 +55,17 @@
     </head>
     <body class="flex min-h-screen flex-col bg-white font-sans text-slate-800 antialiased">
         <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-white focus:px-4 focus:py-2">Skip to content</a>
+
+        @if (filled($banner['text'] ?? null))
+            {{-- CMS-1: a site-wide notice the admin can switch on. --}}
+            <div class="bg-brand-900 px-4 py-2 text-center text-sm text-white">
+                @if (filled($banner['link'] ?? null))
+                    <a href="{{ $banner['link'] }}" class="underline underline-offset-2 hover:no-underline">{{ $banner['text'] }}</a>
+                @else
+                    {{ $banner['text'] }}
+                @endif
+            </div>
+        @endif
 
         <header class="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur">
             <div class="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">

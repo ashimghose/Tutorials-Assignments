@@ -2,8 +2,8 @@
     <section class="bg-gradient-to-b from-brand-50 to-white">
         <div class="mx-auto grid max-w-6xl items-center gap-10 px-4 py-14 sm:px-6 sm:py-20 lg:grid-cols-[1.1fr_1fr]">
             <div>
-                <h1 class="max-w-3xl text-3xl font-bold tracking-tight text-slate-900 sm:text-5xl">Learning support for school and beyond</h1>
-                <p class="mt-5 max-w-2xl text-lg text-slate-600">Live online classes for school children, and expert help for college students to make their own research work clearer, correctly formatted and ready to submit.</p>
+                <h1 class="max-w-3xl text-3xl font-bold tracking-tight text-slate-900 sm:text-5xl">{{ $content['hero']['title'] }}</h1>
+                <p class="mt-5 max-w-2xl text-lg text-slate-600">{{ $content['hero']['lead'] }}</p>
             </div>
             <x-site.hero-image name="home-hero" alt="A live online class on a laptop beside an open book, a graduation cap and bound theses" />
         </div>
@@ -12,13 +12,13 @@
     <section class="mx-auto max-w-6xl px-4 pb-16 sm:px-6">
         <div class="grid gap-6 md:grid-cols-2">
             <article class="flex flex-col rounded-2xl border border-tuition-100 bg-tuition-50 p-6 sm:p-8">
-                <p class="text-sm font-semibold uppercase tracking-wide text-tuition-700">For parents</p>
-                <h2 class="mt-2 text-2xl font-bold text-slate-900">Tuition, classes 1 to 12</h2>
-                <p class="mt-3 text-slate-700">Live online classes in small batches of up to 15, following your child's school syllabus. Maths, Science, English and more, with a free demo class.</p>
+                <p class="text-sm font-semibold uppercase tracking-wide text-tuition-700">{{ $content['offerings']['tuition']['eyebrow'] }}</p>
+                <h2 class="mt-2 text-2xl font-bold text-slate-900">{{ $content['offerings']['tuition']['title'] }}</h2>
+                <p class="mt-3 text-slate-700">{{ $content['offerings']['tuition']['body'] }}</p>
                 <ul class="mt-5 space-y-2 text-slate-700">
-                    <li class="flex gap-2"><span aria-hidden="true" class="text-tuition-700">&#10003;</span> Live teacher, not recorded videos</li>
-                    <li class="flex gap-2"><span aria-hidden="true" class="text-tuition-700">&#10003;</span> Fees paid monthly, per subject</li>
-                    <li class="flex gap-2"><span aria-hidden="true" class="text-tuition-700">&#10003;</span> Parents get every message and notice</li>
+                    @foreach ($content['offerings']['tuition']['points'] as $point)
+                        <li class="flex gap-2"><span aria-hidden="true" class="text-tuition-700">&#10003;</span> {{ $point }}</li>
+                    @endforeach
                 </ul>
                 <div class="mt-auto pt-6">
                     <a href="{{ route('tuition') }}" class="inline-flex min-h-12 items-center rounded-lg bg-tuition-700 px-5 py-3 font-semibold text-white hover:bg-tuition-800">Explore tuition</a>
@@ -26,13 +26,13 @@
             </article>
 
             <article class="flex flex-col rounded-2xl border border-academic-100 bg-academic-50 p-6 sm:p-8">
-                <p class="text-sm font-semibold uppercase tracking-wide text-academic-700">For college students, 18+</p>
-                <h2 class="mt-2 text-2xl font-bold text-slate-900">Academic services</h2>
-                <p class="mt-3 text-slate-700">Guidance, editing, formatting and similarity checks for your synopsis, research paper, thesis or dissertation, plus printing, binding and delivery.</p>
+                <p class="text-sm font-semibold uppercase tracking-wide text-academic-700">{{ $content['offerings']['academic']['eyebrow'] }}</p>
+                <h2 class="mt-2 text-2xl font-bold text-slate-900">{{ $content['offerings']['academic']['title'] }}</h2>
+                <p class="mt-3 text-slate-700">{{ $content['offerings']['academic']['body'] }}</p>
                 <ul class="mt-5 space-y-2 text-slate-700">
-                    <li class="flex gap-2"><span aria-hidden="true" class="text-academic-700">&#10003;</span> Bachelors, Masters and PhD, any stream</li>
-                    <li class="flex gap-2"><span aria-hidden="true" class="text-academic-700">&#10003;</span> Clear fixed prices, quotes for big jobs</li>
-                    <li class="flex gap-2"><span aria-hidden="true" class="text-academic-700">&#10003;</span> Your work stays yours, and confidential</li>
+                    @foreach ($content['offerings']['academic']['points'] as $point)
+                        <li class="flex gap-2"><span aria-hidden="true" class="text-academic-700">&#10003;</span> {{ $point }}</li>
+                    @endforeach
                 </ul>
                 <div class="mt-auto pt-6">
                     <a href="{{ route('academic') }}" class="inline-flex min-h-12 items-center rounded-lg bg-academic-700 px-5 py-3 font-semibold text-white hover:bg-academic-800">Explore academic services</a>

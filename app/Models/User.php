@@ -2,11 +2,20 @@
 
 namespace App\Models;
 
+use App\Enums\AccountStatus;
+use App\Enums\EnrolmentStatus;
+use App\Enums\Role;
 use Database\Factories\UserFactory;
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
@@ -16,41 +25,62 @@ use Laravel\Fortify\PasskeyAuthenticatable;
 use Laravel\Fortify\TwoFactorAuthenticatable;
 
 /**
- * @property int $id
- * @property string $name
- * @property string $email
- * @property Carbon|null $email_verified_at
- * @property string $password
- * @property string|null $two_factor_secret
- * @property string|null $two_factor_recovery_codes
- * @property Carbon|null $two_factor_confirmed_at
- * @property string|null $remember_token
- * @property Carbon|null $created_at
- * @property Carbon|null $updated_at
+ * One login table for everyone; `role` decides access (AUTH-5). Role,
+ * status and lockout fields are never mass-assignable.
+ *
+ * @property Role|null $role
+ * @property AccountStatus $status
+ * @property Carbon|null $locked_until
+ * @property Carbon|null $last_login_at
+ * @property Carbon|null $marketing_opt_in_at
  */
 #[Fillable(['name', 'email', 'password'])]
 #[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
-class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
+class User extends Authenticatable implements FilamentUser, MustVerifyEmail, PasskeyUser
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable, PasskeyAuthenticatable, TwoFactorAuthenticatable;
 
     /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
+     * AUTH-6: this many failed logins in a row lock the account.
      */
+    public const MAX_FAILED_LOGINS = 5;
+
+    public const LOCKOUT_MINUTES = 15;
+
+    /**
+     * Matches the column default, so a new model is active before it is
+     * reloaded from the database.
+     *
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'status' => 'active',
+        'failed_login_attempts' => 0,
+    ];
+
+    protected static function booted(): void
+    {
+        // A parent's children's logins go with the family account.
+        static::deleting(function (User $user) {
+            $user->parentProfile?->students()->with('user')->get()
+                ->each(fn (Student $student) => $student->user?->delete());
+        });
+    }
+
     protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'role' => Role::class,
+            'status' => AccountStatus::class,
+            'locked_until' => 'datetime',
+            'last_login_at' => 'datetime',
+            'marketing_opt_in_at' => 'datetime',
         ];
     }
 
-    /**
-     * Get the user's initials
-     */
     public function initials(): string
     {
         $initials = Str::initials($this->name, true);
@@ -58,5 +88,132 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
         return Str::length($initials) > 1
             ? Str::substr($initials, 0, 1).Str::substr($initials, -1)
             : $initials;
+    }
+
+    /**
+     * Active admin accounts, for business emails such as a new enrolment.
+     *
+     * @param  Builder<User>  $query
+     */
+    public function scopeAdmins(Builder $query): void
+    {
+        $query->where('role', Role::Admin)->where('status', AccountStatus::Active);
+    }
+
+    /**
+     * ADM-5: active people are those with an active account who are still
+     * with us: teachers without an end date in the past, school students
+     * (and their parents) with a current or pending place, and academic
+     * students with an order still open. Everyone else is "past".
+     *
+     * @param  Builder<User>  $query
+     */
+    public function scopeStanding(Builder $query, bool $active): void
+    {
+        $current = [EnrolmentStatus::Active, EnrolmentStatus::Pending];
+        $today = now(config('app.display_timezone'))->toDateString();
+
+        $isActive = fn (Builder $query) => $query->where('status', AccountStatus::Active)->where(fn (Builder $query) => $query
+            ->where('role', Role::Admin)
+            ->orWhere(fn (Builder $q) => $q->where('role', Role::Teacher)->whereHas('teacher', fn (Builder $t) => $t->whereNull('active_to')->orWhere('active_to', '>=', $today)))
+            ->orWhere(fn (Builder $q) => $q->where('role', Role::Student)->whereHas('student.enrolments', fn (Builder $e) => $e->whereIn('status', $current)))
+            ->orWhere(fn (Builder $q) => $q->where('role', Role::Parent)->whereHas('parentProfile.students.enrolments', fn (Builder $e) => $e->whereIn('status', $current)))
+            ->orWhere(fn (Builder $q) => $q->where('role', Role::AcademicStudent)->whereHas('academicStudent.orders.status', fn (Builder $s) => $s->where('is_final', false))));
+
+        $active ? $query->where($isActive) : $query->whereNot($isActive);
+    }
+
+    public function hasRole(Role ...$roles): bool
+    {
+        return in_array($this->role, $roles, true);
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->hasRole(Role::Admin);
+    }
+
+    public function isStudent(): bool
+    {
+        return $this->hasRole(Role::Student);
+    }
+
+    public function isActive(): bool
+    {
+        return $this->status === AccountStatus::Active;
+    }
+
+    public function isLocked(): bool
+    {
+        return $this->locked_until !== null && $this->locked_until->isFuture();
+    }
+
+    /**
+     * School students log in with a username their parent chose and have no
+     * email to verify; their parent's email is verified instead.
+     */
+    public function hasVerifiedEmail(): bool
+    {
+        return $this->role === Role::Student || $this->email_verified_at !== null;
+    }
+
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return $this->isAdmin() && $this->isActive();
+    }
+
+    public function homeRoute(): string
+    {
+        return $this->role?->homeRoute() ?? 'home';
+    }
+
+    /**
+     * CHAT-1: conversations this person belongs to or has read.
+     *
+     * @return BelongsToMany<Conversation, $this>
+     */
+    public function conversations(): BelongsToMany
+    {
+        return $this->belongsToMany(Conversation::class)->withPivot('is_member', 'last_read_at', 'notified_at')->withTimestamps();
+    }
+
+    /**
+     * @return HasOne<ParentProfile, $this>
+     */
+    public function parentProfile(): HasOne
+    {
+        return $this->hasOne(ParentProfile::class);
+    }
+
+    /**
+     * @return HasOne<Student, $this>
+     */
+    public function student(): HasOne
+    {
+        return $this->hasOne(Student::class);
+    }
+
+    /**
+     * @return HasOne<AcademicStudent, $this>
+     */
+    public function academicStudent(): HasOne
+    {
+        return $this->hasOne(AcademicStudent::class);
+    }
+
+    /**
+     * @return HasOne<Teacher, $this>
+     */
+    public function teacher(): HasOne
+    {
+        return $this->hasOne(Teacher::class);
+    }
+
+    /**
+     * @return HasMany<Consent, $this>
+     */
+    public function consents(): HasMany
+    {
+        return $this->hasMany(Consent::class);
     }
 }

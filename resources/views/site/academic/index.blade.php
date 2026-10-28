@@ -10,6 +10,10 @@
                 <div class="mt-8 flex flex-col gap-3 sm:flex-row">
                     <x-site.form-link form="academic" section="academic" :page="$page" interest="General enquiry" variant="academic">Get a price for your work</x-site.form-link>
                     <a href="#prices" class="inline-flex min-h-12 items-center justify-center rounded-lg border border-slate-300 bg-white px-5 py-3 font-semibold text-slate-800 hover:bg-slate-50">See the price list</a>
+                    @if (config('features.academic_orders'))
+                        {{-- M6 (ACA-4): signed-in students place orders on the site. --}}
+                        <a href="{{ route('academic.orders.create') }}" class="inline-flex min-h-12 items-center justify-center rounded-lg border border-academic-700 bg-white px-5 py-3 font-semibold text-academic-800 hover:bg-academic-50">Order online</a>
+                    @endif
                 </div>
                 <p class="mt-4 text-sm text-slate-500">In school? Academic services are for students aged 18 or older. See <a href="{{ route('tuition') }}" class="font-medium text-slate-700 underline">Tuition</a> instead.</p>
             </div>

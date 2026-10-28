@@ -103,6 +103,14 @@ return [
         ],
     ],
 
+    // MKT-3 price question on the enquiry form, to test what people will pay.
+    // PLACEHOLDER ranges.
+    'price_ranges' => [
+        'Up to ₹1,500 a month per subject',
+        '₹1,500 to ₹2,500 a month per subject',
+        'More than ₹2,500 a month per subject',
+    ],
+
     'waitlist' => [
         'title' => 'Your class or subject not listed yet?',
         'body' => 'Join the waitlist and we will tell you when a batch opens for your child\'s class, board and subject.',
