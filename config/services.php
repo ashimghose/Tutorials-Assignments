@@ -35,4 +35,12 @@ return [
         ],
     ],
 
+    // Razorpay (PAY): keys from the dashboard; test keys until live mode.
+    // Online checkout is switched on with FEATURE_CHECKOUT once GST is registered.
+    'razorpay' => [
+        'key_id' => env('RAZORPAY_KEY_ID'),
+        'key_secret' => env('RAZORPAY_KEY_SECRET'),
+        'webhook_secret' => env('RAZORPAY_WEBHOOK_SECRET'),
+    ],
+
 ];
