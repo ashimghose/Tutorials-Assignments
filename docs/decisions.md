@@ -108,3 +108,6 @@ One short entry per notable technical decision, newest at the bottom.
 - **Payouts** are snapshots: "Mark paid" stores the classes, orders and amounts as calculated then, so later corrections don't change a paid month. In the money report, class pay counts to Tuition and order pay to Academic, on the date paid.
 - **Active and past people** (ADM-5): an active account and still with us: teachers without a past end date, school students and their parents with an active or pending place, academic students with an order still open.
 - **Times in tests** must be saved in UTC: Eloquent writes a Carbon's wall-clock time without converting its timezone.
+
+## 2026-10-27 · Hero illustrations
+Home, Tuition and Academic heroes show original flat SVG illustrations (public/images/illustrations, about 5 KB each) drawn for this site in the Calm Scholar colours. They belong to the business outright, so there is no licence to track, and they add almost nothing to page weight on 4G. Real photos can be added later by the owner (Unsplash/Pexels licence, WebP, lazy-loaded below the fold); stock photos are never captioned as our students or teachers.

@@ -30,6 +30,9 @@ test('CMS-2 every public page exports to static HTML', function () {
         'favicon.svg',
         'images/brand/indian-assignments-logo.svg',
         'images/brand/indian-assignments-icon.svg',
+        'images/illustrations/home-hero.svg',
+        'images/illustrations/tuition-live-class.svg',
+        'images/illustrations/academic-services.svg',
         'apple-touch-icon.png',
         'robots.txt',
     ] as $file) {
