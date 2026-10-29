@@ -39,6 +39,30 @@ typed hidden). It writes them to `.env`, switches order files and backups to
 R2, creates the backup password once (shown on screen to write down), then
 checks R2, sends a test email and runs a backup.
 
+## Checking a backup can be restored
+
+```bash
+sudo bash /var/www/indianassignments/deploy/test-restore.sh
+```
+
+Downloads the newest backup, opens it with the backup password, loads it into
+a throw-away `restore_test` database, counts the accounts, then deletes the
+copy. Ends with `RESTORE-OK`.
+
+## HTTPS
+
+Cloudflare gives visitors HTTPS. The server also needs its own certificate so
+Cloudflare can run in **Full (strict)** mode. With the domain pointing at the
+server and Cloudflare set to **Full**, run:
+
+```bash
+sudo bash /var/www/indianassignments/deploy/enable-https.sh
+```
+
+It gets a Let's Encrypt certificate for the domain and `www` (renewed
+automatically), then switch Cloudflare to **Full (strict)**. Until then Nginx
+uses a stand-in certificate.
+
 ## Deploying a new version
 
 ```bash

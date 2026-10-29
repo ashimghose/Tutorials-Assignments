@@ -101,6 +101,11 @@ if [ ! -f .env ]; then
 fi
 
 step "Web server"
+apt-get install -yq ssl-cert
+if [ ! -f /etc/nginx/snippets/indianassignments-ssl.conf ]; then
+    printf 'ssl_certificate /etc/ssl/certs/ssl-cert-snakeoil.pem;\nssl_certificate_key /etc/ssl/private/ssl-cert-snakeoil.key;\n' \
+        > /etc/nginx/snippets/indianassignments-ssl.conf
+fi
 cp deploy/nginx.conf /etc/nginx/sites-available/indianassignments
 ln -sf /etc/nginx/sites-available/indianassignments /etc/nginx/sites-enabled/indianassignments
 rm -f /etc/nginx/sites-enabled/default
