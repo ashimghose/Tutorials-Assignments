@@ -125,3 +125,8 @@ Home, Tuition and Academic heroes show original flat SVG illustrations (public/i
 - **One user.** PHP-FPM, the queue worker, the scheduler and deploys all run as `www-data`, so log and cache files never end up owned by the wrong user.
 - **Build on the server.** Composer and Vite run on the server during a deploy (a 2 GB swap file covers the memory). There's no separate build server or artefact store to pay for.
 - **Behind Cloudflare.** Only Cloudflare's address ranges (`App\Support\Cloudflare`) are trusted proxies, so the visitor's IP (used for rate limits) and HTTPS come through, and someone reaching the server directly can't fake them.
+
+## 2026-10-29 · Phase 2 launch
+
+- indianassignments.com now points at the Lightsail server (Cloudflare proxied, SSL "Full (strict)", Let's Encrypt on the server). The Cloudflare Pages project stays as a fallback with no custom domain, and its deploy workflow now runs only by hand.
+- Deploys to the server are run by hand for now (`deploy/deploy.sh`); deploying automatically from GitHub can come later.

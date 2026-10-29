@@ -1,13 +1,11 @@
 name: deploy
 
 # Phase 0–1: export the marketing pages to static HTML and publish them on
-# Cloudflare Pages. Runs after the tests workflow passes on main, or by hand
-# from the Actions tab. Setup steps: docs/deploy.md.
+# Cloudflare Pages. Since the Phase 2 launch (2026-10-29) the domain points at
+# the Lightsail server (docs/server.md), so this only runs by hand from the
+# Actions tab, e.g. to rebuild the old static site as a fallback.
+# Setup steps: docs/deploy.md.
 on:
-  workflow_run:
-    workflows: [tests]
-    types: [completed]
-    branches: [main]
   workflow_dispatch:
 
 permissions:
