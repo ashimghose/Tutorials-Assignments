@@ -11,25 +11,32 @@ as_app() { sudo -u www-data -H "$@"; }
 
 [ "$(id -u)" -eq 0 ] || { echo "Run with sudo."; exit 1; }
 
-# The very first deploy has no vendor folder yet, so there is nothing to take down.
-[ -f vendor/autoload.php ] && as_app php artisan down --retry=30 || true
-trap 'as_app php artisan up' EXIT
+# Wrapped in a function so bash reads the whole script before running it:
+# the git reset below can replace this very file.
+main() {
+    # The very first deploy has no vendor folder yet, so there is nothing to take down.
+    [ -f vendor/autoload.php ] && as_app php artisan down --retry=30 || true
+    trap 'as_app php artisan up' EXIT
 
-as_app git fetch -q origin main
-as_app git reset -q --hard origin/main
+    as_app git fetch -q origin main
+    as_app git reset -q --hard origin/main
 
-as_app composer install -q --no-dev --no-interaction --prefer-dist --optimize-autoloader
-as_app npm ci --no-audit --no-fund --silent
-as_app npm run build --silent
+    as_app composer install -q --no-dev --no-interaction --prefer-dist --optimize-autoloader
+    as_app npm ci --no-audit --no-fund --silent
+    as_app npm run build --silent
 
-grep -q '^APP_KEY=base64:' .env || as_app php artisan key:generate --force
-as_app php artisan migrate --force
-as_app php artisan db:seed --force
-as_app php artisan storage:link 2>/dev/null || true
-as_app php artisan optimize
-as_app php artisan filament:optimize
+    grep -q '^APP_KEY=base64:' .env || as_app php artisan key:generate --force
+    as_app php artisan migrate --force
+    as_app php artisan db:seed --force
+    as_app php artisan storage:link 2>/dev/null || true
+    as_app php artisan optimize
+    as_app php artisan filament:optimize
 
-systemctl reload php8.4-fpm
-systemctl restart indianassignments-queue
+    systemctl reload php8.4-fpm
+    systemctl restart indianassignments-queue
 
-echo "Deployed $(as_app git log -1 --format='%h %s')"
+    echo "Deployed $(as_app git log -1 --format='%h %s')"
+}
+
+main "$@"
+exit
