@@ -27,6 +27,18 @@ checkout off). It's safe to run again.
 
 Then make the first admin: `cd /var/www/indianassignments && sudo -u www-data php artisan app:make-admin`.
 
+## Email and file storage keys
+
+```bash
+sudo bash /var/www/indianassignments/deploy/set-keys.sh
+```
+
+It asks for the Brevo SMTP login and key, the sender address and name, the
+owner's email, and the R2 key, secret, endpoint and bucket names (secrets are
+typed hidden). It writes them to `.env`, switches order files and backups to
+R2, creates the backup password once (shown on screen to write down), then
+checks R2, sends a test email and runs a backup.
+
 ## Deploying a new version
 
 ```bash
