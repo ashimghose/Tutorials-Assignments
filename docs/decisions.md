@@ -118,3 +118,10 @@ Home, Tuition and Academic heroes show original flat SVG illustrations (public/i
 - **R2 disks.** `r2` holds order files and chat attachments (`ORDER_FILES_DISK=r2` in production); `r2-backups` holds backups in a separate bucket, so a mistake on one can't touch the other. Both are private and throw on errors. Keys are `R2_*` in `.env`.
 - **Backups** are the database only: files already live on R2 and the code is in GitHub. `backup:run --only-db` runs at 02:00 India time, `backup:clean` at 01:30 and `backup:monitor` at 08:00. Each zip is AES-256 encrypted with `BACKUP_ARCHIVE_PASSWORD`, kept 30 days, and stored on `BACKUP_DISK` (`r2-backups` in production). Failures and stale backups email `BACKUP_NOTIFY_EMAIL`, falling back to `CONTACT_EMAIL`. The server needs `pg_dump` (the `postgresql-client` package) and a running scheduler (`schedule:run` every minute). Keep the archive password outside the server too, or the backups can't be opened.
 - **Razorpay** is installed and its keys (`RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, `RAZORPAY_WEBHOOK_SECRET`) are read through `config/services.php`. Checkout, signature checks and the webhook wait until GST registration is done.
+
+## 2026-10-29 · M9 server set-up
+
+- **Scripts, not hand steps.** `deploy/provision.sh` sets up the Lightsail server once and `deploy/deploy.sh` deploys `main`; both are in the repo, so the server can be rebuilt from scratch. See `docs/server.md`.
+- **One user.** PHP-FPM, the queue worker, the scheduler and deploys all run as `www-data`, so log and cache files never end up owned by the wrong user.
+- **Build on the server.** Composer and Vite run on the server during a deploy (a 2 GB swap file covers the memory). There's no separate build server or artefact store to pay for.
+- **Behind Cloudflare.** Only Cloudflare's address ranges (`App\Support\Cloudflare`) are trusted proxies, so the visitor's IP (used for rate limits) and HTTPS come through, and someone reaching the server directly can't fake them.

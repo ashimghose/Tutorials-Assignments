@@ -5,6 +5,7 @@ use App\Http\Middleware\EnsureAccountActive;
 use App\Http\Middleware\EnsureFeatureEnabled;
 use App\Http\Middleware\EnsureRole;
 use App\Http\Middleware\ThrottleAccountForms;
+use App\Support\Cloudflare;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -17,6 +18,9 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // The live site sits behind Cloudflare, which passes on the visitor's IP and HTTPS.
+        $middleware->trustProxies(at: Cloudflare::IPS);
+
         $middleware->web(append: [
             CaptureUtm::class,
             EnsureAccountActive::class,
