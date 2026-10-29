@@ -11,7 +11,8 @@ as_app() { sudo -u www-data -H "$@"; }
 
 [ "$(id -u)" -eq 0 ] || { echo "Run with sudo."; exit 1; }
 
-as_app php artisan down --retry=30 || true
+# The very first deploy has no vendor folder yet, so there is nothing to take down.
+[ -f vendor/autoload.php ] && as_app php artisan down --retry=30 || true
 trap 'as_app php artisan up' EXIT
 
 as_app git fetch -q origin main
