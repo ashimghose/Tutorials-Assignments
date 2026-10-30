@@ -52,10 +52,9 @@ test('CMS-4 guides carry Article structured data with their published date', fun
 });
 
 test('the share image exists at 1200 by 630', function () {
-    expect(getimagesize(public_path('images/social/share.png')))->sequence(
-        fn ($width) => $width->toBe(1200),
-        fn ($height) => $height->toBe(630),
-    );
+    [$width, $height] = getimagesize(public_path('images/social/share.png'));
+
+    expect($width)->toBe(1200)->and($height)->toBe(630);
 });
 
 test('robots.txt points to the sitemap and keeps the portal out of search', function () {
