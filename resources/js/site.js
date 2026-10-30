@@ -1,3 +1,5 @@
+import { initConsent } from './consent';
+
 // MKT-3: remember the campaign a visitor arrived from (utm_source, utm_medium,
 // utm_campaign) for this browser tab, and add it to every Google Form link so
 // each enquiry records its source. Runs only on the public pages; nothing is
@@ -90,3 +92,4 @@ export function decorateFormLinks(utm) {
 }
 
 decorateFormLinks(captureUtm());
+initConsent();

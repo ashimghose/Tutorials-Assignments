@@ -23,6 +23,9 @@
     $account = config('features.accounts')
         ? (auth()->check() ? ['label' => 'My account', 'route' => 'dashboard'] : ['label' => 'Log in', 'route' => 'login'])
         : null;
+    // Google Analytics: public pages, visitors who aren't logged in, a valid G- id only.
+    $gaId = config('site.google_analytics_id');
+    $gaId = filled($gaId) && preg_match('/^G-[A-Z0-9]{4,20}$/', $gaId) && ! auth()->check() ? $gaId : null;
 @endphp
 
 <!DOCTYPE html>
@@ -156,11 +159,18 @@
                         <a href="{{ route('privacy') }}" class="hover:text-slate-900">Privacy policy</a>
                         <a href="{{ route('terms') }}" class="hover:text-slate-900">Terms</a>
                         <a href="{{ route('refunds') }}" class="hover:text-slate-900">Refund policy</a>
+                        @if ($gaId)
+                            <button type="button" data-cookie-settings class="hover:text-slate-900">Cookie settings</button>
+                        @endif
                     </nav>
                 </div>
             </div>
         </footer>
 
         <x-site.whatsapp-button :section="$section" />
+
+        @if ($gaId)
+            <x-site.cookie-consent :measurement-id="$gaId" />
+        @endif
     </body>
 </html>
