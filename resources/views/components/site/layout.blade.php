@@ -18,6 +18,10 @@
         ['label' => 'About', 'route' => 'about'],
         ['label' => 'Contact', 'route' => 'contact'],
     ];
+    // Phase 2+: a way in for parents, students, experts and the admin.
+    $account = config('features.accounts')
+        ? (auth()->check() ? ['label' => 'My account', 'route' => 'dashboard'] : ['label' => 'Log in', 'route' => 'login'])
+        : null;
 @endphp
 
 <!DOCTYPE html>
@@ -84,6 +88,9 @@
                            ])
                            @if (request()->routeIs($item['route'])) aria-current="page" @endif>{{ $item['label'] }}</a>
                     @endforeach
+                    @if ($account)
+                        <a href="{{ route($account['route']) }}" class="ml-2 rounded-md border border-brand-700 px-3 py-2 text-sm font-semibold text-brand-800 hover:bg-brand-50">{{ $account['label'] }}</a>
+                    @endif
                 </nav>
 
                 {{-- Mobile menu: <details> needs no JavaScript. --}}
@@ -96,6 +103,9 @@
                         @foreach ($nav as $item)
                             <a href="{{ route($item['route']) }}" class="block rounded-md px-3 py-3 font-medium text-slate-700 hover:bg-slate-100">{{ $item['label'] }}</a>
                         @endforeach
+                        @if ($account)
+                            <a href="{{ route($account['route']) }}" class="mt-1 block rounded-md border-t border-slate-200 px-3 py-3 font-semibold text-brand-800 hover:bg-brand-50">{{ $account['label'] }}</a>
+                        @endif
                     </nav>
                 </details>
             </div>
