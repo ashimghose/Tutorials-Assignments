@@ -37,6 +37,7 @@ return [
     // Headings, buttons and other short text around the sections above.
     // 'footer' and the 'guides_' lines also appear on other pages.
     'text' => [
+        'seo_title' => 'Online tuition for classes 1 to 12, and thesis and dissertation help',
         'seo_description' => 'Live online tuition for classes 1 to 12 in small batches, and guidance, editing, formatting and printing for Bachelors, Masters and PhD students\' research work.',
         'tuition_button' => 'Explore tuition',
         'academic_button' => 'Explore academic services',
