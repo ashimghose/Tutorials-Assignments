@@ -89,6 +89,30 @@ test('Cloudflare Web Analytics loads only when its token is set', function () {
         ->assertSee('abc123', false);
 });
 
+test('Google Analytics waits for consent and is set only for a valid id', function () {
+    config(['site.google_analytics_id' => null]);
+    $this->get('/')->assertDontSee('cookie-consent', false)->assertDontSee('Cookie settings');
+
+    config(['site.google_analytics_id' => 'not-an-id"><script>']);
+    $this->get('/')->assertDontSee('cookie-consent', false);
+
+    config(['site.google_analytics_id' => 'G-ABC123XYZ']);
+    $this->get('/')
+        ->assertSee('id="cookie-consent" data-ga-id="G-ABC123XYZ" hidden', false)
+        ->assertSee('Cookie settings')
+        // The tag itself is added by JavaScript only after "Allow".
+        ->assertDontSee('googletagmanager.com', false);
+});
+
+test('Google Analytics is never set for logged-in visitors', function () {
+    config(['site.google_analytics_id' => 'G-ABC123XYZ']);
+
+    $this->actingAs(User::factory()->parent()->create())
+        ->get('/')
+        ->assertOk()
+        ->assertDontSee('cookie-consent', false);
+});
+
 test('ACA academic copy never offers finished work to submit as the student\'s own', function () {
     $html = strtolower(html_entity_decode($this->get('/academic')->getContent(), ENT_QUOTES));
 
