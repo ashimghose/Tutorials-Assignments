@@ -117,4 +117,32 @@ return [
         'interest' => 'Tuition: new batch for my class or subject',
     ],
 
+    // Headings, buttons and other short text around the sections above.
+    'text' => [
+        'seo_title' => 'Live online tuition for classes 1 to 12',
+        'seo_description' => 'Live online tuition for classes 1 to 12 in small batches of up to 15. CBSE and ICSE syllabus, monthly fees per subject, free demo class.',
+        'eyebrow' => 'Tuition for parents of classes 1 to 12',
+        'demo_button' => 'Book a free demo class',
+        'question_button' => 'Ask a question',
+        'boards_label' => 'Boards',
+        'fees_eyebrow' => 'Fees',
+        'fees_title' => 'Simple monthly fees',
+        'fees_lead' => 'One fee per subject, per child, per month. No admission fee, and the first class is a free demo.',
+        'subjects_label' => 'Subjects',
+        'plan_button' => 'Book a free demo',
+        'steps_eyebrow' => 'How it works',
+        'steps_title' => 'From enquiry to first class',
+        'people_eyebrow' => 'Teachers',
+        'people_title' => 'Meet the teachers',
+        'testimonials_eyebrow' => 'Parents say',
+        'testimonials_title' => 'What parents tell us',
+        'faqs_eyebrow' => 'Questions',
+        'faqs_title' => 'Questions parents ask',
+        'cta_title' => 'Book a free demo class',
+        'cta_body' => 'Tell us your child\'s class, board and subjects, and we will set up a demo with the teacher.',
+        'cta_button' => 'Book a free demo class',
+        'waitlist_button' => 'Notify me',
+        'guides_title' => 'Guides for parents',
+    ],
+
 ];

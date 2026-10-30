@@ -10,7 +10,8 @@
     $appName = config('app.name');
     $fullTitle = filled($title) ? $title.' | '.$appName : $appName;
     $canonical = url()->current();
-    $banner = \App\Support\SiteContent::section('home')['banner'] ?? [];
+    $home = \App\Support\SiteContent::section('home');
+    $banner = $home['banner'] ?? [];
     $nav = [
         ['label' => 'Tuition', 'route' => 'tuition'],
         ['label' => 'Academic services', 'route' => 'academic'],
@@ -119,7 +120,7 @@
             <div class="mx-auto grid max-w-6xl gap-8 px-4 py-12 sm:grid-cols-2 sm:px-6 lg:grid-cols-4">
                 <div>
                     <p class="font-bold text-brand-900">{{ $appName }}</p>
-                    <p class="mt-2 text-sm text-slate-600">Live online tuition for classes 1 to 12, and academic guidance, editing and printing for college students.</p>
+                    <p class="mt-2 text-sm text-slate-600">{{ $home['text']['footer'] }}</p>
                 </div>
                 <div>
                     <p class="text-sm font-semibold text-slate-900">Tuition</p>

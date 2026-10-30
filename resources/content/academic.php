@@ -146,4 +146,41 @@ return [
         'interest' => 'Academic: printing and delivery in my city',
     ],
 
+    // Headings, buttons and other short text around the sections above.
+    // Keep the integrity notice: we help with the student's own work and
+    // never supply work to submit as theirs (UGC 2018).
+    'text' => [
+        'seo_title' => 'Thesis, dissertation and research paper editing, formatting and printing',
+        'seo_description' => 'Guidance, editing, proofreading, formatting, similarity checks, printing and delivery for Bachelors, Masters and PhD students\' synopses, research papers, theses and dissertations.',
+        'eyebrow' => 'Academic services for students aged 18 and over',
+        'quote_button' => 'Get a price for your work',
+        'prices_button' => 'See the price list',
+        'order_button' => 'Order online',
+        'under_18' => 'In school? Academic services are for students aged 18 or older.',
+        'under_18_link' => 'See Tuition instead',
+        'integrity_title' => 'We help with your work. We don\'t do it for you.',
+        'integrity_body' => 'We guide, edit, format and check the work you wrote, and teach you how to cite sources properly. We do not write theses, dissertations, papers or assignments for anyone to submit as their own. Universities treat that as misconduct, and under the UGC\'s 2018 anti-plagiarism regulations it can cost a student their degree.',
+        'prices_eyebrow' => 'Price list',
+        'prices_title' => 'Clear prices by level',
+        'prices_lead' => 'Fixed prices for standard work. For anything larger or unusual, we send you a quote before you pay.',
+        'quote_label' => 'Quote',
+        'enquire_button' => 'Enquire about this',
+        'quote_only_button' => 'Request a quote',
+        'addons_title' => 'Printing, delivery and express add-ons',
+        'address_note' => 'We ask for a delivery address only if you order printing or courier.',
+        'steps_eyebrow' => 'How it works',
+        'steps_title' => 'From enquiry to delivery',
+        'people_eyebrow' => 'Experts',
+        'people_title' => 'Meet the experts',
+        'testimonials_eyebrow' => 'Students say',
+        'testimonials_title' => 'What students tell us',
+        'faqs_eyebrow' => 'Questions',
+        'faqs_title' => 'Questions students ask',
+        'cta_title' => 'Tell us about your work',
+        'cta_body' => 'Share your level, service, page count and deadline, and we will reply with a confirmed price.',
+        'cta_button' => 'Get a price for your work',
+        'waitlist_button' => 'Notify me',
+        'guides_title' => 'Guides for students',
+    ],
+
 ];

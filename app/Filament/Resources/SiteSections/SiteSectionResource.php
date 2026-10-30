@@ -7,6 +7,7 @@ use App\Filament\Resources\SiteSections\Pages\ListSiteSections;
 use App\Filament\Support\MoneyInput;
 use App\Models\SiteSection;
 use BackedEnum;
+use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\Textarea;
@@ -23,8 +24,9 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
 /**
- * CMS-1: the admin edits the home, tuition and academic page text, fee
- * plans, price list, steps, FAQs and banner without code.
+ * CMS-1: the admin edits every public page's text without code: the home,
+ * tuition and academic sections (headings, buttons, fee plans, price list,
+ * steps, FAQs, banner), the contact page and the text pages.
  */
 class SiteSectionResource extends Resource
 {
@@ -46,7 +48,9 @@ class SiteSectionResource extends Resource
             'home' => self::homeFields(),
             'tuition' => self::tuitionFields(),
             'academic' => self::academicFields(),
-            default => [],
+            'contact' => self::contactFields(),
+            null => [],
+            default => self::textPageFields(),
         })->columns(1);
     }
 
@@ -92,6 +96,19 @@ class SiteSectionResource extends Resource
                     TextInput::make('content.banner.text')->label('Notice across the top of every page')->helperText('Leave empty to hide it.')->maxLength(160),
                     TextInput::make('content.banner.link')->label('Link (optional)')->url()->maxLength(255),
                 ]),
+                self::textTab([
+                    'seo_description' => 'Description for Google and link previews',
+                    'tuition_button' => 'Tuition card button',
+                    'academic_button' => 'Academic card button',
+                    'guides_title' => 'Guides heading (also the Guides page title)',
+                    'guides_lead' => 'Guides intro',
+                    'guides_link' => 'Link to all guides',
+                    'guides_page_lead' => 'Intro on the Guides page',
+                    'help_title' => 'WhatsApp box heading',
+                    'help_body' => 'WhatsApp box text (office hours are added below it)',
+                    'help_button' => 'WhatsApp box button',
+                    'footer' => 'Footer text on every page',
+                ]),
             ]),
         ];
     }
@@ -123,6 +140,32 @@ class SiteSectionResource extends Resource
                 self::stepsTab(),
                 self::faqsTab(),
                 self::waitlistTab(),
+                self::textTab([
+                    'seo_title' => 'Page title for Google and browser tabs',
+                    'seo_description' => 'Description for Google and link previews',
+                    'eyebrow' => 'Small heading above the headline',
+                    'demo_button' => 'Demo button',
+                    'question_button' => 'Question button',
+                    'boards_label' => 'Word before the boards list',
+                    'fees_eyebrow' => 'Fees: small heading',
+                    'fees_title' => 'Fees: heading',
+                    'fees_lead' => 'Fees: intro',
+                    'subjects_label' => 'Word before each plan\'s subjects',
+                    'plan_button' => 'Button on each fee plan',
+                    'steps_eyebrow' => 'How it works: small heading',
+                    'steps_title' => 'How it works: heading',
+                    'people_eyebrow' => 'Teachers: small heading',
+                    'people_title' => 'Teachers: heading',
+                    'testimonials_eyebrow' => 'Testimonials: small heading',
+                    'testimonials_title' => 'Testimonials: heading',
+                    'faqs_eyebrow' => 'Questions: small heading',
+                    'faqs_title' => 'Questions: heading',
+                    'cta_title' => 'Bottom box: heading',
+                    'cta_body' => 'Bottom box: text',
+                    'cta_button' => 'Bottom box: button',
+                    'waitlist_button' => 'Waitlist button',
+                    'guides_title' => 'Guides heading',
+                ]),
             ]),
         ];
     }
@@ -173,8 +216,102 @@ class SiteSectionResource extends Resource
                 self::stepsTab(),
                 self::faqsTab(),
                 self::waitlistTab(),
+                self::textTab([
+                    'seo_title' => 'Page title for Google and browser tabs',
+                    'seo_description' => 'Description for Google and link previews',
+                    'eyebrow' => 'Small heading above the headline',
+                    'quote_button' => 'Price button',
+                    'prices_button' => 'Price list button',
+                    'order_button' => 'Order online button',
+                    'under_18' => 'Note for school students',
+                    'under_18_link' => 'Link to Tuition',
+                    'integrity_title' => 'Integrity notice: heading',
+                    'integrity_body' => 'Integrity notice: text',
+                    'prices_eyebrow' => 'Price list: small heading',
+                    'prices_title' => 'Price list: heading',
+                    'prices_lead' => 'Price list: intro',
+                    'quote_label' => 'Shown instead of a price',
+                    'enquire_button' => 'Button on a priced service',
+                    'quote_only_button' => 'Button on a quote-only service',
+                    'addons_title' => 'Add-ons heading',
+                    'address_note' => 'Note under the add-ons',
+                    'steps_eyebrow' => 'How it works: small heading',
+                    'steps_title' => 'How it works: heading',
+                    'people_eyebrow' => 'Experts: small heading',
+                    'people_title' => 'Experts: heading',
+                    'testimonials_eyebrow' => 'Testimonials: small heading',
+                    'testimonials_title' => 'Testimonials: heading',
+                    'faqs_eyebrow' => 'Questions: small heading',
+                    'faqs_title' => 'Questions: heading',
+                    'cta_title' => 'Bottom box: heading',
+                    'cta_body' => 'Bottom box: text',
+                    'cta_button' => 'Bottom box: button',
+                    'waitlist_button' => 'Waitlist button',
+                    'guides_title' => 'Guides heading',
+                ], 'Keep the integrity notice: we help students with their own work and never supply work for them to submit as theirs (UGC 2018 rules).'),
             ]),
         ];
+    }
+
+    /**
+     * @return array<int, mixed>
+     */
+    private static function contactFields(): array
+    {
+        return [
+            ...self::pageTopFields(),
+            ...collect(['tuition' => 'Tuition box', 'academic' => 'Academic box'])->map(fn (string $label, string $key) => Section::make($label)->schema([
+                TextInput::make("content.cards.{$key}.title")->label('Heading')->required()->maxLength(80),
+                Textarea::make("content.cards.{$key}.body")->label('Text')->required()->rows(2)->maxLength(300),
+                Grid::make(2)->schema([
+                    TextInput::make("content.cards.{$key}.whatsapp")->label('WhatsApp button')->required()->maxLength(60),
+                    TextInput::make("content.cards.{$key}.enquire")->label('Enquiry button')->required()->maxLength(60),
+                ]),
+            ]))->values()->all(),
+            TextInput::make('content.office_hours_note')->label('Note after the office hours')->required()->maxLength(200)
+                ->helperText('Office hours, email and WhatsApp numbers are server settings; ask Claude to change them.'),
+        ];
+    }
+
+    /**
+     * About, privacy, terms and refunds: a title, intro and Markdown body.
+     *
+     * @return array<int, mixed>
+     */
+    private static function textPageFields(): array
+    {
+        return [
+            ...self::pageTopFields(),
+            MarkdownEditor::make('content.body')->label('Page text')->required()
+                ->helperText('Use the toolbar for headings, bold text, lists and links.'),
+        ];
+    }
+
+    /**
+     * @return array<int, mixed>
+     */
+    private static function pageTopFields(): array
+    {
+        return [
+            TextInput::make('content.title')->label('Page title')->required()->maxLength(120),
+            Textarea::make('content.lead')->label('Intro under the title')->rows(2)->maxLength(400),
+            Textarea::make('content.description')->label('Description for Google and link previews')->required()->rows(2)->maxLength(300),
+        ];
+    }
+
+    /**
+     * The headings, buttons and short notes around a page's sections.
+     *
+     * @param  array<string, string>  $labels
+     */
+    private static function textTab(array $labels, ?string $note = null): Tab
+    {
+        $fields = collect($labels)->map(fn (string $label, string $key) => str_ends_with($key, 'body') || str_ends_with($key, 'lead') || in_array($key, ['seo_description', 'footer', 'under_18'], true)
+            ? Textarea::make("content.text.{$key}")->label($label)->required()->rows(2)->maxLength(600)
+            : TextInput::make("content.text.{$key}")->label($label)->required()->maxLength(200)
+        )->values()->all();
+
+        return Tab::make('Headings and buttons')->schema($note === null ? $fields : [Text::make($note), ...$fields]);
     }
 
     private static function heroTab(): Tab
