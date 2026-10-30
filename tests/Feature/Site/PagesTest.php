@@ -22,8 +22,53 @@ test('CMS-2 CMS-4 public pages load with a title, description and canonical link
         ->assertSee($heading)
         ->assertSee('<meta name="description"', false)
         ->assertSee('<link rel="canonical"', false)
-        ->assertSee('<meta property="og:title"', false);
+        ->assertSee('<meta property="og:title"', false)
+        ->assertSee('<meta property="og:image" content="'.url('/images/social/share.png').'">', false)
+        ->assertDontSee('name="robots"', false);
 })->with('public pages');
+
+test('CMS-4 the home page title names both offerings and describes the organisation for Google', function () {
+    $response = $this->get('/')
+        ->assertSee('<title>Online tuition for classes 1 to 12, and thesis and dissertation help | '.config('app.name').'</title>', false)
+        ->assertSee('"@type":"EducationalOrganization"', false);
+
+    preg_match('#<script type="application/ld\+json">\s*(\{.*?"@graph".*?\})\s*</script>#s', $response->getContent(), $match);
+    $data = json_decode($match[1] ?? '', true);
+
+    expect($data['@graph'][0]['name'])->toBe(config('app.name'))
+        ->and($data['@graph'][0]['url'])->toBe(route('home'))
+        ->and($data['@graph'][1]['@type'])->toBe('WebSite');
+});
+
+test('CMS-4 guides carry Article structured data with their published date', function () {
+    $article = SiteContent::articles()[0];
+
+    $response = $this->get(route('resources.show', $article['slug']))
+        ->assertSee('"@type":"Article"', false)
+        ->assertSee('"datePublished":"'.$article['published'].'"', false);
+
+    preg_match('#<script type="application/ld\+json">\s*(\{.*?"Article".*?\})\s*</script>#s', $response->getContent(), $match);
+    expect(json_decode($match[1] ?? '', true))->toBeArray();
+});
+
+test('the share image exists at 1200 by 630', function () {
+    [$width, $height] = getimagesize(public_path('images/social/share.png'));
+
+    expect($width)->toBe(1200)->and($height)->toBe(630);
+});
+
+test('robots.txt points to the sitemap and keeps the portal out of search', function () {
+    $robots = file_get_contents(public_path('robots.txt'));
+
+    expect($robots)->toContain('Sitemap: https://indianassignments.com/sitemap.xml')
+        ->toContain('Disallow: /admin')
+        ->toContain('Disallow: /my-orders')
+        ->not->toContain("Disallow: /\n");
+});
+
+test('log-in and portal pages ask search engines not to index them', function () {
+    $this->get(route('login'))->assertSee('<meta name="robots" content="noindex, nofollow" />', false);
+});
 
 test('public pages stay exportable as static HTML: no forms or CSRF tokens', function (string $path) {
     $this->get($path)
@@ -121,6 +166,9 @@ test('CMS-4 the sitemap lists every public page and guide', function () {
     foreach (['/tuition', '/academic', '/resources', '/privacy', '/terms', '/resources/how-to-structure-a-synopsis'] as $path) {
         $response->assertSee('<loc>'.url($path).'</loc>', false);
     }
+
+    $article = SiteContent::articles()[0];
+    $response->assertSee('<loc>'.route('resources.show', $article['slug']).'</loc><lastmod>'.$article['published'].'</lastmod>', false);
 });
 
 test('the header logo is the Indian Assignments SVG, linked home', function () {

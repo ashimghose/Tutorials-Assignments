@@ -1,6 +1,22 @@
 @php($section = $article['offering'])
 
 <x-site.layout :title="$article['title']" :description="$article['description']" :section="$section" type="article">
+    <x-slot:head>
+        <meta property="article:published_time" content="{{ $article['published'] }}">
+        <script type="application/ld+json">
+        {!! json_encode([
+            '@context' => 'https://schema.org',
+            '@type' => 'Article',
+            'headline' => $article['title'],
+            'description' => $article['description'],
+            'datePublished' => $article['published'],
+            'image' => url('/images/social/share.png'),
+            'mainEntityOfPage' => route('resources.show', $article['slug']),
+            'author' => ['@type' => 'Organization', 'name' => config('app.name'), 'url' => route('home')],
+            'publisher' => ['@type' => 'Organization', 'name' => config('app.name'), 'logo' => ['@type' => 'ImageObject', 'url' => url('/apple-touch-icon.png')]],
+        ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG) !!}
+        </script>
+    </x-slot:head>
     <article>
         <x-site.page-header :title="$article['title']" :lead="$article['description']">
             <p class="mt-4 text-sm text-slate-500">

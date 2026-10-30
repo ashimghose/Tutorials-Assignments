@@ -97,6 +97,7 @@ class SiteSectionResource extends Resource
                     TextInput::make('content.banner.link')->label('Link (optional)')->url()->maxLength(255),
                 ]),
                 self::textTab([
+                    'seo_title' => 'Page title for Google and browser tabs',
                     'seo_description' => 'Description for Google and link previews',
                     'tuition_button' => 'Tuition card button',
                     'academic_button' => 'Academic card button',

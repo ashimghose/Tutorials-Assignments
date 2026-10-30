@@ -4,6 +4,7 @@
     'section' => 'general',
     'type' => 'website',
     'robots' => null,
+    'image' => '/images/social/share.png',
 ])
 
 @php
@@ -44,7 +45,11 @@
         <meta property="og:description" content="{{ $description }}">
         <meta property="og:url" content="{{ $canonical }}">
         <meta property="og:locale" content="en_IN">
-        <meta name="twitter:card" content="summary">
+        {{-- The preview card on WhatsApp, Facebook and other shares. --}}
+        <meta property="og:image" content="{{ url($image) }}">
+        <meta property="og:image:width" content="1200">
+        <meta property="og:image:height" content="630">
+        <meta name="twitter:card" content="summary_large_image">
         <meta name="theme-color" content="#0b5d45">
 
         <link rel="icon" href="/favicon.ico" sizes="any">
@@ -52,6 +57,8 @@
         <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 
         @vite(['resources/css/site.css', 'resources/js/site.js'])
+
+        {{ $head ?? '' }}
 
         @if (filled(config('site.analytics_token')))
             {{-- Cloudflare Web Analytics: cookie-less, public pages only. --}}

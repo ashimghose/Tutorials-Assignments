@@ -34,6 +34,7 @@ test('CMS-2 every public page exports to static HTML', function () {
         'images/illustrations/tuition-live-class.svg',
         'images/illustrations/academic-services.svg',
         'apple-touch-icon.png',
+        'images/social/share.png',
         'robots.txt',
     ] as $file) {
         expect($disk->exists($file))->toBeTrue("{$file} was not exported");

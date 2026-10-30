@@ -1,5 +1,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+{{-- Log-in pages and the portal stay out of Google; only the marketing pages are indexed. --}}
+<meta name="robots" content="noindex, nofollow" />
 
 <title>
     {{ filled($title ?? null) ? $title.' - '.config('app.name', 'Laravel') : config('app.name', 'Laravel') }}
