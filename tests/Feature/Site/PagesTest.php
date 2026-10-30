@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\User;
 use App\Support\SiteContent;
 
 dataset('public pages', [
@@ -146,3 +147,17 @@ test('each landing page shows its own hero illustration with alt text', function
     'tuition' => ['/tuition', 'tuition-live-class'],
     'academic' => ['/academic', 'academic-services'],
 ]);
+
+test('AUTH-1 the header offers a log-in link once accounts are switched on', function () {
+    config(['features.accounts' => false]);
+    $this->get('/')->assertDontSee('Log in')->assertDontSee('My account');
+
+    config(['features.accounts' => true]);
+    $this->get('/')->assertSee('href="'.route('login').'"', false)->assertSee('Log in');
+
+    $this->actingAs(User::factory()->parent()->create())
+        ->get('/tuition')
+        ->assertSee('href="'.route('dashboard').'"', false)
+        ->assertSee('My account')
+        ->assertDontSee('Log in');
+});
