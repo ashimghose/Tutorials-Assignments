@@ -9,8 +9,8 @@ use Illuminate\Database\Seeder;
 
 /**
  * M4: copies the Phase 0 content files (resources/content) into the
- * database, so nothing is retyped. Existing rows are left alone, so it never
- * overwrites what the admin has edited.
+ * database, so nothing is retyped. It never overwrites what the admin has
+ * edited; it only adds pages and text that are new in the files.
  */
 class ContentSeeder extends Seeder
 {
@@ -21,7 +21,11 @@ class ContentSeeder extends Seeder
             // People and testimonials come from their own tables.
             unset($content['teachers'], $content['experts'], $content['testimonials']);
 
-            SiteSection::query()->firstOrCreate(['key' => $key], ['content' => $content]);
+            $section = SiteSection::query()->firstOrCreate(['key' => $key], ['content' => $content]);
+            $merged = SiteContent::withNewKeys($section->content, $content);
+            if ($merged !== $section->content) {
+                $section->update(['content' => $merged]);
+            }
         }
 
         foreach (SiteContent::articleFiles() as $article) {

@@ -34,4 +34,20 @@ return [
         'link' => '',
     ],
 
+    // Headings, buttons and other short text around the sections above.
+    // 'footer' and the 'guides_' lines also appear on other pages.
+    'text' => [
+        'seo_description' => 'Live online tuition for classes 1 to 12 in small batches, and guidance, editing, formatting and printing for Bachelors, Masters and PhD students\' research work.',
+        'tuition_button' => 'Explore tuition',
+        'academic_button' => 'Explore academic services',
+        'guides_title' => 'Free guides',
+        'guides_lead' => 'Practical help for parents and students, whether or not you study with us.',
+        'guides_link' => 'All guides',
+        'guides_page_lead' => 'Practical help for parents of school children and for college students working on their research.',
+        'help_title' => 'Not sure where to start?',
+        'help_body' => 'Message us on WhatsApp and tell us what you need. We reply during office hours.',
+        'help_button' => 'Message us on WhatsApp',
+        'footer' => 'Live online tuition for classes 1 to 12, and academic guidance, editing and printing for college students.',
+    ],
+
 ];

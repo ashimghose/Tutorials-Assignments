@@ -90,7 +90,7 @@ test('Cloudflare Web Analytics loads only when its token is set', function () {
 });
 
 test('ACA academic copy never offers finished work to submit as the student\'s own', function () {
-    $html = strtolower($this->get('/academic')->getContent());
+    $html = strtolower(html_entity_decode($this->get('/academic')->getContent(), ENT_QUOTES));
 
     foreach (['we write your', 'write your thesis for you', 'ready-made thesis', 'ghostwrit', 'buy a thesis', 'guaranteed plagiarism-free'] as $phrase) {
         expect($html)->not->toContain($phrase);

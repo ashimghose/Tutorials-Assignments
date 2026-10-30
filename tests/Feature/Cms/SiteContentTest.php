@@ -20,7 +20,7 @@ function setSection(string $key, callable $change): void
 }
 
 test('M4 the seeder copies the Phase 0 content files into the database', function () {
-    expect(SiteSection::pluck('key')->sort()->values()->all())->toBe(['academic', 'home', 'tuition'])
+    expect(SiteSection::pluck('key')->sort()->values()->all())->toBe(collect(SiteSection::KEYS)->sort()->values()->all())
         ->and(Article::count())->toBe(count(SiteContent::articleFiles()));
 
     $tuition = SiteSection::where('key', 'tuition')->sole()->content;
@@ -37,6 +37,19 @@ test('running the seeder again keeps the admin\'s edits', function () {
     $this->seed(ContentSeeder::class);
 
     expect(SiteSection::where('key', 'tuition')->sole()->content['hero']['title'])->toBe('Edited by the admin');
+});
+
+test('the seeder adds new headings to pages already in the database, keeping the admin\'s edits', function () {
+    setSection('tuition', function (array &$content) {
+        $content['text']['fees_title'] = 'Edited by the admin';
+        unset($content['text']['faqs_title']);
+    });
+
+    $this->seed(ContentSeeder::class);
+
+    $text = SiteSection::where('key', 'tuition')->sole()->content['text'];
+    expect($text['fees_title'])->toBe('Edited by the admin')
+        ->and($text['faqs_title'])->toBe(SiteContent::sectionFile('tuition')['text']['faqs_title']);
 });
 
 test('CMS-1 with FEATURE_CMS on, the pages show what the admin edited', function () {

@@ -40,6 +40,10 @@ final class SiteContent
         }
 
         /** @var array<string, mixed> $content */
+        if (self::fromDatabase()) {
+            $content = self::withNewKeys($content, self::sectionFile($name));
+        }
+
         if (self::fromDatabase() && in_array($name, ['tuition', 'academic'], true)) {
             $content[$name === 'tuition' ? 'teachers' : 'experts'] = self::people($name);
             $content['testimonials'] = self::testimonials($name);
@@ -54,6 +58,24 @@ final class SiteContent
         }
 
         return $content;
+    }
+
+    /**
+     * Adds text the admin hasn't seen yet (a new heading or button added to
+     * the files after the page was copied into the database), without
+     * touching anything the admin edited.
+     *
+     * @param  array<string, mixed>  $content
+     * @param  array<string, mixed>  $file
+     * @return array<string, mixed>
+     */
+    public static function withNewKeys(array $content, array $file): array
+    {
+        if (is_array($file['text'] ?? null)) {
+            $content['text'] = (is_array($content['text'] ?? null) ? $content['text'] : []) + $file['text'];
+        }
+
+        return $content + $file;
     }
 
     /**

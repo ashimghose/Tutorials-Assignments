@@ -39,6 +39,42 @@ test('CMS-1 the admin edits a page and the change is live and audited', function
     expect($log?->user_id)->toBe($this->admin->id);
 });
 
+test('CMS-1 the admin edits headings and buttons on a section page', function () {
+    $tuition = SiteSection::where('key', 'tuition')->sole();
+
+    Livewire::test(EditSiteSection::class, ['record' => $tuition->getRouteKey()])
+        ->fillForm(fn (array $state) => data_set($state, 'content.text.fees_title', 'Fair fees for every family'))
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    $this->get(route('tuition'))->assertSee('Fair fees for every family')->assertDontSee('Simple monthly fees');
+});
+
+test('CMS-1 the admin edits the about, policy and contact pages', function (string $key, string $route) {
+    $section = SiteSection::where('key', $key)->sole();
+    $field = $key === 'contact' ? 'content.cards.tuition.title' : 'content.body';
+    $value = $key === 'contact' ? 'Tuition for your child' : "## Our story\n\nStarted by a teacher in Delhi.";
+
+    Livewire::test(EditSiteSection::class, ['record' => $section->getRouteKey()])
+        ->fillForm(fn (array $state) => data_set($state, $field, $value))
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    $this->get(route($route))->assertOk()->assertSee($key === 'contact' ? 'Tuition for your child' : 'Started by a teacher in Delhi.');
+})->with([
+    'about' => ['about', 'about'],
+    'privacy' => ['privacy', 'privacy'],
+    'terms' => ['terms', 'terms'],
+    'refunds' => ['refunds', 'refunds'],
+    'contact' => ['contact', 'contact'],
+]);
+
+test('CMS-1 page text strips HTML so a pasted script can\'t run', function () {
+    SiteSection::where('key', 'about')->sole()->update(['content' => ['title' => 'About us', 'lead' => '', 'description' => 'About', 'body' => 'Hello <script>alert(1)</script>']]);
+
+    $this->get(route('about'))->assertSee('Hello')->assertDontSee('<script>alert(1)</script>', false);
+});
+
 test('CMS-1 academic prices round-trip between rupees in the form and paise in storage', function () {
     // Before online orders (M6) the price list is edited with the page.
     config(['features.academic_orders' => false]);

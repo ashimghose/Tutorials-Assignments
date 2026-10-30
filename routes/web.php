@@ -23,11 +23,12 @@ Route::controller(SiteController::class)->group(function () {
     Route::get('sitemap.xml', 'sitemap')->name('sitemap');
 });
 
-Route::view('about', 'site.about')->name('about');
+// Text pages: a title, intro and Markdown body each (CMS-1).
+Route::view('about', 'site.page', ['key' => 'about'])->name('about');
 Route::view('contact', 'site.contact')->name('contact');
-Route::view('privacy', 'site.privacy')->name('privacy');
-Route::view('terms', 'site.terms')->name('terms');
-Route::view('refund-policy', 'site.refunds')->name('refunds');
+Route::view('privacy', 'site.page', ['key' => 'privacy'])->name('privacy');
+Route::view('terms', 'site.page', ['key' => 'terms'])->name('terms');
+Route::view('refund-policy', 'site.page', ['key' => 'refunds'])->name('refunds');
 
 // Cloudflare Pages shows /404.html for any address it doesn't have.
 Route::view('404.html', 'site.not-found')->name('not-found');
