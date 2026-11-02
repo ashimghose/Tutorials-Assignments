@@ -302,7 +302,7 @@ configuration change later.
    paths for policies that now see Music. Playwright: `/music` on a 360 px phone and on
    desktop. Pint, Pest and Playwright must pass.
 9. **Docs.** `.env.example` (new names), `docs/decisions.md`, and
-   `docs/how-to-change-website-content` notes for the music page.
+   a music-page note in the shared guide `guides/how-to-change-website-content.md`.
 
 Deploy: merged and deployed like other PRs, with music off. You switch it on with one
 `.env` line when the music page copy is ready.
