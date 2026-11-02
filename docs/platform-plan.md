@@ -1,8 +1,8 @@
 # Proposal: three verticals and partner businesses on one platform
 
-Status: **proposal, awaiting the owner's decision** (2 Nov 2026). Nothing here changes
-the app yet. Once the owner picks an option, the chosen parts move into `docs/spec.md`,
-`CLAUDE.md` and `docs/decisions.md`, and the build starts milestone by milestone.
+Status: **option B chosen by the owner on 2 Nov 2026.** VRT and MUS requirements are now
+in `docs/spec.md`, the decision is in `docs/decisions.md`, and the V1 build plan is in
+section 9 (awaiting approval). Partner work (TEN, PAY-7 to 10) waits for Gate P.
 
 ## The short answer
 
@@ -259,3 +259,50 @@ None of them needs to stop. Only the brand and domain question touches them.
 4. **Partner name:** "Partner" (recommended) or another word.
 5. **Before Gate P, ask a CA and a lawyer:** GST on platform fees, own-account vs Route,
    the partner agreement and the data processing agreement.
+
+## 9. V1 build plan: verticals and domains (awaiting approval)
+
+Scope: VRT-1 to VRT-5. Music lessons themselves (instruments, 1-to-1 slots, adult
+learners, MUS-1 to 4) are V2. No new package, no new paid service, no change to
+monthly cost. Everything stays on indianassignments.com; separate domains are a
+configuration change later.
+
+1. **Music in the offering list.** Add `Music` to `App\Enums\Offering`. Existing rows
+   keep their values. Content that applies to every section (articles, testimonials)
+   keeps its "all sections" value, shown as "All sections" instead of "Both".
+2. **Teachers in any mix of verticals.** A new `teacher_offerings` link table replaces
+   the teacher's single `offering` column. The migration turns "both" into Tuition and
+   Academic rows, so nothing is retyped. Teacher pickers on batches and orders read the
+   link table.
+3. **Vertical settings in one place.** New `config/verticals.php`: per vertical, its
+   flag (`FEATURE_VERTICAL_TUITION`, `_ACADEMIC`, `_MUSIC`; tuition and academic on by
+   default, music off), path, optional domain (`VERTICAL_DOMAIN_*`, empty = main
+   domain), brand name and logo, WhatsApp number and message. The current
+   `config/site.php` WhatsApp and form values move under it, with the same `.env`
+   names so the live server needs no change.
+4. **Domain routing and redirects.** A `ResolveVertical` middleware picks the vertical
+   from the domain, or from the path on the main domain, and shares it with every page.
+   If a vertical has its own domain, its old paths on the main domain send 301 redirects
+   to the new domain with the same path and UTM tags. Logins and dashboards stay on the
+   main domain.
+5. **Brand per vertical.** Header, footer, page titles, share image and JSON-LD use the
+   current vertical's brand. Defaults are today's "Indian Assignments" brand, so the
+   live site looks the same.
+6. **Music landing page.** `/music` with hero, how it works, subjects (singing and
+   instruments as editable text for now), FAQs, enquiry form, WhatsApp button and
+   campaign pages, editable in `/admin` like Tuition and Academic. Hidden from the menu,
+   home page and sitemap while `FEATURE_VERTICAL_MUSIC` is off. The copy is placeholder
+   until you give the real list.
+7. **Everything else accepts Music.** Lead forms and the leads dashboard, campaigns,
+   chat, notices, marketing emails, payments, expenses and the money report gain Music
+   as a filter and a column.
+8. **Tests.** Pest: the enum and migration, routing by path and by domain, 301 redirects
+   keep the path and UTM tags, a switched-off vertical returns 404 and leaves the
+   sitemap, teacher pickers by vertical, music leads and money report rows, and denied
+   paths for policies that now see Music. Playwright: `/music` on a 360 px phone and on
+   desktop. Pint, Pest and Playwright must pass.
+9. **Docs.** `.env.example` (new names), `docs/decisions.md`, and
+   `docs/how-to-change-website-content` notes for the music page.
+
+Deploy: merged and deployed like other PRs, with music off. You switch it on with one
+`.env` line when the music page copy is ready.

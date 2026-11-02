@@ -130,3 +130,9 @@ Home, Tuition and Academic heroes show original flat SVG illustrations (public/i
 
 - indianassignments.com now points at the Lightsail server (Cloudflare proxied, SSL "Full (strict)", Let's Encrypt on the server). The Cloudflare Pages project stays as a fallback with no custom domain, and its deploy workflow now runs only by hand.
 - Deploys to the server are run by hand for now (`deploy/deploy.sh`); deploying automatically from GitHub can come later.
+
+## 2026-11-02 · Three verticals now, partner businesses later (option B)
+
+- The owner chose option B of `docs/platform-plan.md`: add Music as a third vertical and per-vertical domain support now (V1, V2); build partner businesses (multi-tenancy, per-partner payments) only after Gate P, when 2 to 3 businesses have committed and a CA and lawyer have answered the GST and terms questions.
+- Everything stays on indianassignments.com under `/tuition`, `/academic` and `/music` until a brand needs its own domain; V1 makes that a configuration change with 301 redirects.
+- The businesses that may later run on the platform are called **Partners** (`Tenant` in code).

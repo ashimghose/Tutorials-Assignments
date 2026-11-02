@@ -63,8 +63,10 @@ students per live class, and up to 20 academic orders a month.
 
 **Not in v1 (later phases):** native mobile apps, automatic teacher
 payouts, AI features, homework/assignment grading, multi-language UI,
-multiple tuition centres, and courses beyond school tuition. Keep these
-out so v1 ships.
+multiple tuition centres, and courses beyond school tuition and music
+lessons. Keep these out so v1 ships. Music lessons were added as a third
+offering on 2 Nov 2026, and other businesses ("partners") may run on the
+platform later; see `docs/platform-plan.md`.
 
 **Done means:** one real batch of students has paid online and attended
 at least four live classes, at least five academic orders have gone from
@@ -416,6 +418,49 @@ and it knows exactly what to build and test.
 
 - MKT-7 Referral codes that give the referrer and the new customer a
   discount, tracked per code.
+
+**Verticals (VRT)** — added 2 Nov 2026, option B of `docs/platform-plan.md`
+
+- VRT-1 Three verticals: School tuition (classes 1 to 12), Academic
+  services and Music lessons, each switched on or off by a feature flag.
+
+- VRT-2 Each vertical has its own landing page, CTAs, WhatsApp number
+  and message, enquiry form, campaign pages, FAQs and price list, all
+  editable in the admin.
+
+- VRT-3 A vertical can be served on its own domain or as a path on the
+  main domain. The domain map is configuration, and moving a vertical to
+  its own domain sends permanent (301) redirects from the old addresses.
+
+- VRT-4 Leads, chat, notices, payments, expenses and the money report
+  carry the vertical and can be filtered by it.
+
+- VRT-5 Brand (name, logo, footer text) can differ per vertical.
+
+**Music lessons (MUS)** — added 2 Nov 2026
+
+- MUS-1 Instruments, singing styles, levels and optional exam tracks are
+  admin-managed data, never hard-coded.
+
+- MUS-2 Lessons are group batches or 1-to-1 slots, priced monthly per
+  student, with an optional trial lesson.
+
+- MUS-3 Learners are minors (signed up by a parent with consent, like
+  school students) or adults (18+ self sign-up with their own consent).
+
+- MUS-4 Safeguarding for 1-to-1 lessons with a minor: the parent is
+  always in the chat (CHAT-4), lessons and links are visible to the
+  parent, and recording needs the parent's explicit consent. Whether a
+  parent must be present for under-13s is an open question.
+
+- MUS-5 Practice log and teacher feedback per lesson (later).
+
+- MUS-6 Music needs "original sound" audio: teachers get Meet audio
+  advice until the Phase 3 classroom offers a music mode.
+
+Partner businesses (TEN-1 to 7) and partner payments (PAY-7 to 10) are
+deferred until Gate P; they are described in `docs/platform-plan.md` and
+move here when that work is approved.
 
 ## Non-functional requirements
 

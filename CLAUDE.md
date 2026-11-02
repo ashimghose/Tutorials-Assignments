@@ -6,8 +6,8 @@ CHAT-4, MKT-3, PAY-2, …) come from the spec. Use them in plans, tests and comm
 
 ## What this is
 
-A website for an Indian education business with two offerings, each with its own
-marketing section:
+A website for an Indian education business with three offerings (verticals), each with its own
+marketing section and able to move to its own domain later (VRT, `docs/platform-plan.md`):
 
 1. **Tuition** – live online school tuition, classes 1–12 (`/tuition`).
 2. **Academic services** – guidance, editing, formatting, similarity checking, printing and
@@ -15,6 +15,11 @@ marketing section:
    synopses, theses and dissertations (`/academic`). Fixed price list + add-ons
    (printing, binding, courier, express) + custom quotes. Orders move through
    admin-configurable statuses.
+3. **Music lessons** – singing and instruments, group or 1-to-1, for minors (via a parent) and
+   adults (`/music`, MUS; being added in V1/V2).
+
+Other businesses ("Partners", `Tenant` in code) may run on the platform later. That is deferred
+until Gate P in `docs/platform-plan.md`: don't add tenant/partner code until it is approved.
 
 Logged-in roles:
 - **Parent** – owns a family account, adds school-age children, gives consent, pays tuition fees.
