@@ -65,7 +65,7 @@ class ListUsers extends ListRecords
                     TagsInput::make('subjects')->placeholder('Maths, Physics, Thesis editing…'),
                 ])
                 ->action(function (array $data, InviteTeacher $invite): void {
-                    $invite($data['name'], $data['email'], array_map(Offering::from(...), $data['offerings']), $data['subjects'] ?? []);
+                    $invite($data['name'], $data['email'], array_values(array_map(Offering::from(...), $data['offerings'])), $data['subjects'] ?? []);
 
                     Notification::make()
                         ->title('Invitation sent')

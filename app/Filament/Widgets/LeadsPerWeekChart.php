@@ -47,7 +47,7 @@ class LeadsPerWeekChart extends ChartWidget
             'datasets' => collect(Offering::sections())->map(fn (Offering $offering) => [
                 'label' => $offering->label(),
                 'data' => $counts[$offering->value],
-                'backgroundColor' => $colours[$offering->value],
+                'backgroundColor' => $colours[$offering->value] ?? '#64748b',
             ])->all(),
             'labels' => $weeks->map(fn (CarbonImmutable $week) => $week->format('j M'))->all(),
         ];
