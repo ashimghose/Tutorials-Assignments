@@ -16,14 +16,17 @@ use Illuminate\Support\Facades\DB;
 class InviteTeacher
 {
     /**
+     * @param  list<Offering>  $offerings  the sections they work in (VRT-1)
      * @param  array<int, string>  $subjects
      */
-    public function __invoke(string $name, string $email, Offering $offering, array $subjects = []): User
+    public function __invoke(string $name, string $email, array $offerings, array $subjects = []): User
     {
-        $user = DB::transaction(function () use ($name, $email, $offering, $subjects) {
+        $offerings = array_values(array_unique(array_map(fn (Offering $offering) => $offering->value, $offerings)));
+
+        $user = DB::transaction(function () use ($name, $email, $offerings, $subjects) {
             $user = new User(['name' => $name, 'email' => $email]);
             $user->forceFill(['role' => Role::Teacher])->save();
-            $user->teacher()->create(['offering' => $offering, 'subjects' => $subjects]);
+            $user->teacher()->create(['offerings' => $offerings, 'subjects' => $subjects]);
 
             AuditLog::record('teacher.invited', $user);
 

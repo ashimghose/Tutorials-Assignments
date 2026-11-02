@@ -48,6 +48,7 @@ class SiteSectionResource extends Resource
             'home' => self::homeFields(),
             'tuition' => self::tuitionFields(),
             'academic' => self::academicFields(),
+            'music' => self::musicFields(),
             'contact' => self::contactFields(),
             null => [],
             default => self::textPageFields(),
@@ -85,7 +86,7 @@ class SiteSectionResource extends Resource
                     Textarea::make('content.hero.lead')->label('Intro')->required()->rows(3)->maxLength(400),
                 ]),
                 Tab::make('Offering cards')->schema(
-                    collect(['tuition' => 'Tuition card', 'academic' => 'Academic card'])->map(fn (string $label, string $key) => Section::make($label)->schema([
+                    collect(['tuition' => 'Tuition card', 'academic' => 'Academic card', 'music' => 'Music card'])->map(fn (string $label, string $key) => Section::make($label)->schema([
                         TextInput::make("content.offerings.{$key}.eyebrow")->label('Small heading')->required()->maxLength(60),
                         TextInput::make("content.offerings.{$key}.title")->label('Title')->required()->maxLength(80),
                         Textarea::make("content.offerings.{$key}.body")->label('Text')->required()->rows(3)->maxLength(400),
@@ -100,6 +101,7 @@ class SiteSectionResource extends Resource
                     'seo_description' => 'Description for Google and link previews',
                     'tuition_button' => 'Tuition card button',
                     'academic_button' => 'Academic card button',
+                    'music_button' => 'Music card button',
                     'guides_title' => 'Guides heading (also the Guides page title)',
                     'guides_lead' => 'Guides intro',
                     'guides_link' => 'Link to all guides',
@@ -147,6 +149,63 @@ class SiteSectionResource extends Resource
                     'demo_button' => 'Demo button',
                     'question_button' => 'Question button',
                     'boards_label' => 'Word before the boards list',
+                    'fees_eyebrow' => 'Fees: small heading',
+                    'fees_title' => 'Fees: heading',
+                    'fees_lead' => 'Fees: intro',
+                    'subjects_label' => 'Word before each plan\'s subjects',
+                    'plan_button' => 'Button on each fee plan',
+                    'steps_eyebrow' => 'How it works: small heading',
+                    'steps_title' => 'How it works: heading',
+                    'people_eyebrow' => 'Teachers: small heading',
+                    'people_title' => 'Teachers: heading',
+                    'testimonials_eyebrow' => 'Testimonials: small heading',
+                    'testimonials_title' => 'Testimonials: heading',
+                    'faqs_eyebrow' => 'Questions: small heading',
+                    'faqs_title' => 'Questions: heading',
+                    'cta_title' => 'Bottom box: heading',
+                    'cta_body' => 'Bottom box: text',
+                    'cta_button' => 'Bottom box: button',
+                    'waitlist_button' => 'Waitlist button',
+                    'guides_title' => 'Guides heading',
+                ]),
+            ]),
+        ];
+    }
+
+    /**
+     * @return array<int, mixed>
+     */
+    private static function musicFields(): array
+    {
+        return [
+            Tabs::make()->tabs([
+                self::heroTab(),
+                Tab::make('Fees')->schema([
+                    TagsInput::make('content.styles')->label('Instruments and singing styles')->required(),
+                    Repeater::make('content.plans')->label('Fee plans')
+                        ->schema([
+                            TextInput::make('name')->required()->maxLength(80),
+                            Grid::make(2)->schema([
+                                MoneyInput::make('price')->label('Fee')->required(),
+                                TextInput::make('period')->required()->maxLength(60),
+                            ]),
+                            TagsInput::make('subjects'),
+                            TagsInput::make('features')->label('Ticked points'),
+                        ])
+                        ->itemLabel(fn (array $state): ?string => $state['name'] ?? null)
+                        ->collapsible()->reorderable(),
+                    TagsInput::make('content.price_ranges')->label('Price question choices on the enquiry form'),
+                ]),
+                self::stepsTab(),
+                self::faqsTab(),
+                self::waitlistTab(),
+                self::textTab([
+                    'seo_title' => 'Page title for Google and browser tabs',
+                    'seo_description' => 'Description for Google and link previews',
+                    'eyebrow' => 'Small heading above the headline',
+                    'demo_button' => 'Trial lesson button',
+                    'question_button' => 'Question button',
+                    'styles_label' => 'Words before the instruments and styles list',
                     'fees_eyebrow' => 'Fees: small heading',
                     'fees_title' => 'Fees: heading',
                     'fees_lead' => 'Fees: intro',
@@ -260,7 +319,7 @@ class SiteSectionResource extends Resource
     {
         return [
             ...self::pageTopFields(),
-            ...collect(['tuition' => 'Tuition box', 'academic' => 'Academic box'])->map(fn (string $label, string $key) => Section::make($label)->schema([
+            ...collect(['tuition' => 'Tuition box', 'academic' => 'Academic box', 'music' => 'Music box'])->map(fn (string $label, string $key) => Section::make($label)->schema([
                 TextInput::make("content.cards.{$key}.title")->label('Heading')->required()->maxLength(80),
                 Textarea::make("content.cards.{$key}.body")->label('Text')->required()->rows(2)->maxLength(300),
                 Grid::make(2)->schema([

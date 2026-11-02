@@ -9,6 +9,7 @@ use App\Observers\AuditAdminChanges;
 use Database\Factories\TeacherFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -18,7 +19,7 @@ use Illuminate\Support\Carbon;
 /**
  * A teacher or academic expert, invited by an admin (AUTH-4).
  *
- * @property Offering $offering
+ * @property list<string> $offerings the sections they work in (VRT-1)
  * @property list<string>|null $subjects
  * @property Carbon|null $active_from
  * @property Carbon|null $active_to
@@ -28,7 +29,7 @@ use Illuminate\Support\Carbon;
  * @property int|null $order_rate
  */
 #[ObservedBy(AuditAdminChanges::class)]
-#[Fillable(['offering', 'subjects', 'bio', 'photo_path', 'active_from', 'active_to', 'class_rate', 'class_rate_per', 'order_rate_type', 'order_rate'])]
+#[Fillable(['offerings', 'subjects', 'bio', 'photo_path', 'active_from', 'active_to', 'class_rate', 'class_rate_per', 'order_rate_type', 'order_rate'])]
 class Teacher extends Model
 {
     /** @use HasFactory<TeacherFactory> */
@@ -37,7 +38,7 @@ class Teacher extends Model
     protected function casts(): array
     {
         return [
-            'offering' => Offering::class,
+            'offerings' => 'array',
             'subjects' => 'array',
             'active_from' => 'date',
             'active_to' => 'date',
@@ -46,6 +47,28 @@ class Teacher extends Model
             'order_rate_type' => OrderRateType::class,
             'order_rate' => 'integer',
         ];
+    }
+
+    public function worksIn(Offering $offering): bool
+    {
+        return in_array($offering->value, $this->offerings ?? [], true);
+    }
+
+    /**
+     * Teachers who work in a section.
+     *
+     * @param  Builder<Teacher>  $query
+     */
+    public function scopeWorksInOffering(Builder $query, Offering $offering): void
+    {
+        $query->whereJsonContains('offerings', $offering->value);
+    }
+
+    public function offeringLabels(): string
+    {
+        return collect($this->offerings ?? [])
+            ->map(fn (string $value) => Offering::tryFrom($value)?->label() ?? $value)
+            ->implode(', ');
     }
 
     /**

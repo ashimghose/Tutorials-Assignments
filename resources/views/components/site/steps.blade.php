@@ -7,6 +7,7 @@
                 'grid size-9 place-items-center rounded-full text-sm font-bold',
                 'bg-tuition-100 text-tuition-800' => $accent === 'tuition',
                 'bg-academic-100 text-academic-800' => $accent === 'academic',
+                'bg-music-100 text-music-800' => $accent === 'music',
                 'bg-brand-100 text-brand-800' => $accent === 'brand',
             ])>{{ $loop->iteration }}</span>
             <h3 class="mt-3 font-semibold text-slate-900">{{ $step['title'] }}</h3>

@@ -50,8 +50,12 @@ class SendMarketingEmail
                 ->whereNotNull('email')
                 ->get()
                 ->map(fn (User $user) => [(string) $user->email, $link('user', $user->id)]),
-            MarketingAudience::TuitionLeads, MarketingAudience::AcademicLeads => Lead::query()
-                ->where('offering', $audience === MarketingAudience::TuitionLeads ? Offering::Tuition : Offering::Academic)
+            MarketingAudience::TuitionLeads, MarketingAudience::AcademicLeads, MarketingAudience::MusicLeads => Lead::query()
+                ->where('offering', match ($audience) {
+                    MarketingAudience::TuitionLeads => Offering::Tuition,
+                    MarketingAudience::AcademicLeads => Offering::Academic,
+                    default => Offering::Music,
+                })
                 ->where('marketing_consent', true)
                 ->whereNotNull('email')
                 ->latest('id')

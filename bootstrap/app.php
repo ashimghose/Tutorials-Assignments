@@ -4,6 +4,7 @@ use App\Http\Middleware\CaptureUtm;
 use App\Http\Middleware\EnsureAccountActive;
 use App\Http\Middleware\EnsureFeatureEnabled;
 use App\Http\Middleware\EnsureRole;
+use App\Http\Middleware\ResolveVertical;
 use App\Http\Middleware\ThrottleAccountForms;
 use App\Support\Cloudflare;
 use Illuminate\Foundation\Application;
@@ -20,6 +21,11 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         // The live site sits behind Cloudflare, which passes on the visitor's IP and HTTPS.
         $middleware->trustProxies(at: Cloudflare::IPS);
+
+        // VRT-1, VRT-3: switched-off sections and sections on their own domain.
+        $middleware->web(prepend: [
+            ResolveVertical::class,
+        ]);
 
         $middleware->web(append: [
             CaptureUtm::class,

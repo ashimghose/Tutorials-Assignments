@@ -4,6 +4,7 @@ namespace App\Filament\Widgets;
 
 use App\Enums\LeadKind;
 use App\Enums\LeadStatus;
+use App\Enums\Offering;
 use App\Models\Lead;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
@@ -26,8 +27,7 @@ class LeadStats extends StatsOverviewWidget
         $converted = Lead::query()->where('created_at', '>=', now()->subDays(90))->where('status', LeadStatus::Converted)->count();
 
         return [
-            Stat::make('Tuition leads, last 7 days', $count('tuition')),
-            Stat::make('Academic leads, last 7 days', $count('academic')),
+            ...collect(Offering::sections())->map(fn (Offering $offering) => Stat::make("{$offering->label()} leads, last 7 days", $count($offering->value)))->all(),
             Stat::make('On waitlists', $waitlist),
             Stat::make('Became customers, last 90 days', $total > 0 ? round($converted / $total * 100).'%' : '—')
                 ->description("{$converted} of {$total} leads"),

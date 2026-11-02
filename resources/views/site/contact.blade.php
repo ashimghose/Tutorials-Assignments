@@ -4,23 +4,27 @@
     <x-site.page-header :title="$content['title']" :lead="$content['lead']" />
 
     <section class="mx-auto max-w-3xl px-4 py-12 sm:px-6">
+        @php
+            // VRT-2: one box per switched-on section, each with its own WhatsApp number.
+            $boxStyles = [
+                'tuition' => ['box' => 'border-tuition-100 bg-tuition-50', 'button' => 'bg-tuition-700 hover:bg-tuition-800'],
+                'academic' => ['box' => 'border-academic-100 bg-academic-50', 'button' => 'bg-academic-700 hover:bg-academic-800'],
+                'music' => ['box' => 'border-music-100 bg-music-50', 'button' => 'bg-music-700 hover:bg-music-800'],
+            ];
+            $boxes = array_values(array_filter(\App\Support\Verticals::enabledKeys(), fn (string $key) => isset($content['cards'][$key])));
+        @endphp
         <div class="grid gap-4 sm:grid-cols-2">
-            <div class="rounded-xl border border-tuition-100 bg-tuition-50 p-5">
-                <h2 class="font-semibold text-slate-900">{{ $content['cards']['tuition']['title'] }}</h2>
-                <p class="mt-1 text-sm text-slate-600">{{ $content['cards']['tuition']['body'] }}</p>
-                <div class="mt-4 flex flex-col gap-2">
-                    <a href="{{ \App\Support\SiteLinks::whatsapp('tuition') }}" target="_blank" rel="noopener" class="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-tuition-700 px-4 py-3 font-semibold text-white hover:bg-tuition-800"><x-site.whatsapp-icon class="size-5" /> {{ $content['cards']['tuition']['whatsapp'] }}</a>
-                    <x-site.form-link form="tuition" section="tuition" page="contact" interest="General enquiry" variant="outline">{{ $content['cards']['tuition']['enquire'] }}</x-site.form-link>
+            @foreach ($boxes as $key)
+                @php($card = $content['cards'][$key])
+                <div class="rounded-xl border p-5 {{ $boxStyles[$key]['box'] }}">
+                    <h2 class="font-semibold text-slate-900">{{ $card['title'] }}</h2>
+                    <p class="mt-1 text-sm text-slate-600">{{ $card['body'] }}</p>
+                    <div class="mt-4 flex flex-col gap-2">
+                        <a href="{{ \App\Support\SiteLinks::whatsapp($key) }}" target="_blank" rel="noopener" class="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg px-4 py-3 font-semibold text-white {{ $boxStyles[$key]['button'] }}"><x-site.whatsapp-icon class="size-5" /> {{ $card['whatsapp'] }}</a>
+                        <x-site.form-link :form="$key" :section="$key" page="contact" interest="General enquiry" variant="outline">{{ $card['enquire'] }}</x-site.form-link>
+                    </div>
                 </div>
-            </div>
-            <div class="rounded-xl border border-academic-100 bg-academic-50 p-5">
-                <h2 class="font-semibold text-slate-900">{{ $content['cards']['academic']['title'] }}</h2>
-                <p class="mt-1 text-sm text-slate-600">{{ $content['cards']['academic']['body'] }}</p>
-                <div class="mt-4 flex flex-col gap-2">
-                    <a href="{{ \App\Support\SiteLinks::whatsapp('academic') }}" target="_blank" rel="noopener" class="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-academic-700 px-4 py-3 font-semibold text-white hover:bg-academic-800"><x-site.whatsapp-icon class="size-5" /> {{ $content['cards']['academic']['whatsapp'] }}</a>
-                    <x-site.form-link form="academic" section="academic" page="contact" interest="General enquiry" variant="outline">{{ $content['cards']['academic']['enquire'] }}</x-site.form-link>
-                </div>
-            </div>
+            @endforeach
         </div>
 
         <dl class="mt-10 space-y-4 text-slate-700">

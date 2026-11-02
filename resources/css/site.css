@@ -1,6 +1,6 @@
 /* Public marketing site. Kept apart from app.css so the static pages don't
    load the admin and dashboard styles. "Calm Scholar" look: forest green,
-   saffron for tuition, serif headings. Two self-hosted variable fonts
+   saffron for tuition, plum for music, serif headings. Two self-hosted variable fonts
    (about 80 KB for English pages) keep it fast on 4G. */
 @import 'tailwindcss';
 @import './fonts.css';
@@ -28,6 +28,11 @@
     --color-academic-100: #d5ebe2;
     --color-academic-700: #0b5d45;
     --color-academic-800: #0a4c39;
+
+    --color-music-50: #f5f2fa;
+    --color-music-100: #e7dff4;
+    --color-music-700: #5b3a8c;
+    --color-music-800: #482d70;
 }
 
 @layer base {

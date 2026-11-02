@@ -46,7 +46,7 @@ class ExpenseResource extends Resource
     {
         return $schema->columns(1)->components([
             Grid::make(2)->schema([
-                Select::make('offering')->label('Section')->options([Offering::Tuition->value => 'Tuition', Offering::Academic->value => 'Academic services'])->required(),
+                Select::make('offering')->label('Section')->options(Offering::sectionOptions())->required(),
                 Select::make('category')->options(ExpenseCategory::options())->required(),
                 MoneyInput::make('amount')->required()->minValue(1),
                 DatePicker::make('spent_on')->required()->default(fn (): string => now(config('app.display_timezone'))->toDateString()),
@@ -62,14 +62,14 @@ class ExpenseResource extends Resource
             ->columns([
                 TextColumn::make('spent_on')->date('j M Y')->sortable(),
                 TextColumn::make('offering')->label('Section')->badge()->formatStateUsing(fn (Offering $state): string => $state->label())
-                    ->color(fn (Offering $state): string => $state === Offering::Tuition ? 'warning' : 'primary'),
+                    ->color(fn (Offering $state): string => $state->color()),
                 TextColumn::make('category')->formatStateUsing(fn (ExpenseCategory $state): string => $state->label()),
                 TextColumn::make('order')->state(fn (Expense $record): ?string => $record->order?->reference())->placeholder('—'),
                 TextColumn::make('amount')->formatStateUsing(fn (int $state): string => Money::format($state))->alignEnd(),
                 TextColumn::make('note')->placeholder('—')->limit(40),
             ])
             ->filters([
-                SelectFilter::make('offering')->label('Section')->options([Offering::Tuition->value => 'Tuition', Offering::Academic->value => 'Academic services']),
+                SelectFilter::make('offering')->label('Section')->options(Offering::sectionOptions()),
                 SelectFilter::make('category')->options(ExpenseCategory::options()),
             ])
             ->headerActions([

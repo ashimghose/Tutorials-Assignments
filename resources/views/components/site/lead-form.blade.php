@@ -11,7 +11,11 @@
 {{-- CMS-3: the site's own enquiry form (FEATURE_CMS). Campaign source is
      added on the server from the visit (CaptureUtm), never from the form. --}}
 @php
-    $accent = $offering === 'academic' ? 'bg-academic-700 hover:bg-academic-800' : 'bg-tuition-700 hover:bg-tuition-800';
+    $accent = match ($offering) {
+        'academic' => 'bg-academic-700 hover:bg-academic-800',
+        'music' => 'bg-music-700 hover:bg-music-800',
+        default => 'bg-tuition-700 hover:bg-tuition-800',
+    };
     $input = 'mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-base text-slate-900 focus:border-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-100';
 @endphp
 
@@ -45,8 +49,8 @@
     </div>
 
     <div>
-        <label for="lead-class" class="text-sm font-medium text-slate-800">{{ $offering === 'tuition' ? 'Child\'s class, board and subjects' : 'Level, service and deadline' }}</label>
-        <input id="lead-class" name="class_or_service" type="text" value="{{ old('class_or_service') }}" placeholder="{{ $offering === 'tuition' ? 'Class 8, CBSE, Maths and Science' : 'Masters, thesis editing, due 15 March' }}" class="{{ $input }}">
+        <label for="lead-class" class="text-sm font-medium text-slate-800">{{ match ($offering) { 'tuition' => 'Child\'s class, board and subjects', 'music' => 'Instrument or style, level and learner\'s age', default => 'Level, service and deadline' } }}</label>
+        <input id="lead-class" name="class_or_service" type="text" value="{{ old('class_or_service') }}" placeholder="{{ match ($offering) { 'tuition' => 'Class 8, CBSE, Maths and Science', 'music' => 'Guitar, beginner, age 12', default => 'Masters, thesis editing, due 15 March' } }}" class="{{ $input }}">
         @error('class_or_service') <p class="mt-1 text-sm text-red-700">{{ $message }}</p> @enderror
     </div>
 
@@ -58,7 +62,7 @@
 
     @if ($priceRanges !== [])
         <fieldset>
-            <legend class="text-sm font-medium text-slate-800">{{ $offering === 'tuition' ? 'Which monthly fee suits you?' : 'What budget suits you?' }} <span class="font-normal text-slate-500">(optional)</span></legend>
+            <legend class="text-sm font-medium text-slate-800">{{ in_array($offering, ['tuition', 'music'], true) ? 'Which monthly fee suits you?' : 'What budget suits you?' }} <span class="font-normal text-slate-500">(optional)</span></legend>
             <div class="mt-2 space-y-2">
                 @foreach ($priceRanges as $range)
                     <label class="flex items-center gap-3 rounded-lg border border-slate-200 px-3 py-2.5 text-slate-700">

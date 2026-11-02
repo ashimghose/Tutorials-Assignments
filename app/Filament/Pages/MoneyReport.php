@@ -2,6 +2,7 @@
 
 namespace App\Filament\Pages;
 
+use App\Enums\Offering;
 use App\Filament\Pages\Concerns\HasDateRange;
 use App\Services\MoneyReport as Report;
 use App\Support\Money;
@@ -49,15 +50,13 @@ class MoneyReport extends Page implements HasTable
 
                 return collect(Report::ROWS)->mapWithKeys(fn (string $label, string $key) => [$key => [
                     'row' => $label,
-                    'tuition' => $report['tuition'][$key],
-                    'academic' => $report['academic'][$key],
+                    ...collect(Offering::sectionValues())->mapWithKeys(fn (string $section) => [$section => $report[$section][$key]])->all(),
                     'total' => $report['total'][$key],
                 ]])->all();
             })
             ->columns([
                 TextColumn::make('row')->label('')->weight(fn (array $record): string => $record['row'] === 'Net' ? 'bold' : 'normal'),
-                TextColumn::make('tuition')->label('Tuition')->formatStateUsing($money)->alignEnd(),
-                TextColumn::make('academic')->label('Academic services')->formatStateUsing($money)->alignEnd(),
+                ...collect(Offering::sections())->map(fn (Offering $offering) => TextColumn::make($offering->value)->label($offering->label())->formatStateUsing($money)->alignEnd())->all(),
                 TextColumn::make('total')->label('Total')->formatStateUsing($money)->alignEnd()->weight('bold'),
             ])
             ->filters([self::periodFilter()], layout: FiltersLayout::AboveContent)

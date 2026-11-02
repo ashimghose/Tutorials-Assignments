@@ -7,7 +7,8 @@
                 'text-xs font-semibold uppercase tracking-wide',
                 'text-tuition-700' => $article['offering'] === 'tuition',
                 'text-academic-700' => $article['offering'] === 'academic',
-            ])>{{ $article['offering'] === 'tuition' ? 'For parents' : 'For college students' }}</p>
+                'text-music-700' => $article['offering'] === 'music',
+            ])>{{ match ($article['offering']) { 'tuition' => 'For parents', 'music' => 'For music learners', default => 'For college students' } }}</p>
             <h3 class="mt-2 font-semibold text-slate-900 group-hover:underline">{{ $article['title'] }}</h3>
             <p class="mt-2 text-sm text-slate-600">{{ $article['description'] }}</p>
         </a>

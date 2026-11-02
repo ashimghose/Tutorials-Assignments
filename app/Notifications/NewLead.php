@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\Enums\Offering;
 use App\Models\Lead;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -27,7 +28,7 @@ class NewLead extends Notification implements ShouldQueue
 
     public function toMail(object $notifiable): MailMessage
     {
-        $offering = $this->lead->offering === 'academic' ? 'Academic' : 'Tuition';
+        $offering = Offering::tryFrom($this->lead->offering)?->label() ?? 'Tuition';
 
         return (new MailMessage)
             ->subject("New {$offering} ".strtolower($this->lead->kind->label()).": {$this->lead->name}")

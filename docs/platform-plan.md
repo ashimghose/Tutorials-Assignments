@@ -2,7 +2,7 @@
 
 Status: **option B chosen by the owner on 2 Nov 2026.** VRT and MUS requirements are now
 in `docs/spec.md`, the decision is in `docs/decisions.md`, and the V1 build plan is in
-section 9 (awaiting approval). Partner work (TEN, PAY-7 to 10) waits for Gate P.
+section 9 (approved and built in PR #20). Partner work (TEN, PAY-7 to 10) waits for Gate P.
 
 ## The short answer
 
@@ -260,7 +260,7 @@ None of them needs to stop. Only the brand and domain question touches them.
 5. **Before Gate P, ask a CA and a lawyer:** GST on platform fees, own-account vs Route,
    the partner agreement and the data processing agreement.
 
-## 9. V1 build plan: verticals and domains (awaiting approval)
+## 9. V1 build plan: verticals and domains (approved 2 Nov 2026)
 
 Scope: VRT-1 to VRT-5. Music lessons themselves (instruments, 1-to-1 slots, adult
 learners, MUS-1 to 4) are V2. No new package, no new paid service, no change to

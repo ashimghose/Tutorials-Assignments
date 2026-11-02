@@ -9,6 +9,7 @@ use App\Models\Campaign;
 use App\Models\Lead;
 use App\Notifications\NewLead;
 use App\Support\LeadForms;
+use App\Support\Verticals;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -23,6 +24,8 @@ class LeadController extends Controller
 {
     public function show(Request $request, string $form): View
     {
+        abort_unless($form === 'waitlist' || Verticals::enabled($form), 404);
+
         $section = $request->string('section')->toString();
         $offering = LeadForms::offering($form, $section);
 
@@ -30,7 +33,7 @@ class LeadController extends Controller
             'form' => $form,
             'offering' => $offering,
             'kind' => LeadForms::kind($form, $request->string('interest')->toString()),
-            'section' => in_array($section, ['tuition', 'academic'], true) ? $section : $offering,
+            'section' => Verticals::exists($section) ? $section : $offering,
             'interest' => mb_substr($request->string('interest')->toString(), 0, 160),
             'page' => mb_substr($request->string('page')->toString(), 0, 120),
             'priceRanges' => LeadForms::priceRanges($offering),
@@ -40,6 +43,8 @@ class LeadController extends Controller
 
     public function store(StoreLeadRequest $request, string $form): RedirectResponse
     {
+        abort_unless($form === 'waitlist' || Verticals::enabled($form), 404);
+
         $this->record($request, $request->offering(), LeadForms::kind($form, $request->input('interest')));
 
         return redirect()->route('enquire.thanks', ['section' => $request->offering()]);
@@ -66,7 +71,7 @@ class LeadController extends Controller
 
     public function thanks(Request $request): View
     {
-        $section = $request->query('section') === 'academic' ? 'academic' : 'tuition';
+        $section = Verticals::exists((string) $request->query('section')) ? (string) $request->query('section') : 'tuition';
 
         return view('site.enquire-thanks', ['section' => $section]);
     }

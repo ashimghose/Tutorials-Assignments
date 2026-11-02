@@ -147,9 +147,9 @@ test('ACA-8 students see only their own orders', function () {
 });
 
 test('ACA-9 the assigned expert sees the order and others don\'t', function () {
-    $expert = Teacher::factory()->create(['offering' => 'academic']);
+    $expert = Teacher::factory()->create(['offerings' => ['academic']]);
     $order = AcademicOrder::factory()->paid()->create(['expert_id' => $expert->id]);
-    $other = Teacher::factory()->create(['offering' => 'academic']);
+    $other = Teacher::factory()->create(['offerings' => ['academic']]);
 
     $this->actingAs($expert->user)->get(route('teacher.orders.show', $order))->assertOk();
     Livewire::actingAs($expert->user)->test('pages::portal.teacher.orders')->assertSee($order->reference());
@@ -158,7 +158,7 @@ test('ACA-9 the assigned expert sees the order and others don\'t', function () {
 });
 
 test('ACA-9 the expert uploads a draft and moves the status only to statuses experts may set', function () {
-    $expert = Teacher::factory()->create(['offering' => 'academic']);
+    $expert = Teacher::factory()->create(['offerings' => ['academic']]);
     $order = AcademicOrder::factory()->for($this->student)->paid()->create(['expert_id' => $expert->id]);
     $draftShared = OrderStatus::where('name', 'Draft shared')->sole();
     $shipped = OrderStatus::where('name', 'Shipped')->sole();

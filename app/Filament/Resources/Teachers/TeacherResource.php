@@ -11,6 +11,7 @@ use App\Filament\Support\MoneyInput;
 use App\Models\Teacher;
 use BackedEnum;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TagsInput;
@@ -47,8 +48,8 @@ class TeacherResource extends Resource
     {
         return $schema->columns(1)->components([
             Grid::make(2)->schema([
-                Select::make('offering')->label('Works in')
-                    ->options(collect(Offering::cases())->mapWithKeys(fn (Offering $offering) => [$offering->value => $offering->label()]))
+                CheckboxList::make('offerings')->label('Works in')
+                    ->options(Offering::sectionOptions())
                     ->required(),
                 TagsInput::make('subjects'),
             ]),
@@ -88,7 +89,7 @@ class TeacherResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('user.name')->label('Name')->searchable(),
-                TextColumn::make('offering')->label('Works in')->formatStateUsing(fn (Offering $state): string => $state->label()),
+                TextColumn::make('offerings')->label('Works in')->state(fn (Teacher $record): string => $record->offeringLabels()),
                 TextColumn::make('subjects')->badge(),
                 IconColumn::make('show_on_site')->label('On website')->boolean(),
             ])

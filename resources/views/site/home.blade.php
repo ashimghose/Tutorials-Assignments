@@ -9,35 +9,34 @@
         </div>
     </section>
 
-    <section class="mx-auto max-w-6xl px-4 pb-16 sm:px-6">
-        <div class="grid gap-6 md:grid-cols-2">
-            <article class="flex flex-col rounded-2xl border border-tuition-100 bg-tuition-50 p-6 sm:p-8">
-                <p class="text-sm font-semibold uppercase tracking-wide text-tuition-700">{{ $content['offerings']['tuition']['eyebrow'] }}</p>
-                <h2 class="mt-2 text-2xl font-bold text-slate-900">{{ $content['offerings']['tuition']['title'] }}</h2>
-                <p class="mt-3 text-slate-700">{{ $content['offerings']['tuition']['body'] }}</p>
-                <ul class="mt-5 space-y-2 text-slate-700">
-                    @foreach ($content['offerings']['tuition']['points'] as $point)
-                        <li class="flex gap-2"><span aria-hidden="true" class="text-tuition-700">&#10003;</span> {{ $point }}</li>
-                    @endforeach
-                </ul>
-                <div class="mt-auto pt-6">
-                    <a href="{{ route('tuition') }}" class="inline-flex min-h-12 items-center rounded-lg bg-tuition-700 px-5 py-3 font-semibold text-white hover:bg-tuition-800">{{ $content['text']['tuition_button'] }}</a>
-                </div>
-            </article>
+    @php
+        // VRT-1: one card per switched-on section. Full class names so Tailwind keeps them.
+        $cardStyles = [
+            'tuition' => ['card' => 'border-tuition-100 bg-tuition-50', 'text' => 'text-tuition-700', 'button' => 'bg-tuition-700 hover:bg-tuition-800'],
+            'academic' => ['card' => 'border-academic-100 bg-academic-50', 'text' => 'text-academic-700', 'button' => 'bg-academic-700 hover:bg-academic-800'],
+            'music' => ['card' => 'border-music-100 bg-music-50', 'text' => 'text-music-700', 'button' => 'bg-music-700 hover:bg-music-800'],
+        ];
+        $cards = array_values(array_filter(\App\Support\Verticals::enabledKeys(), fn (string $key) => isset($content['offerings'][$key])));
+    @endphp
 
-            <article class="flex flex-col rounded-2xl border border-academic-100 bg-academic-50 p-6 sm:p-8">
-                <p class="text-sm font-semibold uppercase tracking-wide text-academic-700">{{ $content['offerings']['academic']['eyebrow'] }}</p>
-                <h2 class="mt-2 text-2xl font-bold text-slate-900">{{ $content['offerings']['academic']['title'] }}</h2>
-                <p class="mt-3 text-slate-700">{{ $content['offerings']['academic']['body'] }}</p>
-                <ul class="mt-5 space-y-2 text-slate-700">
-                    @foreach ($content['offerings']['academic']['points'] as $point)
-                        <li class="flex gap-2"><span aria-hidden="true" class="text-academic-700">&#10003;</span> {{ $point }}</li>
-                    @endforeach
-                </ul>
-                <div class="mt-auto pt-6">
-                    <a href="{{ route('academic') }}" class="inline-flex min-h-12 items-center rounded-lg bg-academic-700 px-5 py-3 font-semibold text-white hover:bg-academic-800">{{ $content['text']['academic_button'] }}</a>
-                </div>
-            </article>
+    <section class="mx-auto max-w-6xl px-4 pb-16 sm:px-6">
+        <div @class(['grid gap-6 md:grid-cols-2', 'lg:grid-cols-3' => count($cards) >= 3])>
+            @foreach ($cards as $key)
+                @php($card = $content['offerings'][$key])
+                <article class="flex flex-col rounded-2xl border p-6 sm:p-8 {{ $cardStyles[$key]['card'] }}">
+                    <p class="text-sm font-semibold uppercase tracking-wide {{ $cardStyles[$key]['text'] }}">{{ $card['eyebrow'] }}</p>
+                    <h2 class="mt-2 text-2xl font-bold text-slate-900">{{ $card['title'] }}</h2>
+                    <p class="mt-3 text-slate-700">{{ $card['body'] }}</p>
+                    <ul class="mt-5 space-y-2 text-slate-700">
+                        @foreach ($card['points'] as $point)
+                            <li class="flex gap-2"><span aria-hidden="true" class="{{ $cardStyles[$key]['text'] }}">&#10003;</span> {{ $point }}</li>
+                        @endforeach
+                    </ul>
+                    <div class="mt-auto pt-6">
+                        <a href="{{ \App\Support\Verticals::url($key) }}" class="inline-flex min-h-12 items-center rounded-lg px-5 py-3 font-semibold text-white {{ $cardStyles[$key]['button'] }}">{{ $content['text'][$key.'_button'] }}</a>
+                    </div>
+                </article>
+            @endforeach
         </div>
     </section>
 

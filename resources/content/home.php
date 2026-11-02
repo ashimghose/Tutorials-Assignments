@@ -25,6 +25,13 @@ return [
             'body' => 'Guidance, editing, formatting and similarity checks for your synopsis, research paper, thesis or dissertation, plus printing, binding and delivery.',
             'points' => ['Bachelors, Masters and PhD, any stream', 'Clear fixed prices, quotes for big jobs', 'Your work stays yours, and confidential'],
         ],
+        // Shown once music is switched on (FEATURE_VERTICAL_MUSIC).
+        'music' => [
+            'eyebrow' => 'For children and adults',
+            'title' => 'Music lessons',
+            'body' => 'Live online singing and instrument lessons, in small groups or one-to-one, from your first note to exam level, with a free trial lesson.',
+            'points' => ['Singing, guitar, keyboard and more', 'Children sign up through a parent', 'Fees paid monthly'],
+        ],
     ],
 
     // A one-line notice across the top of every public page. Hidden while
@@ -40,6 +47,7 @@ return [
         'seo_description' => 'Live online tuition for classes 1 to 12 in small batches, and guidance, editing, formatting and printing for Bachelors, Masters and PhD students\' research work.',
         'tuition_button' => 'Explore tuition',
         'academic_button' => 'Explore academic services',
+        'music_button' => 'Explore music lessons',
         'guides_title' => 'Free guides',
         'guides_lead' => 'Practical help for parents and students, whether or not you study with us.',
         'guides_link' => 'All guides',

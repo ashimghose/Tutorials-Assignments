@@ -106,8 +106,8 @@ test('ADM-1 ADM-2 an hourly rate pays the class\'s scheduled length', function (
 });
 
 test('ACA-10 ADM-2 experts are paid for paid orders completed that month, not cancelled ones', function () {
-    $percent = Teacher::factory()->create(['offering' => Offering::Academic, 'order_rate_type' => OrderRateType::Percent, 'order_rate' => 40]);
-    $fixed = Teacher::factory()->create(['offering' => Offering::Academic, 'order_rate_type' => OrderRateType::Fixed, 'order_rate' => 150000]);
+    $percent = Teacher::factory()->create(['offerings' => [Offering::Academic->value], 'order_rate_type' => OrderRateType::Percent, 'order_rate' => 40]);
+    $fixed = Teacher::factory()->create(['offerings' => [Offering::Academic->value], 'order_rate_type' => OrderRateType::Fixed, 'order_rate' => 150000]);
 
     // ₹8,000 subtotal of which ₹1,000 is printing: 40% of ₹7,000 = ₹2,800.
     $withPrinting = completedOrder($percent, '2026-10-10 15:00');
@@ -151,7 +151,7 @@ test('ADM-2 the admin marks a month as paid, which keeps the amounts', function 
 });
 
 test('ADM-1 the admin sets a teacher\'s pay in rupees or as a percentage', function () {
-    $teacher = Teacher::factory()->create(['offering' => Offering::Both]);
+    $teacher = Teacher::factory()->create(['offerings' => [Offering::Tuition->value, Offering::Academic->value]]);
 
     Livewire::test(EditTeacher::class, ['record' => $teacher->getRouteKey()])
         ->fillForm(['class_rate' => 600, 'class_rate_per' => 'hour', 'order_rate_type' => 'percent'])
@@ -211,7 +211,7 @@ test('ADM-4 "Fee received" and "Payment received" record the money', function ()
 
 test('ADM-4 the money report, split by offering, matches a hand calculation', function () {
     $tuitionTeacher = Teacher::factory()->create();
-    $expert = Teacher::factory()->create(['offering' => Offering::Academic]);
+    $expert = Teacher::factory()->create(['offerings' => [Offering::Academic->value]]);
     $enrolment = Enrolment::factory()->create();
     $order = AcademicOrder::factory()->create();
 
@@ -245,7 +245,7 @@ test('ADM-4 the money report, split by offering, matches a hand calculation', fu
 });
 
 test('ADM-4 the orders report counts orders by status, service and expert', function () {
-    $expert = Teacher::factory()->create(['offering' => Offering::Academic]);
+    $expert = Teacher::factory()->create(['offerings' => [Offering::Academic->value]]);
     AcademicOrder::factory()->count(2)->paid()->create(['expert_id' => $expert->id, 'created_at' => '2026-11-10 06:00:00']);
     AcademicOrder::factory()->create(['service_title' => 'Similarity check', 'created_at' => '2026-11-11 06:00:00']);
     AcademicOrder::factory()->create(['service_title' => 'Old order', 'created_at' => '2026-09-01 06:00:00']);
