@@ -63,6 +63,17 @@ test('AUTH-3 a parent adds a child with consent and creates the child\'s login',
         ->and($consent->policy_version)->toBe(config('privacy.policy_version'));
 });
 
+test('a parent can choose the Assam board for a child', function () {
+    $parent = User::factory()->parent()->create();
+    $this->actingAs($parent);
+
+    fillChildForm(Livewire::test('pages::portal.parent.children'), childForm(['board' => 'Assam Board (ASSEB)']))
+        ->call('addChild')
+        ->assertHasNoErrors();
+
+    expect($parent->parentProfile->students()->sole()->board)->toBe('Assam Board (ASSEB)');
+});
+
 test('AUTH-3 a child cannot be added without consent or with a taken username', function () {
     User::factory()->student()->create(['username' => 'riya2026']);
     $this->actingAs(User::factory()->parent()->create());
