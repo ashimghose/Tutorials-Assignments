@@ -33,7 +33,7 @@ return [
             'general' => env('WHATSAPP_TEXT_GENERAL', 'Hi, I have a question'),
             'tuition' => env('WHATSAPP_TEXT_TUITION', "Hi, I'm asking about tuition"),
             'academic' => env('WHATSAPP_TEXT_ACADEMIC', "Hi, I'm asking about academic services"),
-            'music' => env('WHATSAPP_TEXT_MUSIC', "Hi, I'm asking about music lessons"),
+            'music' => env('WHATSAPP_TEXT_MUSIC', "Hi, I'm asking about guitar classes"),
         ],
     ],
 

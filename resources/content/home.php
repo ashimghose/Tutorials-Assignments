@@ -28,9 +28,9 @@ return [
         // Shown once music is switched on (FEATURE_VERTICAL_MUSIC).
         'music' => [
             'eyebrow' => 'For children and adults',
-            'title' => 'Music lessons',
-            'body' => 'Live online singing and instrument lessons, in small groups or one-to-one, from your first note to exam level, with a free trial lesson.',
-            'points' => ['Singing, guitar, keyboard and more', 'Children sign up through a parent', 'Fees paid monthly'],
+            'title' => 'Guitar classes',
+            'body' => 'Live online guitar classes in small groups, from your first chord to your first song, with a free trial class.',
+            'points' => ['A live teacher who watches your hands', 'Children sign up through a parent', '₹1,000 a month'],
         ],
     ],
 
@@ -48,7 +48,7 @@ return [
         'seo_description' => 'Live online tuition for classes 1 to 12 in small batches, and guidance, editing, formatting and printing for Bachelors, Masters and PhD students\' research work.',
         'tuition_button' => 'Explore tuition',
         'academic_button' => 'Explore academic services',
-        'music_button' => 'Explore music lessons',
+        'music_button' => 'Explore guitar classes',
         'guides_title' => 'Free guides',
         'guides_lead' => 'Practical help for parents and students, whether or not you study with us.',
         'guides_link' => 'All guides',

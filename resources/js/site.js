@@ -93,3 +93,21 @@ export function decorateFormLinks(utm) {
 
 decorateFormLinks(captureUtm());
 initConsent();
+
+// Click-to-play videos (x-site.videos): load the youtube-nocookie player only
+// after the visitor taps play, so YouTube sees nothing before that.
+document.addEventListener('click', (event) => {
+    const link = event.target instanceof Element ? event.target.closest('a[data-youtube]') : null;
+    if (!link || !/^[A-Za-z0-9_-]{11}$/.test(link.dataset.youtube ?? '')) {
+        return;
+    }
+
+    event.preventDefault();
+    const player = document.createElement('iframe');
+    player.src = `https://www.youtube-nocookie.com/embed/${link.dataset.youtube}?autoplay=1&rel=0`;
+    player.title = link.dataset.title ?? 'Video';
+    player.allow = 'autoplay; encrypted-media; picture-in-picture';
+    player.allowFullscreen = true;
+    player.className = 'absolute inset-0 size-full';
+    link.replaceWith(player);
+});

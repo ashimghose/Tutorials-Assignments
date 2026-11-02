@@ -6,7 +6,9 @@ use App\Filament\Resources\SiteSections\Pages\EditSiteSection;
 use App\Filament\Resources\SiteSections\Pages\ListSiteSections;
 use App\Filament\Support\MoneyInput;
 use App\Models\SiteSection;
+use App\Support\YouTube;
 use BackedEnum;
+use Closure;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\TagsInput;
@@ -197,7 +199,36 @@ class SiteSectionResource extends Resource
                         ->collapsible()->reorderable(),
                     TagsInput::make('content.price_ranges')->label('Price question choices on the enquiry form'),
                 ]),
+                Tab::make('Chords')->schema([
+                    Repeater::make('content.chords')->label('Chord boxes on the page')
+                        ->helperText('Frets from the thickest string to the thinnest: x = not played, 0 = open, a number = the fret to press. For example C is x32010.')
+                        ->schema([
+                            Grid::make(2)->schema([
+                                TextInput::make('name')->required()->maxLength(8),
+                                TextInput::make('frets')->required()->regex('/^[x0-5]{6}$/')->placeholder('x32010'),
+                            ]),
+                        ])
+                        ->itemLabel(fn (array $state): ?string => $state['name'] ?? null)
+                        ->collapsible()->reorderable()->maxItems(8),
+                ]),
                 self::stepsTab(),
+                // A YouTube link per video; only the video id is kept on the page.
+                Tab::make('Videos')->schema([
+                    Repeater::make('content.videos')->label('Videos')
+                        ->helperText('Upload the video to YouTube (public or unlisted) and paste its link. The section is hidden while this list is empty.')
+                        ->schema([
+                            TextInput::make('title')->required()->maxLength(80),
+                            TextInput::make('url')->label('YouTube link')->required()->maxLength(255)
+                                ->rule(fn () => function (string $attribute, mixed $value, Closure $fail): void {
+                                    if (YouTube::id((string) $value) === null) {
+                                        $fail('Paste a YouTube video link, for example https://youtu.be/…');
+                                    }
+                                }),
+                            TextInput::make('caption')->label('Short caption (optional)')->maxLength(160),
+                        ])
+                        ->itemLabel(fn (array $state): ?string => $state['title'] ?? null)
+                        ->collapsible()->reorderable()->maxItems(6),
+                ]),
                 self::faqsTab(),
                 self::waitlistTab(),
                 self::textTab([
@@ -207,6 +238,10 @@ class SiteSectionResource extends Resource
                     'demo_button' => 'Trial lesson button',
                     'question_button' => 'Question button',
                     'styles_label' => 'Words before the instruments and styles list',
+                    'chords_eyebrow' => 'Chords: small heading',
+                    'chords_title' => 'Chords: heading',
+                    'chords_lead' => 'Chords: intro',
+                    'chords_note' => 'Chords: how to read a chord box',
                     'fees_eyebrow' => 'Fees: small heading',
                     'fees_title' => 'Fees: heading',
                     'fees_lead' => 'Fees: intro',
@@ -214,6 +249,8 @@ class SiteSectionResource extends Resource
                     'plan_button' => 'Button on each fee plan',
                     'steps_eyebrow' => 'How it works: small heading',
                     'steps_title' => 'How it works: heading',
+                    'videos_eyebrow' => 'Videos: small heading',
+                    'videos_title' => 'Videos: heading',
                     'people_eyebrow' => 'Teachers: small heading',
                     'people_title' => 'Teachers: heading',
                     'testimonials_eyebrow' => 'Testimonials: small heading',

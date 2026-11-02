@@ -1,7 +1,7 @@
 @php
     $heading = match (true) {
         $kind === \App\Enums\LeadKind::Waitlist => 'Join the waitlist',
-        $kind === \App\Enums\LeadKind::Demo && $offering === 'music' => 'Book a free trial lesson',
+        $kind === \App\Enums\LeadKind::Demo && $offering === 'music' => 'Book a free trial class',
         $kind === \App\Enums\LeadKind::Demo => 'Book a free demo class',
         $offering === 'academic' => 'Ask about academic services',
         $offering === 'music' => 'Ask about music lessons',

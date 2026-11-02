@@ -49,8 +49,8 @@
     </div>
 
     <div>
-        <label for="lead-class" class="text-sm font-medium text-slate-800">{{ match ($offering) { 'tuition' => 'Child\'s class, board and subjects', 'music' => 'Instrument or style, level and learner\'s age', default => 'Level, service and deadline' } }}</label>
-        <input id="lead-class" name="class_or_service" type="text" value="{{ old('class_or_service') }}" placeholder="{{ match ($offering) { 'tuition' => 'Class 8, CBSE, Maths and Science', 'music' => 'Guitar, beginner, age 12', default => 'Masters, thesis editing, due 15 March' } }}" class="{{ $input }}">
+        <label for="lead-class" class="text-sm font-medium text-slate-800">{{ match ($offering) { 'tuition' => 'Child\'s class, board and subjects', 'music' => 'Learner\'s age and guitar experience', default => 'Level, service and deadline' } }}</label>
+        <input id="lead-class" name="class_or_service" type="text" value="{{ old('class_or_service') }}" placeholder="{{ match ($offering) { 'tuition' => 'Class 8, CBSE, Maths and Science', 'music' => 'Age 12, never played before', default => 'Masters, thesis editing, due 15 March' } }}" class="{{ $input }}">
         @error('class_or_service') <p class="mt-1 text-sm text-red-700">{{ $message }}</p> @enderror
     </div>
 

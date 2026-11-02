@@ -9,12 +9,12 @@
                 <h1 class="mt-2 max-w-3xl text-3xl font-bold tracking-tight text-slate-900 sm:text-5xl">{{ $content['hero']['title'] }}</h1>
                 <p class="mt-5 max-w-2xl text-lg text-slate-600">{{ $content['hero']['lead'] }}</p>
                 <div class="mt-8 flex flex-col gap-3 sm:flex-row">
-                    <x-site.form-link form="music" section="music" :page="$page" interest="Free trial lesson" variant="music">{{ $text['demo_button'] }}</x-site.form-link>
+                    <x-site.form-link form="music" section="music" :page="$page" interest="Free trial class" variant="music">{{ $text['demo_button'] }}</x-site.form-link>
                     <x-site.form-link form="music" section="music" :page="$page" interest="General enquiry" variant="outline">{{ $text['question_button'] }}</x-site.form-link>
                 </div>
                 <p class="mt-4 text-sm text-slate-500">{{ $text['styles_label'] }}: {{ implode(', ', $content['styles']) }}</p>
             </div>
-            <x-site.hero-image name="music-live-class" alt="A live online music lesson: a teacher with a guitar on a laptop screen, with music notes" />
+            <x-site.hero-image name="guitar-group-class" alt="A live online guitar class: the teacher plays on a laptop screen while learners play along with their guitars" />
         </div>
     </section>
 
@@ -28,6 +28,18 @@
             @endforeach
         </div>
     </section>
+
+    @if (($content['chords'] ?? []) !== [])
+        <section id="chords" class="mx-auto max-w-6xl px-4 pb-16 sm:px-6">
+            <x-site.section-heading :eyebrow="$text['chords_eyebrow']" :title="$text['chords_title']" :lead="$text['chords_lead']" />
+            <div class="mt-8 grid grid-cols-2 gap-6 rounded-2xl border border-music-100 bg-music-50 p-6 sm:grid-cols-4">
+                @foreach ($content['chords'] as $chord)
+                    <x-site.chord :name="$chord['name']" :frets="$chord['frets']" />
+                @endforeach
+            </div>
+            <p class="mt-4 text-sm text-slate-500">{{ $text['chords_note'] }}</p>
+        </section>
+    @endif
 
     <section id="fees" class="border-y border-slate-200 bg-slate-50">
         <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6">
@@ -59,6 +71,15 @@
             <x-site.steps :steps="$content['steps']" accent="music" />
         </div>
     </section>
+
+    @if (($content['videos'] ?? []) !== [])
+        <section id="videos" class="mx-auto max-w-6xl px-4 pb-16 sm:px-6">
+            <x-site.section-heading :eyebrow="$text['videos_eyebrow']" :title="$text['videos_title']" />
+            <div class="mt-8">
+                <x-site.videos :videos="$content['videos']" />
+            </div>
+        </section>
+    @endif
 
     @if ($content['teachers'] !== [])
         <section id="teachers" class="mx-auto max-w-6xl px-4 pb-16 sm:px-6">
@@ -92,7 +113,7 @@
             <div>
                 <h2 class="text-2xl font-bold">{{ $text['cta_title'] }}</h2>
                 <p class="mt-2 text-music-100">{{ $text['cta_body'] }}</p>
-                <x-site.form-link form="music" section="music" :page="$page" interest="Free trial lesson" variant="light" class="mt-6">{{ $text['cta_button'] }}</x-site.form-link>
+                <x-site.form-link form="music" section="music" :page="$page" interest="Free trial class" variant="light" class="mt-6">{{ $text['cta_button'] }}</x-site.form-link>
             </div>
             <div class="rounded-xl bg-white/10 p-5">
                 <h3 class="font-semibold">{{ $content['waitlist']['title'] }}</h3>

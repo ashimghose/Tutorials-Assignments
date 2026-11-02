@@ -7,6 +7,13 @@
 
 return [
     [
+        'slug' => 'starting-guitar-first-month',
+        'title' => 'Starting guitar: what you need and your first month of practice',
+        'description' => 'The guitar, tuner and set-up for online classes, and a week-by-week plan to your first song with four easy chords.',
+        'offering' => 'music',
+        'published' => '2026-11-02',
+    ],
+    [
         'slug' => 'how-to-structure-a-synopsis',
         'title' => 'How to structure a research synopsis',
         'description' => 'The sections a synopsis needs, what goes in each one, and the mistakes that get synopses sent back.',

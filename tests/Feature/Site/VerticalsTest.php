@@ -27,9 +27,9 @@ test('VRT-1 music stays hidden until it is switched on', function () {
     musicOn();
 
     $this->get('/music')->assertOk()
-        ->assertSee('Live online music lessons: singing and instruments')
-        ->assertSee('/images/illustrations/music-live-class.svg', false);
-    $this->get('/')->assertSee('href="'.route('music').'"', false)->assertSee('Explore music lessons');
+        ->assertSee('Learn guitar online, live in a small group')
+        ->assertSee('/images/illustrations/guitar-group-class.svg', false);
+    $this->get('/')->assertSee('href="'.route('music').'"', false)->assertSee('Explore guitar classes');
     $this->get('/sitemap.xml')->assertSee('<loc>'.url('/music').'</loc>', false);
 });
 
@@ -45,7 +45,7 @@ test('VRT-2 the music page has its own WhatsApp message', function () {
     musicOn();
     config(['site.whatsapp.number' => '919000000001', 'site.whatsapp.numbers.music' => '919000000003']);
 
-    $this->get('/music')->assertSee('https://wa.me/919000000003?text='.rawurlencode("Hi, I'm asking about music lessons"), false);
+    $this->get('/music')->assertSee('https://wa.me/919000000003?text='.rawurlencode("Hi, I'm asking about guitar classes"), false);
 });
 
 test('VRT-3 a section on its own domain gets 301 redirects from its old path, keeping UTM tags', function () {
@@ -59,7 +59,7 @@ test('VRT-3 a section on its own domain gets 301 redirects from its old path, ke
 test('VRT-3 a section\'s own domain shows its landing page and sends the rest to the right place', function () {
     musicOn(['domain' => 'music.test']);
 
-    $this->get('http://music.test/')->assertOk()->assertSee('Live online music lessons: singing and instruments');
+    $this->get('http://music.test/')->assertOk()->assertSee('Learn guitar online, live in a small group');
     $this->get('http://music.test/music')->assertStatus(301)->assertRedirect('http://music.test/');
     $this->get('http://music.test/tuition')->assertStatus(301)->assertRedirect('http://localhost/tuition');
     $this->get('http://music.test/login')->assertRedirect('http://localhost/login');
@@ -85,7 +85,7 @@ test('VRT-5 a section can show its own brand name and logo', function () {
     musicOn(['brand' => ['name' => 'Sur Academy', 'logo' => '/images/brand/sur-academy.svg']]);
 
     $this->get('/music')
-        ->assertSee('<title>Live online music lessons: singing and instruments | Sur Academy</title>', false)
+        ->assertSee('<title>Online guitar classes in small groups, ₹1,000 a month | Sur Academy</title>', false)
         ->assertSee('<img src="/images/brand/sur-academy.svg" alt="Sur Academy"', false);
 
     // Other pages keep the main brand.
@@ -100,8 +100,8 @@ test('VRT-2 VRT-4 a music enquiry is stored as a music lead, only while music is
     $form = [
         'name' => 'Ravi Das',
         'mobile' => '98765 43210',
-        'class_or_service' => 'Guitar, beginner, age 12',
-        'interest' => 'Free trial lesson',
+        'class_or_service' => 'Age 12, never played',
+        'interest' => 'Free trial class',
         'section' => 'music',
         'page' => 'music',
     ];
@@ -111,10 +111,10 @@ test('VRT-2 VRT-4 a music enquiry is stored as a music lead, only while music is
 
     musicOn();
 
-    $this->get(route('enquire.show', ['form' => 'music', 'interest' => 'Free trial lesson']))
+    $this->get(route('enquire.show', ['form' => 'music', 'interest' => 'Free trial class']))
         ->assertOk()
-        ->assertSee('Book a free trial lesson')
-        ->assertSee('Instrument or style, level and learner');
+        ->assertSee('Book a free trial class')
+        ->assertSee('guitar experience');
     $this->post(route('enquire.store', 'music'), $form)->assertRedirect(route('enquire.thanks', ['section' => 'music']));
 
     expect(Lead::sole()->offering)->toBe('music');
