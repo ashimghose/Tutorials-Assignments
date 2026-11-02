@@ -4,6 +4,7 @@ use App\Enums\Offering;
 use App\Models\Lead;
 use App\Models\Teacher;
 use App\Services\MoneyReport;
+use App\Support\LeadForms;
 use App\Support\Verticals;
 use Carbon\CarbonImmutable;
 use Database\Seeders\ContentSeeder;
@@ -117,11 +118,11 @@ test('VRT-2 VRT-4 a music enquiry is stored as a music lead, only while music is
 });
 
 test('VRT-1 a waitlist sign-up for music counts as tuition while music is off', function () {
-    expect(App\Support\LeadForms::offering('waitlist', 'music'))->toBe('tuition');
+    expect(LeadForms::offering('waitlist', 'music'))->toBe('tuition');
 
     musicOn();
 
-    expect(App\Support\LeadForms::offering('waitlist', 'music'))->toBe('music');
+    expect(LeadForms::offering('waitlist', 'music'))->toBe('music');
 });
 
 test('VRT-1 teachers can work in any mix of sections', function () {
