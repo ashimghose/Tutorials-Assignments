@@ -63,7 +63,8 @@ Rules:
 - **Payments:** Razorpay Payment Links (Phase 1); Razorpay PHP SDK inside `app/Services/Payments` (Phase 2+).
 - **Live classes:** Google Meet links on sessions (Phase 1–2); LiveKit (Phase 3) inside `app/Services/Video`,
   server tokens via the community `agence104/livekit-server-sdk` package.
-- **Analytics:** Cloudflare Web Analytics (cookie-less), public pages only.
+- **Analytics:** Cloudflare Web Analytics (cookie-less), public pages only; optional Google Analytics 4
+  (`GA_MEASUREMENT_ID`) on public pages, logged-out visitors only, loaded only after cookie consent.
 - **Tests:** Pest (unit + feature), Playwright (browser end-to-end). **Code style:** Laravel Pint.
 - **Local dev:** `composer run dev` (Phases 0–1); Laravel Sail (Phase 2+). Node.js 24 LTS for Vite and Playwright.
 

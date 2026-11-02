@@ -24,6 +24,7 @@ return [
     - **Enquiry and waitlist forms.** When you fill in one of our forms (hosted on Google Forms) we receive what you enter, usually your name, mobile number, email, the class or service you are interested in and your message. The form also records which page and campaign link you came from.
     - **WhatsApp.** If you message us on WhatsApp we receive your number, your profile name and your messages.
     - **Website visits.** We use Cloudflare Web Analytics, which counts page visits without cookies and without identifying you.
+    - **Google Analytics, only if you allow it.** On our public pages we ask before using Google Analytics. If you tap "Allow", Google Analytics sets cookies that tell us which pages are visited, roughly where visitors are from (city level) and which device they use. We have turned off Google's advertising features. If you tap "No, thanks", it never loads. You can change your choice any time with "Cookie settings" at the bottom of every page. We never use Google Analytics on logged-in pages.
 
     This website does not use advertising trackers or cookies for profiling.
 
@@ -46,7 +47,7 @@ return [
 
     ## Who we share it with
 
-    Only service providers we need to run the business: Google (forms and sheets), WhatsApp, Cloudflare (website hosting and analytics), and, when you pay, our payment gateway. Card and UPI details are handled by the payment gateway and never reach us.
+    Only service providers we need to run the business: Google (forms and sheets), WhatsApp, Cloudflare (website hosting and analytics), Google Analytics (only if you allow it), and, when you pay, our payment gateway. Card and UPI details are handled by the payment gateway and never reach us.
 
     ## How long we keep it
 

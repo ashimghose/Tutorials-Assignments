@@ -75,4 +75,8 @@ return [
     // Cloudflare Web Analytics (cookie-less), public pages only.
     'analytics_token' => env('CF_ANALYTICS_TOKEN'),
 
+    // Google Analytics 4 measurement id (G-XXXXXXXXXX). Public pages only, for
+    // visitors who aren't logged in, and only after they accept analytics cookies.
+    'google_analytics_id' => env('GA_MEASUREMENT_ID'),
+
 ];

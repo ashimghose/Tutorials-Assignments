@@ -443,7 +443,8 @@ lawyer review the privacy policy and consent text before launch.
 
 - No third-party ad trackers or behavioural analytics on logged-in
   pages. Use privacy-friendly, cookie-less analytics on public pages
-  only.
+  only. Google Analytics (optional) runs only on public pages, for
+  logged-out visitors, after they accept analytics cookies.
 
 - Recordings show students' video only if they turned their camera on;
   tell parents this in the consent text.
