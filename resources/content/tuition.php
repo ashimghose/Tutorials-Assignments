@@ -23,7 +23,7 @@ return [
         ['title' => 'Parents stay in the loop', 'body' => 'Fees, notices and teacher messages come to you, the parent. Teachers never chat privately with your child.'],
     ],
 
-    'boards' => ['CBSE', 'ICSE'],
+    'boards' => ['CBSE', 'ICSE', 'Assam Board (ASSEB)'],
 
     // PLACEHOLDER fees: monthly fee per subject, per child.
     'plans' => [
@@ -83,7 +83,7 @@ return [
         ],
         [
             'q' => 'Which boards do you teach?',
-            'a' => 'We currently teach CBSE and ICSE syllabi. Ask us on WhatsApp if your child follows a state board.',
+            'a' => 'We teach the CBSE, ICSE and Assam Board (ASSEB, formerly SEBA and AHSEC) syllabi. Ask us on WhatsApp if your child follows another state board.',
         ],
         [
             'q' => 'Is the demo class really free?',
@@ -119,8 +119,8 @@ return [
 
     // Headings, buttons and other short text around the sections above.
     'text' => [
-        'seo_title' => 'Live online tuition for classes 1 to 12',
-        'seo_description' => 'Live online tuition for classes 1 to 12 in small batches of up to 15. CBSE and ICSE syllabus, monthly fees per subject, free demo class.',
+        'seo_title' => 'Online tuition for classes 1 to 12: CBSE, ICSE, Assam Board',
+        'seo_description' => 'Live online tuition for classes 1 to 12 in small batches. CBSE, ICSE and Assam Board (SEBA/AHSEC) syllabus, monthly fees per subject, free demo class.',
         'eyebrow' => 'Tuition for parents of classes 1 to 12',
         'demo_button' => 'Book a free demo class',
         'question_button' => 'Ask a question',
