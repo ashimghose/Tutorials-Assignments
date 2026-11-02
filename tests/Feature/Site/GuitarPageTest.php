@@ -73,3 +73,32 @@ test('MKT-6 VRT-1 the beginner guitar guide shows only while music is on', funct
     $this->get('/resources')->assertDontSee('Starting guitar');
     $this->get('/')->assertDontSee('Starting guitar');
 });
+
+test('MUS the guitar content replaces the untouched example music page once', function () {
+    $migration = require database_path('migrations/2026_11_02_000002_replace_placeholder_music_content.php');
+    config(['features.cms' => true]);
+
+    SiteSection::create(['key' => 'music', 'content' => [
+        'hero' => ['title' => $migration::PLACEHOLDER_TITLE, 'lead' => 'Example'],
+        'plans' => [['name' => 'Group lessons', 'price' => 150000, 'period' => 'per learner, per month', 'features' => []]],
+    ]]);
+
+    $migration->up();
+
+    $this->get('/music')->assertOk()
+        ->assertSee('Learn guitar online, live in a small group')
+        ->assertSee('₹1,000')
+        ->assertDontSee('₹1,500');
+});
+
+test('MUS a music page the admin has already edited is left alone', function () {
+    $migration = require database_path('migrations/2026_11_02_000002_replace_placeholder_music_content.php');
+
+    $section = SiteSection::create(['key' => 'music', 'content' => [
+        'hero' => ['title' => 'Our own guitar classes', 'lead' => 'Edited by the admin'],
+    ]]);
+
+    $migration->up();
+
+    expect($section->fresh()->content['hero']['title'])->toBe('Our own guitar classes');
+});
