@@ -10,6 +10,10 @@ use Carbon\CarbonImmutable;
 use Database\Seeders\ContentSeeder;
 use Illuminate\Support\Facades\Notification;
 
+beforeEach(function () {
+    config(['app.url' => 'http://localhost']);
+});
+
 function musicOn(array $settings = []): void
 {
     config(['verticals.music' => ['enabled' => true, 'domain' => null, 'brand' => ['name' => null, 'logo' => null], ...$settings]]);
@@ -49,7 +53,7 @@ test('VRT-3 a section on its own domain gets 301 redirects from its old path, ke
 
     $this->get('/music?utm_source=instagram&utm_campaign=diwali')
         ->assertStatus(301)
-        ->assertRedirect('http://music.test/?utm_source=instagram&utm_campaign=diwali');
+        ->assertRedirect('http://music.test/?utm_campaign=diwali&utm_source=instagram');
 });
 
 test('VRT-3 a section\'s own domain shows its landing page and sends the rest to the right place', function () {

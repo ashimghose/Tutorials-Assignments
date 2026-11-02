@@ -1,4 +1,6 @@
-@php($content = \App\Support\SiteContent::section('contact'))
+@php
+    $content = \App\Support\SiteContent::section('contact');
+@endphp
 
 <x-site.layout :title="$content['title']" :description="$content['description']">
     <x-site.page-header :title="$content['title']" :lead="$content['lead']" />
@@ -11,11 +13,11 @@
                 'academic' => ['box' => 'border-academic-100 bg-academic-50', 'button' => 'bg-academic-700 hover:bg-academic-800'],
                 'music' => ['box' => 'border-music-100 bg-music-50', 'button' => 'bg-music-700 hover:bg-music-800'],
             ];
-            $boxes = array_values(array_filter(\App\Support\Verticals::enabledKeys(), fn (string $key) => isset($content['cards'][$key])));
+            $boxes = collect(\App\Support\Verticals::enabledKeys())->filter(fn (string $key) => isset($content['cards'][$key]))
+                ->mapWithKeys(fn (string $key) => [$key => $content['cards'][$key]])->all();
         @endphp
         <div class="grid gap-4 sm:grid-cols-2">
-            @foreach ($boxes as $key)
-                @php($card = $content['cards'][$key])
+            @foreach ($boxes as $key => $card)
                 <div class="rounded-xl border p-5 {{ $boxStyles[$key]['box'] }}">
                     <h2 class="font-semibold text-slate-900">{{ $card['title'] }}</h2>
                     <p class="mt-1 text-sm text-slate-600">{{ $card['body'] }}</p>

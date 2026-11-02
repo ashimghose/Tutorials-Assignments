@@ -16,13 +16,13 @@
             'academic' => ['card' => 'border-academic-100 bg-academic-50', 'text' => 'text-academic-700', 'button' => 'bg-academic-700 hover:bg-academic-800'],
             'music' => ['card' => 'border-music-100 bg-music-50', 'text' => 'text-music-700', 'button' => 'bg-music-700 hover:bg-music-800'],
         ];
-        $cards = array_values(array_filter(\App\Support\Verticals::enabledKeys(), fn (string $key) => isset($content['offerings'][$key])));
+        $cards = collect(\App\Support\Verticals::enabledKeys())->filter(fn (string $key) => isset($content['offerings'][$key]))
+            ->mapWithKeys(fn (string $key) => [$key => $content['offerings'][$key]])->all();
     @endphp
 
     <section class="mx-auto max-w-6xl px-4 pb-16 sm:px-6">
         <div @class(['grid gap-6 md:grid-cols-2', 'lg:grid-cols-3' => count($cards) >= 3])>
-            @foreach ($cards as $key)
-                @php($card = $content['offerings'][$key])
+            @foreach ($cards as $key => $card)
                 <article class="flex flex-col rounded-2xl border p-6 sm:p-8 {{ $cardStyles[$key]['card'] }}">
                     <p class="text-sm font-semibold uppercase tracking-wide {{ $cardStyles[$key]['text'] }}">{{ $card['eyebrow'] }}</p>
                     <h2 class="mt-2 text-2xl font-bold text-slate-900">{{ $card['title'] }}</h2>
