@@ -71,8 +71,8 @@ test('VRT-3 a section\'s own domain shows its landing page and sends the rest to
         ->assertDontSee('/about</loc>', false);
 
     // The main domain links to the music domain and leaves it out of its sitemap.
-    $this->get('/')->assertSee('href="http://music.test/"', false);
-    $this->get('/sitemap.xml')->assertDontSee('music', false);
+    $this->get('http://localhost/')->assertSee('href="http://music.test/"', false);
+    $this->get('http://localhost/sitemap.xml')->assertDontSee('music', false);
 });
 
 test('VRT-3 a switched-off section\'s own domain is not found', function () {
