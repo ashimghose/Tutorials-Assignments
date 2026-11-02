@@ -1,2 +1,15 @@
 User-agent: *
-Disallow:
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /parent/
+Disallow: /student
+Disallow: /teacher
+Disallow: /my-orders
+Disallow: /messages
+Disallow: /order-files/
+Disallow: /message-files/
+Disallow: /classes/
+Disallow: /invitation/
+Disallow: /enquire/thanks
+
+Sitemap: https://indianassignments.com/sitemap.xml

@@ -1,4 +1,36 @@
-<x-site.layout :description="$content['text']['seo_description']">
+<x-site.layout :title="$content['text']['seo_title']" :description="$content['text']['seo_description']">
+    <x-slot:head>
+        {{-- Tells Google who runs the site, for the knowledge panel and sitelinks. --}}
+        <script type="application/ld+json">
+        {!! json_encode([
+            '@context' => 'https://schema.org',
+            '@graph' => [
+                array_filter([
+                    '@type' => 'EducationalOrganization',
+                    '@id' => route('home').'#organization',
+                    'name' => config('app.name'),
+                    'url' => route('home'),
+                    'logo' => url('/apple-touch-icon.png'),
+                    'image' => url('/images/social/share.png'),
+                    'description' => $content['text']['seo_description'],
+                    'email' => config('site.contact.email'),
+                    'areaServed' => ['@type' => 'Country', 'name' => 'India'],
+                    'address' => filled(config('site.contact.city'))
+                        ? ['@type' => 'PostalAddress', 'addressLocality' => config('site.contact.city'), 'addressCountry' => 'IN']
+                        : null,
+                ]),
+                [
+                    '@type' => 'WebSite',
+                    'name' => config('app.name'),
+                    'url' => route('home'),
+                    'inLanguage' => 'en-IN',
+                    'publisher' => ['@id' => route('home').'#organization'],
+                ],
+            ],
+        ], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG) !!}
+        </script>
+    </x-slot:head>
+
     <section class="bg-gradient-to-b from-brand-50 to-white">
         <div class="mx-auto grid max-w-6xl items-center gap-10 px-4 py-14 sm:px-6 sm:py-20 lg:grid-cols-[1.1fr_1fr]">
             <div>

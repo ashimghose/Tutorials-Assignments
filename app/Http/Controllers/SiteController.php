@@ -56,8 +56,11 @@ class SiteController extends Controller
     public function sitemap(): Response
     {
         $urls = collect(['home', 'tuition', 'academic', 'resources.index', 'about', 'contact', 'privacy', 'terms', 'refunds'])
-            ->map(fn (string $name) => route($name))
-            ->merge(collect(SiteContent::articles())->map(fn (array $article) => route('resources.show', $article['slug'])));
+            ->map(fn (string $name) => ['loc' => route($name), 'lastmod' => null])
+            ->merge(collect(SiteContent::articles())->map(fn (array $article) => [
+                'loc' => route('resources.show', $article['slug']),
+                'lastmod' => $article['published'],
+            ]));
 
         return response()
             ->view('site.sitemap', ['urls' => $urls])
