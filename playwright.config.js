@@ -2,7 +2,8 @@ import { defineConfig, devices } from '@playwright/test';
 
 const port = process.env.E2E_PORT ?? '8000';
 const baseURL = `http://127.0.0.1:${port}`;
-// A second server with the content and lead features on (FEATURE_CMS), for cms.spec.js.
+// A second server with the content and lead features on (FEATURE_CMS), for cms.spec.js,
+// and the music section on, for music.spec.js.
 const cmsPort = String(Number(port) + 1);
 export const cmsBaseURL = `http://127.0.0.1:${cmsPort}`;
 // A third server with a Google Analytics id set, for analytics.spec.js.
@@ -50,7 +51,8 @@ export default defineConfig({
         timeout: 60_000,
     }, {
         command: `php artisan serve --no-reload --host=127.0.0.1 --port=${cmsPort}`,
-        env: { FEATURE_ACCOUNTS: 'true', FEATURE_BATCHES: 'true', FEATURE_ACADEMIC_ORDERS: 'true', FEATURE_CHAT: 'true', FEATURE_CMS: 'true' },
+        // Music is switched on here too, for music.spec.js (VRT-1).
+        env: { FEATURE_ACCOUNTS: 'true', FEATURE_BATCHES: 'true', FEATURE_ACADEMIC_ORDERS: 'true', FEATURE_CHAT: 'true', FEATURE_CMS: 'true', FEATURE_VERTICAL_MUSIC: 'true' },
         url: cmsBaseURL,
         reuseExistingServer: !process.env.CI,
         timeout: 60_000,

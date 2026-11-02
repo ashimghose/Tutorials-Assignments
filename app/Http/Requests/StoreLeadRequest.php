@@ -38,7 +38,7 @@ class StoreLeadRequest extends FormRequest
             'message' => ['nullable', 'string', 'max:2000'],
             'price_range' => ['nullable', 'string', Rule::in(LeadForms::priceRanges($this->offering()))],
             'interest' => ['nullable', 'string', 'max:160'],
-            'section' => ['nullable', 'in:tuition,academic,general'],
+            'section' => ['nullable', 'in:tuition,academic,music,general'],
             'page' => ['nullable', 'string', 'max:120'],
             'marketing_consent' => ['nullable', 'boolean'],
             // Honeypot: hidden from people, filled in by bots.

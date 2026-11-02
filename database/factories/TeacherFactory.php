@@ -19,7 +19,7 @@ class TeacherFactory extends Factory
     {
         return [
             'user_id' => fn () => UserFactory::makeUserWithoutProfile(User::factory()->teacher())->id,
-            'offering' => Offering::Tuition,
+            'offerings' => [Offering::Tuition->value],
             'subjects' => ['Maths'],
         ];
     }

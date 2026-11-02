@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Leads;
 
 use App\Enums\LeadKind;
 use App\Enums\LeadStatus;
+use App\Enums\Offering;
 use App\Filament\Resources\Leads\Pages\ListLeads;
 use App\Filament\Resources\Leads\Pages\ViewLead;
 use App\Filament\Support\OfferingOptions;
@@ -90,7 +91,7 @@ class LeadResource extends Resource
                 TextColumn::make('created_at')->label('Received')->dateTime('j M, g:i a', timezone: config('app.display_timezone'))->sortable(),
                 TextColumn::make('name')->searchable(),
                 TextColumn::make('mobile')->searchable()->url(fn (Lead $record): string => self::whatsappUrl($record), shouldOpenInNewTab: true),
-                TextColumn::make('offering')->label('Section')->badge()->color(fn (string $state): string => $state === 'tuition' ? 'warning' : 'primary'),
+                TextColumn::make('offering')->label('Section')->badge()->color(fn (string $state): string => Offering::tryFrom($state)?->color() ?? 'gray'),
                 TextColumn::make('kind')->formatStateUsing(fn (LeadKind $state): string => $state->label()),
                 TextColumn::make('interest')->limit(30)->toggleable(),
                 TextColumn::make('utm_source')->label('Source')->toggleable(),

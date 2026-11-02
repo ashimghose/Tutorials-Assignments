@@ -2,8 +2,10 @@
 
 namespace App\Filament\Support;
 
+use App\Enums\Offering;
+
 /**
- * The two marketing sections, for selects and filters.
+ * The switched-on sections (VRT-1), for selects and filters.
  */
 class OfferingOptions
 {
@@ -12,6 +14,6 @@ class OfferingOptions
      */
     public static function sections(): array
     {
-        return ['tuition' => 'Tuition', 'academic' => 'Academic services'];
+        return Offering::sectionOptions();
     }
 }

@@ -108,7 +108,7 @@ test('CHAT-4 teachers and admins cannot start conversations, so there are no pri
 
 test('M7 an academic order conversation reaches the assigned expert, and only them', function () {
     $this->seed(AcademicCatalogueSeeder::class);
-    $expert = Teacher::factory()->create(['offering' => Offering::Academic]);
+    $expert = Teacher::factory()->create(['offerings' => [Offering::Academic->value]]);
     $order = AcademicOrder::factory()->paid()->create(['expert_id' => $expert->id]);
     $student = $order->academicStudent->user;
 
@@ -123,7 +123,7 @@ test('M7 an academic order conversation reaches the assigned expert, and only th
         ->call('send')
         ->assertHasNoErrors();
 
-    $otherExpert = Teacher::factory()->create(['offering' => Offering::Academic])->user;
+    $otherExpert = Teacher::factory()->create(['offerings' => [Offering::Academic->value]])->user;
     Livewire::actingAs($otherExpert)->test('pages::portal.messages.show', ['conversation' => $conversation])->assertForbidden();
 
     // Someone else's order can't be linked.

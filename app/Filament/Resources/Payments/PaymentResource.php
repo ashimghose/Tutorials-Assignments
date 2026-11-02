@@ -59,7 +59,7 @@ class PaymentResource extends Resource
             ->columns([
                 TextColumn::make('received_on')->date('j M Y')->sortable(),
                 TextColumn::make('offering')->badge()->formatStateUsing(fn (Offering $state): string => $state->label())
-                    ->color(fn (Offering $state): string => $state === Offering::Tuition ? 'warning' : 'primary'),
+                    ->color(fn (Offering $state): string => $state->color()),
                 TextColumn::make('for')->state(fn (Payment $record): string => $record->description()),
                 TextColumn::make('amount')->formatStateUsing(fn (int $state): string => Money::format($state))->alignEnd(),
                 TextColumn::make('gateway_fee')->label('Fee')->formatStateUsing(fn (int $state): string => Money::format($state))->alignEnd(),
@@ -67,7 +67,7 @@ class PaymentResource extends Resource
                 TextColumn::make('reference')->placeholder('—')->searchable(),
             ])
             ->filters([
-                SelectFilter::make('offering')->options([Offering::Tuition->value => 'Tuition', Offering::Academic->value => 'Academic services']),
+                SelectFilter::make('offering')->options(Offering::sectionOptions()),
             ])
             ->recordActions([EditAction::make(), DeleteAction::make()]);
     }

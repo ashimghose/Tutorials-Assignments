@@ -64,7 +64,7 @@ class UserInfolist
                     ->visible(fn (User $record): bool => $record->role === Role::Teacher)
                     ->columns(2)
                     ->schema([
-                        TextEntry::make('teacher.offering')->label('Works in')->formatStateUsing(fn ($state) => $state?->label()),
+                        TextEntry::make('teacher.offerings')->label('Works in')->state(fn (User $record): ?string => $record->teacher?->offeringLabels()),
                         TextEntry::make('teacher.subjects')->label('Subjects')->badge()->placeholder('—'),
                         TextEntry::make('password')
                             ->label('Invitation')

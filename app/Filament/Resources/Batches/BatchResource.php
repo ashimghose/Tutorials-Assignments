@@ -57,7 +57,7 @@ class BatchResource extends Resource
                     ->options(collect(range(1, 12))->mapWithKeys(fn (int $level) => [$level => "Class {$level}"])),
                 Select::make('board')->required()->options(array_combine([...$boards, 'Other'], [...$boards, 'Other'])),
                 Select::make('teacher_id')->label('Teacher')
-                    ->options(fn () => Teacher::query()->whereIn('offering', [Offering::Tuition, Offering::Both])->with('user')->get()
+                    ->options(fn () => Teacher::query()->worksInOffering(Offering::Tuition)->with('user')->get()
                         ->mapWithKeys(fn (Teacher $teacher) => [$teacher->id => $teacher->user->name])),
                 MoneyInput::make('monthly_fee')->label('Monthly fee')->required(),
                 TextInput::make('max_seats')->label('Seats')->integer()->minValue(1)->maxValue(50)->default(15)->required(),

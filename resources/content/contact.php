@@ -24,6 +24,13 @@ return [
             'whatsapp' => 'WhatsApp about academic work',
             'enquire' => 'Send an enquiry',
         ],
+        // Shown once music is switched on (FEATURE_VERTICAL_MUSIC).
+        'music' => [
+            'title' => 'Music lessons',
+            'body' => 'For learners and parents asking about singing or instrument lessons, fees or a free trial.',
+            'whatsapp' => 'WhatsApp about music lessons',
+            'enquire' => 'Send an enquiry',
+        ],
     ],
 
     'office_hours_note' => 'Messages sent outside these hours are answered the next working day.',

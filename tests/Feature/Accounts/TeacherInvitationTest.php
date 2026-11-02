@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Notification;
 
 function invitedTeacher(): User
 {
-    return app(InviteTeacher::class)('Meera Iyer', 'meera@example.com', Offering::Both, ['Maths']);
+    return app(InviteTeacher::class)('Meera Iyer', 'meera@example.com', [Offering::Tuition, Offering::Academic], ['Maths']);
 }
 
 test('AUTH-4 inviting a teacher creates an account with no password and emails a link', function () {
@@ -22,7 +22,7 @@ test('AUTH-4 inviting a teacher creates an account with no password and emails a
 
     expect($teacher->role)->toBe(Role::Teacher)
         ->and($teacher->password)->toBeNull()
-        ->and($teacher->teacher->offering)->toBe(Offering::Both)
+        ->and($teacher->teacher->offerings)->toBe(['tuition', 'academic'])
         ->and($teacher->teacher->subjects)->toBe(['Maths']);
 
     Notification::assertSentTo($teacher, TeacherInvitation::class);

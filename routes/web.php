@@ -18,6 +18,7 @@ Route::controller(SiteController::class)->group(function () {
     Route::get('/', 'home')->name('home');
     Route::get('tuition', 'tuition')->name('tuition');
     Route::get('academic', 'academic')->name('academic');
+    Route::get('music', 'music')->name('music');
     Route::get('resources', 'resources')->name('resources.index');
     Route::get('resources/{slug}', 'article')->where('slug', '[a-z0-9-]+')->name('resources.show');
     Route::get('sitemap.xml', 'sitemap')->name('sitemap');

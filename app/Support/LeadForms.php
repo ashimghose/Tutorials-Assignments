@@ -5,18 +5,20 @@ namespace App\Support;
 use App\Enums\LeadKind;
 
 /**
- * The site's three forms (CMS-3, MKT-4) and how a submission is classified.
+ * The site's forms (CMS-3, MKT-4): one per section plus the waitlist, and
+ * how a submission is classified.
  */
 final class LeadForms
 {
-    public const FORMS = ['tuition', 'academic', 'waitlist'];
+    public const FORMS = ['tuition', 'academic', 'music', 'waitlist'];
 
     public static function offering(string $form, ?string $section = null): string
     {
-        return match ($form) {
-            'tuition', 'academic' => $form,
-            default => $section === 'academic' ? 'academic' : 'tuition',
-        };
+        if (Verticals::exists($form)) {
+            return $form;
+        }
+
+        return in_array($section, ['academic', 'music'], true) && Verticals::enabled($section) ? $section : 'tuition';
     }
 
     public static function kind(string $form, ?string $interest): LeadKind
@@ -25,7 +27,8 @@ final class LeadForms
             return LeadKind::Waitlist;
         }
 
-        return str_contains(strtolower((string) $interest), 'demo') ? LeadKind::Demo : LeadKind::Enquiry;
+        // A music trial lesson is the music section's free demo.
+        return preg_match('/\b(demo|trial)\b/i', (string) $interest) === 1 ? LeadKind::Demo : LeadKind::Enquiry;
     }
 
     /**

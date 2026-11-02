@@ -71,7 +71,7 @@ class ConversationResource extends Resource
             ->columns([
                 TextColumn::make('subject')->searchable()->limit(50)->weight('medium'),
                 TextColumn::make('offering')->badge()->formatStateUsing(fn (Offering $state): string => $state->label())
-                    ->color(fn (Offering $state): string => $state === Offering::Tuition ? 'warning' : 'primary'),
+                    ->color(fn (Offering $state): string => $state->color()),
                 TextColumn::make('starter.name')->label('From')->placeholder('Deleted account'),
                 TextColumn::make('student.first_name')->label('About')->placeholder('—'),
                 TextColumn::make('assignee.name')->label('Assigned to')->placeholder('Admin team'),
@@ -83,7 +83,7 @@ class ConversationResource extends Resource
             ->filters([
                 TernaryFilter::make('closed_at')->label('Status')->nullable()->placeholder('All')
                     ->trueLabel('Closed')->falseLabel('Open')->default(false),
-                SelectFilter::make('offering')->options([Offering::Tuition->value => 'Tuition', Offering::Academic->value => 'Academic services']),
+                SelectFilter::make('offering')->options(Offering::sectionOptions()),
                 Filter::make('reported')->label('Has a reported message')
                     ->query(fn (Builder $query) => $query->whereHas('messages', fn (Builder $q) => $q->whereNotNull('reported_at'))),
             ]);

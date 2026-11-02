@@ -34,7 +34,7 @@ class DemoSeeder extends Seeder
 
         $teacherUser = $this->user('teacher@example.com', 'Meera Iyer (demo)', Role::Teacher);
         $teacher = Teacher::query()->whereBelongsTo($teacherUser)->first()
-            ?? Teacher::query()->make(['offering' => Offering::Tuition, 'subjects' => ['Maths', 'Science']])->user()->associate($teacherUser);
+            ?? Teacher::query()->make(['offerings' => [Offering::Tuition->value], 'subjects' => ['Maths', 'Science']])->user()->associate($teacherUser);
         $teacher->save();
 
         $parentUser = $this->user('parent@example.com', 'Asha Verma (demo)', Role::Parent);
@@ -73,7 +73,7 @@ class DemoSeeder extends Seeder
         }
         $expertUser = $this->user('expert@example.com', 'Arjun Rao (demo)', Role::Teacher);
         if (! Teacher::query()->whereBelongsTo($expertUser)->exists()) {
-            Teacher::query()->make(['offering' => Offering::Academic, 'subjects' => ['Editing', 'Formatting']])->user()->associate($expertUser)->save();
+            Teacher::query()->make(['offerings' => [Offering::Academic->value], 'subjects' => ['Editing', 'Formatting']])->user()->associate($expertUser)->save();
         }
 
         $this->command->info('Demo logins (password "password"): parent@example.com, teacher@example.com, student username riyademo, student@example.com (academic), expert@example.com.');

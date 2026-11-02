@@ -28,12 +28,13 @@ test('AUTH-4 the admin invites a teacher from the people list', function () {
         ->callAction('inviteTeacher', data: [
             'name' => 'Meera Iyer',
             'email' => 'meera@example.com',
-            'offering' => 'academic',
+            'offerings' => ['tuition', 'academic'],
             'subjects' => ['Thesis editing'],
         ])
         ->assertHasNoActionErrors();
 
     $teacher = User::where('email', 'meera@example.com')->sole();
+    expect($teacher->teacher->offerings)->toBe(['tuition', 'academic']);
     Notification::assertSentTo($teacher, TeacherInvitation::class);
 });
 

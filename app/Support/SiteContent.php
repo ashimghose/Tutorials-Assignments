@@ -3,7 +3,6 @@
 namespace App\Support;
 
 use App\Enums\AcademicLevel;
-use App\Enums\Offering;
 use App\Models\Article;
 use App\Models\Service;
 use App\Models\ServiceAddon;
@@ -44,8 +43,8 @@ final class SiteContent
             $content = self::withNewKeys($content, self::sectionFile($name));
         }
 
-        if (self::fromDatabase() && in_array($name, ['tuition', 'academic'], true)) {
-            $content[$name === 'tuition' ? 'teachers' : 'experts'] = self::people($name);
+        if (self::fromDatabase() && Verticals::exists($name)) {
+            $content[$name === 'academic' ? 'experts' : 'teachers'] = self::people($name);
             $content['testimonials'] = self::testimonials($name);
         }
 
@@ -71,8 +70,11 @@ final class SiteContent
      */
     public static function withNewKeys(array $content, array $file): array
     {
-        if (is_array($file['text'] ?? null)) {
-            $content['text'] = (is_array($content['text'] ?? null) ? $content['text'] : []) + $file['text'];
+        // 'offerings' and 'cards' gain a block when a section is added (VRT-1).
+        foreach (['text', 'offerings', 'cards'] as $key) {
+            if (is_array($file[$key] ?? null)) {
+                $content[$key] = (is_array($content[$key] ?? null) ? $content[$key] : []) + $file[$key];
+            }
         }
 
         return $content + $file;
@@ -166,7 +168,7 @@ final class SiteContent
         return array_values(Teacher::query()
             ->with('user')
             ->where('show_on_site', true)
-            ->whereIn('offering', [$offering, Offering::Both->value])
+            ->whereJsonContains('offerings', $offering)
             ->where(fn ($query) => $query->whereNull('active_to')->orWhereDate('active_to', '>=', now()))
             ->whereHas('user', fn ($query) => $query->where('status', 'active'))
             ->get()

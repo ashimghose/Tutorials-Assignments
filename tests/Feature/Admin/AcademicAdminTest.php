@@ -120,7 +120,7 @@ test('ACA-5 the admin sends a quote; GST is added and the student is emailed', f
 
 test('ACA-9 the admin assigns an expert, who is emailed', function () {
     $order = AcademicOrder::factory()->paid()->create();
-    $expert = Teacher::factory()->create(['offering' => 'academic']);
+    $expert = Teacher::factory()->create(['offerings' => ['academic']]);
 
     Livewire::test(ViewAcademicOrder::class, ['record' => $order->getRouteKey()])
         ->callAction('assign', data: ['expert_id' => $expert->id])

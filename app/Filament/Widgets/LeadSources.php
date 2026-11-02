@@ -3,6 +3,7 @@
 namespace App\Filament\Widgets;
 
 use App\Enums\LeadStatus;
+use App\Enums\Offering;
 use App\Models\Lead;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -32,7 +33,7 @@ class LeadSources extends TableWidget
             ->defaultKeySort(false)
             ->columns([
                 TextColumn::make('utm_source')->label('Source')->placeholder('unknown'),
-                TextColumn::make('offering')->label('Section')->badge()->color(fn (string $state): string => $state === 'tuition' ? 'warning' : 'primary'),
+                TextColumn::make('offering')->label('Section')->badge()->color(fn (string $state): string => Offering::tryFrom($state)?->color() ?? 'gray'),
                 TextColumn::make('leads')->numeric(),
                 TextColumn::make('customers')->label('Became customers')->numeric(),
             ])

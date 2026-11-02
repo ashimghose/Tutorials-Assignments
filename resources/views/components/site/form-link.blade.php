@@ -15,6 +15,7 @@
         'primary' => 'bg-brand-800 text-white hover:bg-brand-900',
         'tuition' => 'bg-tuition-700 text-white hover:bg-tuition-800',
         'academic' => 'bg-academic-700 text-white hover:bg-academic-800',
+        'music' => 'bg-music-700 text-white hover:bg-music-800',
         'light' => 'bg-white text-slate-900 hover:bg-slate-100',
         default => 'border border-slate-300 bg-white text-slate-800 hover:bg-slate-50',
     };

@@ -12,9 +12,10 @@ use Carbon\CarbonImmutable;
 use Illuminate\Support\Collection;
 
 /**
- * ADM-4: money in and out for a date range (India dates, both ends
- * included), split by offering. Teacher payouts count by the date they were
- * paid: classes to Tuition, orders to Academic.
+ * ADM-4, VRT-4: money in and out for a date range (India dates, both ends
+ * included), split by section. Teacher payouts count by the date they were
+ * paid: classes to Tuition, orders to Academic. Music lessons get their own
+ * class pay in V2; until then music shows only its payments and costs.
  */
 class MoneyReport
 {
@@ -38,13 +39,17 @@ class MoneyReport
         $payouts = Payout::query()->whereBetween('paid_on', $range)->get();
 
         $report = [];
-        foreach ([Offering::Tuition, Offering::Academic] as $offering) {
+        foreach (Offering::sections() as $offering) {
             $in = $payments->where('offering', $offering);
             $costs = $expenses->where('offering', $offering);
             $row = [
                 'received' => (int) $in->sum('amount'),
                 'gateway_fees' => (int) $in->sum('gateway_fee'),
-                'paid_out' => (int) $payouts->sum($offering === Offering::Tuition ? 'class_amount' : 'order_amount'),
+                'paid_out' => match ($offering) {
+                    Offering::Tuition => (int) $payouts->sum('class_amount'),
+                    Offering::Academic => (int) $payouts->sum('order_amount'),
+                    default => 0,
+                },
                 'printing_courier' => (int) $costs->whereIn('category', [ExpenseCategory::Printing, ExpenseCategory::Courier])->sum('amount'),
                 'other_costs' => (int) $costs->where('category', ExpenseCategory::Other)->sum('amount'),
             ];
@@ -53,7 +58,7 @@ class MoneyReport
         }
 
         $report['total'] = collect(array_keys(self::ROWS))
-            ->mapWithKeys(fn (string $key) => [$key => $report['tuition'][$key] + $report['academic'][$key]])->all();
+            ->mapWithKeys(fn (string $key) => [$key => array_sum(array_column($report, $key))])->all();
 
         return $report;
     }

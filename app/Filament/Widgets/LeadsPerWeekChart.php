@@ -2,6 +2,7 @@
 
 namespace App\Filament\Widgets;
 
+use App\Enums\Offering;
 use App\Models\Lead;
 use Carbon\CarbonImmutable;
 use Filament\Widgets\ChartWidget;
@@ -30,7 +31,8 @@ class LeadsPerWeekChart extends ChartWidget
         $start = CarbonImmutable::now($tz)->startOfWeek()->subWeeks(11);
 
         $weeks = collect(range(0, 11))->map(fn (int $i) => $start->addWeeks($i));
-        $counts = ['tuition' => array_fill(0, 12, 0), 'academic' => array_fill(0, 12, 0)];
+        $counts = collect(Offering::sectionValues())->mapWithKeys(fn (string $section) => [$section => array_fill(0, 12, 0)])->all();
+        $colours = ['tuition' => '#b4561a', 'academic' => '#0b5d45', 'music' => '#5b3a8c'];
 
         // A few hundred rows at most: grouping in PHP keeps the query portable.
         Lead::query()->where('created_at', '>=', $start->utc())->get(['offering', 'created_at'])
@@ -42,10 +44,11 @@ class LeadsPerWeekChart extends ChartWidget
             });
 
         return [
-            'datasets' => [
-                ['label' => 'Tuition', 'data' => $counts['tuition'], 'backgroundColor' => '#b4561a'],
-                ['label' => 'Academic', 'data' => $counts['academic'], 'backgroundColor' => '#0b5d45'],
-            ],
+            'datasets' => collect(Offering::sections())->map(fn (Offering $offering) => [
+                'label' => $offering->label(),
+                'data' => $counts[$offering->value],
+                'backgroundColor' => $colours[$offering->value] ?? '#64748b',
+            ])->all(),
             'labels' => $weeks->map(fn (CarbonImmutable $week) => $week->format('j M'))->all(),
         ];
     }

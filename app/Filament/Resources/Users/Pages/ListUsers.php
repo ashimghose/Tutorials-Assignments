@@ -8,7 +8,7 @@ use App\Filament\Resources\Users\UserResource;
 use App\Models\AuditLog;
 use App\Models\User;
 use Filament\Actions\Action;
-use Filament\Forms\Components\Select;
+use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
@@ -58,14 +58,14 @@ class ListUsers extends ListRecords
                 ->schema([
                     TextInput::make('name')->required()->maxLength(255),
                     TextInput::make('email')->email()->required()->maxLength(255)->unique(User::class, 'email'),
-                    Select::make('offering')
+                    CheckboxList::make('offerings')
                         ->label('Works in')
-                        ->options(collect(Offering::cases())->mapWithKeys(fn (Offering $offering) => [$offering->value => $offering->label()]))
+                        ->options(Offering::sectionOptions())
                         ->required(),
                     TagsInput::make('subjects')->placeholder('Maths, Physics, Thesis editing…'),
                 ])
                 ->action(function (array $data, InviteTeacher $invite): void {
-                    $invite($data['name'], $data['email'], Offering::from($data['offering']), $data['subjects'] ?? []);
+                    $invite($data['name'], $data['email'], array_values(array_map(Offering::from(...), $data['offerings'])), $data['subjects'] ?? []);
 
                     Notification::make()
                         ->title('Invitation sent')
