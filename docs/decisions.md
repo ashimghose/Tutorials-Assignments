@@ -131,6 +131,12 @@ Home, Tuition and Academic heroes show original flat SVG illustrations (public/i
 - indianassignments.com now points at the Lightsail server (Cloudflare proxied, SSL "Full (strict)", Let's Encrypt on the server). The Cloudflare Pages project stays as a fallback with no custom domain, and its deploy workflow now runs only by hand.
 - Deploys to the server are run by hand for now (`deploy/deploy.sh`); deploying automatically from GitHub can come later.
 
+## 2026-10-30 · Google Analytics with consent
+
+- The owner asked for Google Analytics (GA4) alongside Cloudflare Web Analytics. GA4 sets cookies, so it loads **only after the visitor taps "Allow"** in a small banner (`resources/js/consent.js`); "No, thanks" means the script is never requested. Cloudflare Web Analytics keeps counting every visit without cookies.
+- Public pages only, and never for a logged-in visitor (DPDP, minors). Google signals and ad personalisation are off. The id is `GA_MEASUREMENT_ID` in `.env`; empty or not shaped like `G-XXXX` means no banner and no tag.
+- The choice lives in the visitor's browser (localStorage); "Cookie settings" in the footer reopens the banner, and withdrawing clears the `_ga` cookies.
+
 ## 2026-11-02 · Three verticals now, partner businesses later (option B)
 
 - The owner chose option B of `docs/platform-plan.md`: add Music as a third vertical and per-vertical domain support now (V1, V2); build partner businesses (multi-tenancy, per-partner payments) only after Gate P, when 2 to 3 businesses have committed and a CA and lawyer have answered the GST and terms questions.

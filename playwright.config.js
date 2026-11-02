@@ -6,6 +6,9 @@ const baseURL = `http://127.0.0.1:${port}`;
 // and the music section on, for music.spec.js.
 const cmsPort = String(Number(port) + 1);
 export const cmsBaseURL = `http://127.0.0.1:${cmsPort}`;
+// A third server with a Google Analytics id set, for analytics.spec.js.
+const gaPort = String(Number(port) + 2);
+export const gaBaseURL = `http://127.0.0.1:${gaPort}`;
 
 export default defineConfig({
     testDir: './tests/e2e',
@@ -51,6 +54,12 @@ export default defineConfig({
         // Music is switched on here too, for music.spec.js (VRT-1).
         env: { FEATURE_ACCOUNTS: 'true', FEATURE_BATCHES: 'true', FEATURE_ACADEMIC_ORDERS: 'true', FEATURE_CHAT: 'true', FEATURE_CMS: 'true', FEATURE_VERTICAL_MUSIC: 'true' },
         url: cmsBaseURL,
+        reuseExistingServer: !process.env.CI,
+        timeout: 60_000,
+    }, {
+        command: `php artisan serve --no-reload --host=127.0.0.1 --port=${gaPort}`,
+        env: { FEATURE_ACCOUNTS: 'true', GA_MEASUREMENT_ID: 'G-E2ETEST01' },
+        url: gaBaseURL,
         reuseExistingServer: !process.env.CI,
         timeout: 60_000,
     }],

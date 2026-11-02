@@ -81,12 +81,15 @@ class SiteController extends Controller
         $section = Verticals::forHost($request->getHost());
 
         $urls = $section !== null
-            ? collect([url('/')])
+            ? collect([['loc' => url('/'), 'lastmod' => null]])
             : collect(['home'])
                 ->merge(array_filter(Verticals::enabledKeys(), fn (string $key) => Verticals::domain($key) === null))
                 ->merge(['resources.index', 'about', 'contact', 'privacy', 'terms', 'refunds'])
-                ->map(fn (string $name) => route($name))
-                ->merge(collect(SiteContent::articles())->map(fn (array $article) => route('resources.show', $article['slug'])));
+                ->map(fn (string $name) => ['loc' => route($name), 'lastmod' => null])
+                ->merge(collect(SiteContent::articles())->map(fn (array $article) => [
+                    'loc' => route('resources.show', $article['slug']),
+                    'lastmod' => $article['published'],
+                ]));
 
         return response()
             ->view('site.sitemap', ['urls' => $urls])

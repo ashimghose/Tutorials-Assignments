@@ -4,6 +4,7 @@
     'section' => 'general',
     'type' => 'website',
     'robots' => null,
+    'image' => '/images/social/share.png',
 ])
 
 @php
@@ -36,6 +37,9 @@
     $account = config('features.accounts')
         ? (auth()->check() ? ['label' => 'My account', 'route' => 'dashboard'] : ['label' => 'Log in', 'route' => 'login'])
         : null;
+    // Google Analytics: public pages, visitors who aren't logged in, a valid G- id only.
+    $gaId = config('site.google_analytics_id');
+    $gaId = filled($gaId) && preg_match('/^G-[A-Z0-9]{4,20}$/', $gaId) && ! auth()->check() ? $gaId : null;
 @endphp
 
 <!DOCTYPE html>
@@ -57,7 +61,11 @@
         <meta property="og:description" content="{{ $description }}">
         <meta property="og:url" content="{{ $canonical }}">
         <meta property="og:locale" content="en_IN">
-        <meta name="twitter:card" content="summary">
+        {{-- The preview card on WhatsApp, Facebook and other shares. --}}
+        <meta property="og:image" content="{{ url($image) }}">
+        <meta property="og:image:width" content="1200">
+        <meta property="og:image:height" content="630">
+        <meta name="twitter:card" content="summary_large_image">
         <meta name="theme-color" content="#0b5d45">
 
         <link rel="icon" href="/favicon.ico" sizes="any">
@@ -65,6 +73,8 @@
         <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 
         @vite(['resources/css/site.css', 'resources/js/site.js'])
+
+        {{ $head ?? '' }}
 
         @if (filled(config('site.analytics_token')))
             {{-- Cloudflare Web Analytics: cookie-less, public pages only. --}}
@@ -163,11 +173,18 @@
                         <a href="{{ route('privacy') }}" class="hover:text-slate-900">Privacy policy</a>
                         <a href="{{ route('terms') }}" class="hover:text-slate-900">Terms</a>
                         <a href="{{ route('refunds') }}" class="hover:text-slate-900">Refund policy</a>
+                        @if ($gaId)
+                            <button type="button" data-cookie-settings class="hover:text-slate-900">Cookie settings</button>
+                        @endif
                     </nav>
                 </div>
             </div>
         </footer>
 
         <x-site.whatsapp-button :section="$section" />
+
+        @if ($gaId)
+            <x-site.cookie-consent :measurement-id="$gaId" />
+        @endif
     </body>
 </html>
