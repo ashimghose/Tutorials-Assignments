@@ -43,8 +43,8 @@
                 <x-site.form-link form="tuition" section="tuition" :page="'resources/'.$article['slug']" interest="Free demo class" variant="light" class="mt-5">Book a free demo class</x-site.form-link>
             @elseif ($section === 'music')
                 <h2 class="text-xl font-bold">Want to learn with a teacher?</h2>
-                <p class="mt-2 text-music-100">Live online singing and instrument lessons, in small groups or one-to-one, with a free trial lesson.</p>
-                <x-site.form-link form="music" section="music" :page="'resources/'.$article['slug']" interest="Free trial lesson" variant="light" class="mt-5">Book a free trial lesson</x-site.form-link>
+                <p class="mt-2 text-music-100">Live online guitar group classes for children and adults, ₹1,000 a month, and the first class is a free trial.</p>
+                <x-site.form-link form="music" section="music" :page="'resources/'.$article['slug']" interest="Free trial class" variant="light" class="mt-5">Book a free trial class</x-site.form-link>
             @else
                 <h2 class="text-xl font-bold">Want an expert to check your work?</h2>
                 <p class="mt-2 text-academic-100">Guidance, editing, formatting and similarity checks for your own synopsis, paper or thesis.</p>

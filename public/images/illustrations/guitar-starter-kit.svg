@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 300" role="img" aria-labelledby="t"><title id="t">What you need for online guitar classes: an acoustic guitar, a clip-on tuner, picks and a phone or laptop on a stand</title>
+<path d="M30,160 C30,70 130,25 240,30 C370,36 455,90 450,170 C445,255 345,290 230,284 C110,278 30,240 30,160 z" fill="#F5F2FA"/>
+<rect x="20" y="268" width="440" height="7" rx="3.5" fill="#E2E8F0"/>
+<g transform="rotate(-18 150 170)">
+<ellipse cx="118" cy="190" rx="62" ry="54" fill="#E8833A"/>
+<ellipse cx="190" cy="186" rx="44" ry="40" fill="#E8833A"/>
+<circle cx="150" cy="188" r="17" fill="#8F4314"/>
+<rect x="96" y="180" width="10" height="20" rx="2" fill="#8F4314"/>
+<rect x="228" y="179" width="128" height="16" rx="3" fill="#8F4314"/>
+<path d="M236,179 v16 M256,179 v16 M276,179 v16 M296,179 v16 M316,179 v16 M336,179 v16" stroke="#E2C9A8" stroke-width="1.5"/>
+<rect x="352" y="174" width="34" height="26" rx="6" fill="#1F1A17"/>
+<path d="M104,183 L390,183 M104,187 L390,187 M104,191 L390,191 M104,195 L390,195" stroke="#F8FAFC" stroke-width=".8" opacity=".9"/>
+</g>
+<g>
+<rect x="330" y="52" width="70" height="44" rx="10" fill="#1E293B"/>
+<rect x="338" y="60" width="54" height="22" rx="4" fill="#0B5D45"/>
+<text x="365" y="76" font-family="Georgia,serif" font-size="14" font-weight="bold" fill="#fff" text-anchor="middle">E</text>
+<rect x="356" y="96" width="18" height="16" rx="3" fill="#475569"/>
+</g>
+<g fill="#5B3A8C"><path d="M70,70 q14,-6 26,2 q-4,18 -13,24 q-10,-8 -13,-26 z"/></g>
+<g fill="#0B5D45"><path d="M104,58 q14,-6 26,2 q-4,18 -13,24 q-10,-8 -13,-26 z"/></g>
+<g>
+<rect x="392" y="150" width="50" height="90" rx="8" fill="#1E293B"/>
+<rect x="397" y="157" width="40" height="72" rx="3" fill="#E7DFF4"/>
+<circle cx="417" cy="182" r="8" fill="#A0673D"/>
+<path d="M404,212 q0,-16 13,-16 q13,0 13,16 z" fill="#5B3A8C"/>
+<path d="M410,240 l-14,28 M424,240 l14,28" stroke="#475569" stroke-width="4" stroke-linecap="round"/>
+</g>
+</svg>

@@ -110,6 +110,18 @@ final class SiteContent
      */
     public static function articles(): array
     {
+        // VRT-1: guides for a switched-off section stay hidden with it.
+        return array_values(array_filter(
+            self::allArticles(),
+            fn (array $article) => ! Verticals::exists($article['offering']) || Verticals::enabled($article['offering']),
+        ));
+    }
+
+    /**
+     * @return list<array{slug: string, title: string, description: string, offering: string, published: string}>
+     */
+    private static function allArticles(): array
+    {
         if (self::fromDatabase()) {
             return array_values(Article::query()->published()->latest('published_on')->latest('id')->get()
                 ->map(fn (Article $article) => [

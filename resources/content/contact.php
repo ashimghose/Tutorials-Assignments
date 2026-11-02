@@ -26,9 +26,9 @@ return [
         ],
         // Shown once music is switched on (FEATURE_VERTICAL_MUSIC).
         'music' => [
-            'title' => 'Music lessons',
-            'body' => 'For learners and parents asking about singing or instrument lessons, fees or a free trial.',
-            'whatsapp' => 'WhatsApp about music lessons',
+            'title' => 'Guitar classes',
+            'body' => 'For learners and parents asking about guitar classes, fees or a free trial class.',
+            'whatsapp' => 'WhatsApp about guitar classes',
             'enquire' => 'Send an enquiry',
         ],
     ],

@@ -152,3 +152,10 @@ Home, Tuition and Academic heroes show original flat SVG illustrations (public/i
 - **A trial lesson counts as a demo** when classifying leads (`LeadForms::kind`), so music trials show in the same "demo" numbers.
 - **New page content blocks reach the database.** `SiteContent::withNewKeys` now also adds new `offerings` (home cards) and `cards` (contact boxes) from the files, so the deploy's `db:seed` gives the admin the music card and box without overwriting their edits.
 - Music teachers' class pay in the money report waits for V2 (music batches); until then music shows its payments and costs.
+
+## 2026-11-02 · Guitar first for music (MUS)
+
+- Music starts with **guitar group classes at ₹1,000 a month** (the owner's price). Class length, classes per month and group size aren't set yet, so the page doesn't promise them.
+- **Chord boxes are drawn in Blade** (`x-site.chord`) from a six-character fret string, so the admin can change or add chords without image files, and each box has a text description for screen readers.
+- **Videos are YouTube links pasted in the admin.** Only the 11-character id is kept (`App\Support\YouTube`), and the page shows a styled play button; the `youtube-nocookie` player is added only when the visitor taps it (`resources/js/site.js`), so YouTube sets nothing before then. Free hosting, and no video files on our server or R2.
+- **Guides follow their section's switch:** a guide tagged music is hidden from the guides list, the home page and the sitemap while music is off.
