@@ -42,7 +42,13 @@ return new class extends Migration
             $content['boards'] = $file['boards'];
         }
 
-        $newAnswer = collect($file['faqs'])->firstWhere('q', self::BOARDS_QUESTION)['a'] ?? null;
+        $newAnswer = null;
+        foreach ($file['faqs'] as $faq) {
+            if ($faq['q'] === self::BOARDS_QUESTION) {
+                $newAnswer = $faq['a'];
+            }
+        }
+
         foreach ($content['faqs'] ?? [] as $i => $faq) {
             if (($faq['q'] ?? null) === self::BOARDS_QUESTION && ($faq['a'] ?? null) === self::OLD_BOARDS_ANSWER && $newAnswer !== null) {
                 $content['faqs'][$i]['a'] = $newAnswer;
