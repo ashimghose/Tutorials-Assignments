@@ -32,12 +32,9 @@
     <section id="fees" class="border-y border-slate-200 bg-slate-50">
         <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6">
             <x-site.section-heading :eyebrow="$text['fees_eyebrow']" :title="$text['fees_title']" :lead="$text['fees_lead']" />
-            @php
-                // Plans the admin saved without a price are left out, so a half-filled plan can't break the page.
-                $plans = array_values(array_filter($content['plans'] ?? [], fn ($plan) => is_array($plan) && is_numeric($plan['price'] ?? null)));
-                $planColumns = match (count($plans)) { 1 => 'sm:max-w-sm', 2 => 'sm:grid-cols-2', 3 => 'sm:grid-cols-2 lg:grid-cols-3', default => 'sm:grid-cols-2 lg:grid-cols-4' };
-            @endphp
-            <div class="mt-8 grid gap-4 {{ $planColumns }}">
+            {{-- Plans saved without a fee are left out, so a half-filled plan can't break the page. --}}
+            @php($plans = \App\Support\SiteContent::pricedPlans($content['plans'] ?? []))
+            <div class="mt-8 grid gap-4 {{ \App\Support\SiteContent::planColumns(count($plans)) }}">
                 @foreach ($plans as $plan)
                     <article class="flex flex-col rounded-xl border border-slate-200 bg-white p-5">
                         <h3 class="font-semibold text-slate-900">{{ $plan['name'] ?? '' }}</h3>

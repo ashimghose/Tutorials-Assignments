@@ -81,6 +81,33 @@ final class SiteContent
     }
 
     /**
+     * Fee plans that have a fee, so a plan the admin saved half-filled (or
+     * an odd value in the list) can't break the page (MKT-1).
+     *
+     * @return list<array<string, mixed>>
+     */
+    public static function pricedPlans(mixed $plans): array
+    {
+        return array_values(array_filter(
+            is_array($plans) ? $plans : [],
+            fn (mixed $plan) => is_array($plan) && is_numeric($plan['price'] ?? null),
+        ));
+    }
+
+    /**
+     * Grid columns for the fee cards, so three plans fill the row.
+     */
+    public static function planColumns(int $count): string
+    {
+        return match ($count) {
+            1 => 'sm:max-w-sm',
+            2 => 'sm:grid-cols-2',
+            3 => 'sm:grid-cols-2 lg:grid-cols-3',
+            default => 'sm:grid-cols-2 lg:grid-cols-4',
+        };
+    }
+
+    /**
      * @return list<array{name: string, body: string, prices: list<int|null>, turnaround: string, revisions: int|null}>
      */
     private static function priceList(): array
