@@ -17,6 +17,9 @@ return [
         'lead' => 'Small batches of up to 15 students, taught live by a teacher who knows your child by name. Join from home on a laptop, tablet or phone.',
     ],
 
+    // Highlighted badges under the headline (MKT-1); none by default.
+    'keywords' => [],
+
     'highlights' => [
         ['title' => 'Small live batches', 'body' => 'At most 15 students in a class, so every child can ask questions and be heard.'],
         ['title' => 'Notebook camera', 'body' => 'Teachers solve problems on paper or a whiteboard, the way your child will in the exam.'],
