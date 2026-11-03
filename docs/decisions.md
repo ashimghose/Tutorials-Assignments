@@ -166,3 +166,10 @@ Home, Tuition and Academic heroes show original flat SVG illustrations (public/i
 - The tuition page skips a plan saved without a fee and copes with missing subjects or ticked points, so a half-finished admin edit can't take the page down. The fee grid uses as many columns as there are plans.
 - The admin edit form fills in text added to the content files after a page was copied into the database (here the "Online" and "Physical classroom" labels), so saving an older page doesn't fail on empty required fields.
 - Batches still have one monthly fee each; a classroom batch is set up as its own batch with the classroom fee.
+
+## 2026-11-03 · WhatsApp numbers set in the admin (CHAT-6, VRT-2)
+
+- The admin sets the WhatsApp number for the general pages and for each section on **Website → Pages → Contact us**, stored with that page's content (`whatsapp_numbers`). No new table: the numbers are site content, and the page edit is already audited.
+- A number set in the admin wins; an empty field falls back to `WHATSAPP_NUMBER_{SECTION}`, then the general number, so nothing changes until the admin types one.
+- Numbers are kept as digits only. A 10-digit number gets India's 91 in front, so the owner can type a mobile number as written.
+

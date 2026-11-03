@@ -1,8 +1,10 @@
 <?php
 
 /*
-| Contact page (CMS-1). WhatsApp numbers, email and office hours come from
-| .env (config/site.php); this is the text around them.
+| Contact page (CMS-1). Email and office hours come from .env
+| (config/site.php); this is the text around them. With FEATURE_CMS on, the
+| admin can also set each section's WhatsApp number here
+| ('whatsapp_numbers'); an empty one falls back to the .env number.
 */
 
 return [

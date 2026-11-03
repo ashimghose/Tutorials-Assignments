@@ -150,3 +150,49 @@ test('non-admins cannot reach the content or lead screens', function (string $st
     $this->get('/admin/leads')->assertForbidden();
     $this->get('/admin/articles')->assertForbidden();
 })->with(['parent', 'academicStudent', 'teacher']);
+
+test('CHAT-6 the admin sets each section\'s WhatsApp number on the contact page', function () {
+    config([
+        'verticals.music.enabled' => true,
+        'site.whatsapp.number' => '919000000001',
+        'site.whatsapp.numbers' => ['tuition' => null, 'academic' => null, 'music' => '919000000003'],
+    ]);
+    $contact = SiteSection::where('key', 'contact')->sole();
+
+    Livewire::test(EditSiteSection::class, ['record' => $contact->getRouteKey()])
+        ->assertFormFieldExists('content.whatsapp_numbers.music')
+        ->fillForm(fn (array $state) => data_set($state, 'content.whatsapp_numbers', [
+            'general' => '',
+            'tuition' => '98765 43210',
+            'academic' => '+44 7700 900123',
+            'music' => '',
+        ]))
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect($contact->fresh()->content['whatsapp_numbers'])->toMatchArray(['tuition' => '919876543210', 'academic' => '447700900123']);
+
+    // The admin's number wins; an empty field keeps the server setting.
+    $this->get(route('tuition'))->assertSee('https://wa.me/919876543210?text=', false);
+    $this->get(route('academic'))->assertSee('https://wa.me/447700900123?text=', false);
+    $this->get(route('music'))->assertSee('https://wa.me/919000000003?text=', false);
+    $this->get(route('about'))->assertSee('https://wa.me/919000000001?text=', false);
+});
+
+test('CHAT-6 a WhatsApp number that is too short is refused', function () {
+    $contact = SiteSection::where('key', 'contact')->sole();
+
+    Livewire::test(EditSiteSection::class, ['record' => $contact->getRouteKey()])
+        ->fillForm(fn (array $state) => data_set($state, 'content.whatsapp_numbers.tuition', '12345'))
+        ->call('save')
+        ->assertHasFormErrors(['content.whatsapp_numbers.tuition']);
+
+    expect($contact->fresh()->content['whatsapp_numbers'] ?? [])->toBe([]);
+});
+
+test('CHAT-6 only an admin can change the WhatsApp numbers', function () {
+    $contact = SiteSection::where('key', 'contact')->sole();
+    $this->actingAs(User::factory()->teacher()->create());
+
+    $this->get('/admin/site-sections/'.$contact->getRouteKey().'/edit')->assertForbidden();
+});

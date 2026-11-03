@@ -2,10 +2,12 @@
 
 namespace App\Filament\Resources\SiteSections;
 
+use App\Enums\Offering;
 use App\Filament\Resources\SiteSections\Pages\EditSiteSection;
 use App\Filament\Resources\SiteSections\Pages\ListSiteSections;
 use App\Filament\Support\MoneyInput;
 use App\Models\SiteSection;
+use App\Support\SiteLinks;
 use App\Support\YouTube;
 use BackedEnum;
 use Closure;
@@ -372,8 +374,39 @@ class SiteSectionResource extends Resource
                 ]),
             ]))->values()->all(),
             TextInput::make('content.office_hours_note')->label('Note after the office hours')->required()->maxLength(200)
-                ->helperText('Office hours, email and WhatsApp numbers are server settings; ask Claude to change them.'),
+                ->helperText('Office hours and email are server settings; ask Claude to change them.'),
+            self::whatsappNumbersSection(),
         ];
+    }
+
+    /**
+     * CHAT-6, VRT-2: the WhatsApp number each section's buttons open. An
+     * empty field keeps the number set on the server, shown as the hint.
+     */
+    private static function whatsappNumbersSection(): Section
+    {
+        $fields = collect(['general' => 'General pages (home, about, guides…)'] + Offering::sectionOptions())
+            ->map(fn (string $label, string $key) => TextInput::make("content.whatsapp_numbers.{$key}")
+                ->label($key === 'general' ? $label : $label.' pages')
+                ->tel()
+                ->maxLength(20)
+                ->placeholder(function () use ($key): string {
+                    $current = SiteLinks::normaliseWhatsapp((string) config($key === 'general' ? 'site.whatsapp.number' : "site.whatsapp.numbers.{$key}"));
+
+                    return $current === '' ? '' : 'Now: '.$current;
+                })
+                ->rule(fn () => function (string $attribute, mixed $value, Closure $fail): void {
+                    $digits = SiteLinks::normaliseWhatsapp((string) $value);
+                    if ($digits !== '' && (strlen($digits) < 11 || strlen($digits) > 15)) {
+                        $fail('Enter a 10-digit mobile number, or the full number with its country code.');
+                    }
+                })
+                ->dehydrateStateUsing(fn (?string $state): ?string => filled($state) ? SiteLinks::normaliseWhatsapp($state) : null))
+            ->values()->all();
+
+        return Section::make('WhatsApp numbers')
+            ->description('The number each WhatsApp button opens a chat with. Type a 10-digit Indian mobile number (91 is added), or the full number with its country code. Leave a field empty to keep the number shown in it; a section left empty without one uses the general number.')
+            ->schema($fields);
     }
 
     /**
