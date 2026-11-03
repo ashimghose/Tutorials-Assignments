@@ -4,6 +4,7 @@ namespace App\Filament\Resources\SiteSections\Pages;
 
 use App\Filament\Resources\SiteSections\SiteSectionResource;
 use App\Models\SiteSection;
+use App\Support\SiteContent;
 use Filament\Actions\Action;
 use Filament\Resources\Pages\EditRecord;
 
@@ -40,6 +41,12 @@ class EditSiteSection extends EditRecord
      */
     protected function mutateFormDataBeforeFill(array $data): array
     {
+        // Text added to the files after the page was copied into the database
+        // (for example a new fee label) starts filled in, not empty.
+        if (is_file(resource_path("content/{$this->record->key}.php"))) {
+            $data['content'] = SiteContent::withNewKeys($data['content'] ?? [], SiteContent::sectionFile($this->record->key));
+        }
+
         foreach ($data['content']['services'] ?? [] as $i => $service) {
             foreach (self::LEVEL_FIELDS as $level => $field) {
                 $data['content']['services'][$i][$field] = $service['prices'][$level] ?? null;

@@ -131,8 +131,11 @@ class SiteSectionResource extends Resource
                     Repeater::make('content.plans')->label('Fee plans')
                         ->schema([
                             TextInput::make('name')->required()->maxLength(80),
-                            Grid::make(2)->schema([
-                                MoneyInput::make('price')->label('Fee')->required(),
+                            Grid::make(3)->schema([
+                                MoneyInput::make('price')->label('Online fee')->required(),
+                                // MKT-1: optional second price for classes at our centre.
+                                MoneyInput::make('classroom_price')->label('Physical classroom fee')
+                                    ->helperText('Leave empty if this plan is online only.'),
                                 TextInput::make('period')->required()->maxLength(60),
                             ]),
                             TagsInput::make('subjects'),
@@ -155,6 +158,8 @@ class SiteSectionResource extends Resource
                     'fees_eyebrow' => 'Fees: small heading',
                     'fees_title' => 'Fees: heading',
                     'fees_lead' => 'Fees: intro',
+                    'online_label' => 'Fees: word above the online fee',
+                    'classroom_label' => 'Fees: words above the physical classroom fee',
                     'subjects_label' => 'Word before each plan\'s subjects',
                     'plan_button' => 'Button on each fee plan',
                     'steps_eyebrow' => 'How it works: small heading',

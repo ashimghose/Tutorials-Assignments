@@ -397,7 +397,8 @@ and it knows exactly what to build and test.
 - MKT-1 Two separate marketing sections, /tuition and /academic, each
   with its own hero, services and prices, how it works, teachers or
   experts, testimonials, FAQs and call to action, all editable by the
-  admin.
+  admin. A tuition fee plan may show a physical classroom fee next to
+  its online fee.
 
 - MKT-2 Admin creates campaign landing pages (headline, offer, form,
   expiry) for each offering, for example "Free synopsis review for PhD
