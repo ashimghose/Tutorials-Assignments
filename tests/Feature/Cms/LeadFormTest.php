@@ -23,7 +23,7 @@ function leadForm(array $overrides = []): array
         'interest' => 'Free demo class',
         'section' => 'tuition',
         'page' => 'tuition',
-        'price_range' => 'Up to ₹1,500 a month per subject',
+        'price_range' => 'Up to ₹1,000 a month per subject',
         'marketing_consent' => '1',
         ...$overrides,
     ];
