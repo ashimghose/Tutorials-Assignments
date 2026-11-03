@@ -171,3 +171,11 @@ test('non-admins cannot reach the academic screens', function (string $role) {
     $this->get('/admin/services')->assertForbidden();
     $this->get('/admin/order-statuses')->assertForbidden();
 })->with(['teacher', 'academicStudent', 'parent']);
+
+test('ACA-1 the services list and edit screens open when a service is quote only', function () {
+    $quoteOnly = Service::where('title', 'Research book editing and formatting')->sole();
+    expect($quoteOnly->price_bachelors)->toBeNull();
+
+    $this->get('/admin/services')->assertOk()->assertSee('Research book editing and formatting')->assertSee('Quote');
+    $this->get("/admin/services/{$quoteOnly->id}/edit")->assertOk();
+});

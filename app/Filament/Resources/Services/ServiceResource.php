@@ -73,9 +73,9 @@ class ServiceResource extends Resource
             ->columns([
                 TextColumn::make('title')->searchable()->wrap(),
                 TextColumn::make('type')->toggleable(),
-                TextColumn::make('price_bachelors')->label('Bachelors')->formatStateUsing($price)->default('Quote'),
-                TextColumn::make('price_masters')->label('Masters')->formatStateUsing($price)->default('Quote'),
-                TextColumn::make('price_phd')->label('PhD')->formatStateUsing($price)->default('Quote'),
+                TextColumn::make('price_bachelors')->label('Bachelors')->formatStateUsing($price)->placeholder('Quote'),
+                TextColumn::make('price_masters')->label('Masters')->formatStateUsing($price)->placeholder('Quote'),
+                TextColumn::make('price_phd')->label('PhD')->formatStateUsing($price)->placeholder('Quote'),
                 IconColumn::make('is_active')->label('On sale')->boolean(),
             ])
             ->recordActions([EditAction::make()]);
