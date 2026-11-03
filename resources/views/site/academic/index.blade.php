@@ -46,11 +46,13 @@
                     <article class="flex flex-col rounded-xl border border-slate-200 bg-white p-5">
                         <h3 class="font-semibold text-slate-900">{{ $service['name'] }}</h3>
                         <p class="mt-2 text-sm text-slate-600">{{ $service['body'] }}</p>
-                        <dl class="mt-4 grid grid-cols-3 gap-2 text-center">
+                        {{-- A level without a price (say one the admin just added) shows the quote label. --}}
+                        <dl @class(['mt-4 grid gap-2 text-center', 'grid-cols-3' => count($content['levels']) !== 4, 'grid-cols-2 sm:grid-cols-4' => count($content['levels']) === 4])>
                             @foreach ($content['levels'] as $index => $level)
+                                @php($price = $service['prices'][$index] ?? null)
                                 <div class="rounded-lg bg-slate-50 px-1 py-2">
                                     <dt class="text-xs font-medium text-slate-500">{{ $level }}</dt>
-                                    <dd class="mt-0.5 font-bold text-slate-900">{{ $service['prices'][$index] === null ? $text['quote_label'] : \App\Support\Money::format($service['prices'][$index]) }}</dd>
+                                    <dd class="mt-0.5 font-bold text-slate-900">{{ $price === null ? $text['quote_label'] : \App\Support\Money::format($price) }}</dd>
                                 </div>
                             @endforeach
                         </dl>
@@ -58,7 +60,7 @@
                             {{ $service['turnaround'] }}@if ($service['revisions'] !== null) &middot; {{ $service['revisions'] === 0 ? 'No revisions' : trans_choice(':count free revision|:count free revisions', $service['revisions']) }}@endif
                         </p>
                         <div class="mt-auto pt-5">
-                            <x-site.form-link form="academic" section="academic" :page="$page" :interest="$service['name']" variant="outline" class="w-full">{{ $service['prices'][0] === null ? $text['quote_only_button'] : $text['enquire_button'] }}</x-site.form-link>
+                            <x-site.form-link form="academic" section="academic" :page="$page" :interest="$service['name']" variant="outline" class="w-full">{{ ($service['prices'][0] ?? null) === null ? $text['quote_only_button'] : $text['enquire_button'] }}</x-site.form-link>
                         </div>
                     </article>
                 @endforeach

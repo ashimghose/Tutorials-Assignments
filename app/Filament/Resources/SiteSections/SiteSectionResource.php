@@ -276,7 +276,8 @@ class SiteSectionResource extends Resource
             Tabs::make()->tabs([
                 self::heroTab(),
                 Tab::make('Price list')->schema([
-                    TagsInput::make('content.levels')->label('Levels')->required(),
+                    TagsInput::make('content.levels')->label('Levels')->required()
+                        ->helperText('One per price column, in order: Bachelors, Masters, PhD. Each service has a price for these three; a level added after them shows the quote label.'),
                     // M6: with online orders on, services and add-ons have their own screens.
                     Text::make('Services, prices and add-ons are edited under Academic → Services and Add-ons.')
                         ->visible(fn (): bool => (bool) config('features.academic_orders')),
