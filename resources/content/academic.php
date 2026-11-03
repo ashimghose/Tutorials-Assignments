@@ -102,6 +102,10 @@ return [
         ['title' => 'Track it to delivery', 'body' => 'We keep you updated at each stage until your files, or your printed copies, reach you.'],
     ],
 
+    // Short videos shown under "How it works". Paste a YouTube link in the
+    // admin; the section stays hidden while the list is empty.
+    'videos' => [],
+
     // Add real expert profiles here: ['name' => '', 'subjects' => '', 'bio' => ''].
     // The section stays hidden while this list is empty.
     'experts' => [],
@@ -179,6 +183,8 @@ return [
         'address_note' => 'We ask for a delivery address only if you order printing or courier.',
         'steps_eyebrow' => 'How it works',
         'steps_title' => 'From enquiry to delivery',
+        'videos_eyebrow' => 'Watch',
+        'videos_title' => 'See how it works',
         'people_eyebrow' => 'Experts',
         'people_title' => 'Meet the experts',
         'testimonials_eyebrow' => 'Students say',

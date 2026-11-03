@@ -80,6 +80,15 @@
         </div>
     </section>
 
+    @if (($content['videos'] ?? []) !== [])
+        <section id="videos" class="mx-auto max-w-6xl px-4 pb-16 sm:px-6">
+            <x-site.section-heading :eyebrow="$text['videos_eyebrow']" :title="$text['videos_title']" />
+            <div class="mt-8">
+                <x-site.videos :videos="$content['videos']" accent="tuition" />
+            </div>
+        </section>
+    @endif
+
     @if ($content['teachers'] !== [])
         <section id="teachers" class="mx-auto max-w-6xl px-4 pb-16 sm:px-6">
             <x-site.section-heading :eyebrow="$text['people_eyebrow']" :title="$text['people_title']" />
