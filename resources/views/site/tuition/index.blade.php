@@ -27,6 +27,12 @@
                 </div>
             @endforeach
         </div>
+
+        <x-site.photo-row :photos="[
+            ['name' => 'tuition-girl-online-class', 'alt' => 'A school student takes notes during a live online class with a teacher on her laptop'],
+            ['name' => 'tuition-teacher-whiteboard', 'alt' => 'A teacher explains maths on a whiteboard to a class joining online'],
+            ['name' => 'tuition-child-video-call', 'alt' => 'A child listens to her teacher on a video call'],
+        ]" />
     </section>
 
     <section id="fees" class="border-y border-slate-200 bg-slate-50">

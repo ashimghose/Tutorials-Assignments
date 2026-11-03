@@ -173,3 +173,6 @@ Home, Tuition and Academic heroes show original flat SVG illustrations (public/i
 - A number set in the admin wins; an empty field falls back to `WHATSAPP_NUMBER_{SECTION}`, then the general number, so nothing changes until the admin types one.
 - Numbers are kept as digits only. A 10-digit number gets India's 91 in front, so the owner can type a mobile number as written.
 
+
+## 2026-11-03 · Stock photos on the landing pages
+Tuition, Music and Academic show a row of three free-licence Pexels photos (chosen by the owner) under the highlights, as WebP at 640 and 1200 px (under 100 KB each), lazy-loaded with fixed width and height. The illustrations stay as heroes. Photos illustrate the kind of class and are never captioned as our own students or teachers; originals are in the project files (site-look/photos).
