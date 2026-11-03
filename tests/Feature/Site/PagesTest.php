@@ -81,7 +81,7 @@ test('MKT-1 tuition and academic sections show their prices and FAQs', function 
     config(['site.forms.tuition.url' => null, 'site.forms.academic.url' => null]);
 
     $this->get('/tuition')
-        ->assertSee('₹1,200')
+        ->assertSee('₹700')
         ->assertSee('Questions parents ask')
         ->assertSee('Book a free demo class')
         ->assertSee('"@type":"FAQPage"', false);

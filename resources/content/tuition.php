@@ -25,32 +25,29 @@ return [
 
     'boards' => ['CBSE', 'ICSE', 'Assam Board (ASSEB)'],
 
-    // PLACEHOLDER fees: monthly fee per subject, per child.
+    // Monthly fee per subject, per child (owner's fees, 2026-11-03). 'price' is
+    // the online fee; 'classroom_price' (optional) is the physical classroom fee.
     'plans' => [
         [
-            'name' => 'Classes 1 to 5',
-            'price' => Money::fromRupees(1200),
+            'name' => 'Classes 1 to 7',
+            'price' => Money::fromRupees(700),
+            'classroom_price' => Money::fromRupees(1000),
             'period' => 'per subject, per month',
-            'subjects' => ['Maths', 'English', 'EVS / Science', 'Hindi'],
+            'subjects' => ['Maths', 'English', 'EVS / Science', 'Social Science', 'Hindi'],
             'features' => ['3 live classes a week', '55 minutes each', 'Monthly progress note for parents'],
         ],
         [
-            'name' => 'Classes 6 to 8',
-            'price' => Money::fromRupees(1500),
-            'period' => 'per subject, per month',
-            'subjects' => ['Maths', 'Science', 'English', 'Social Science'],
-            'features' => ['3 live classes a week', '55 minutes each', 'Chapter tests every month'],
-        ],
-        [
-            'name' => 'Classes 9 and 10',
-            'price' => Money::fromRupees(2000),
+            'name' => 'Classes 8 to 10',
+            'price' => Money::fromRupees(1000),
+            'classroom_price' => Money::fromRupees(1500),
             'period' => 'per subject, per month',
             'subjects' => ['Maths', 'Science', 'English', 'Social Science'],
             'features' => ['3 live classes a week', '55 minutes each', 'Board exam practice papers'],
         ],
         [
             'name' => 'Classes 11 and 12',
-            'price' => Money::fromRupees(2500),
+            'price' => Money::fromRupees(1500),
+            'classroom_price' => Money::fromRupees(2000),
             'period' => 'per subject, per month',
             'subjects' => ['Physics', 'Chemistry', 'Maths', 'Biology', 'Accountancy', 'Economics'],
             'features' => ['3 live classes a week', '55 minutes each', 'Board and entrance exam practice'],
@@ -106,9 +103,9 @@ return [
     // MKT-3 price question on the enquiry form, to test what people will pay.
     // PLACEHOLDER ranges.
     'price_ranges' => [
-        'Up to ₹1,500 a month per subject',
-        '₹1,500 to ₹2,500 a month per subject',
-        'More than ₹2,500 a month per subject',
+        'Up to ₹1,000 a month per subject',
+        '₹1,000 to ₹1,500 a month per subject',
+        'More than ₹1,500 a month per subject',
     ],
 
     'waitlist' => [
@@ -128,6 +125,8 @@ return [
         'fees_eyebrow' => 'Fees',
         'fees_title' => 'Simple monthly fees',
         'fees_lead' => 'One fee per subject, per child, per month. No admission fee, and the first class is a free demo.',
+        'online_label' => 'Online',
+        'classroom_label' => 'Physical classroom',
         'subjects_label' => 'Subjects',
         'plan_button' => 'Book a free demo',
         'steps_eyebrow' => 'How it works',

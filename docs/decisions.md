@@ -159,3 +159,10 @@ Home, Tuition and Academic heroes show original flat SVG illustrations (public/i
 - **Chord boxes are drawn in Blade** (`x-site.chord`) from a six-character fret string, so the admin can change or add chords without image files, and each box has a text description for screen readers.
 - **Videos are YouTube links pasted in the admin.** Only the 11-character id is kept (`App\Support\YouTube`), and the page shows a styled play button; the `youtube-nocookie` player is added only when the visitor taps it (`resources/js/site.js`), so YouTube sets nothing before then. Free hosting, and no video files on our server or R2.
 - **Guides follow their section's switch:** a guide tagged music is hidden from the guides list, the home page and the sitemap while music is off.
+
+## 2026-11-03 · Online and physical classroom tuition fees (MKT-1)
+
+- Each tuition fee plan has an optional **physical classroom fee** next to its online fee (`classroom_price`, paise). A plan without one shows a single fee as before. Owner's fees: classes 1 to 7 ₹700 online / ₹1,000 classroom, 8 to 10 ₹1,000 / ₹1,500, 11 and 12 ₹1,500 / ₹2,000, per subject per month.
+- The tuition page skips a plan saved without a fee and copes with missing subjects or ticked points, so a half-finished admin edit can't take the page down. The fee grid uses as many columns as there are plans.
+- The admin edit form fills in text added to the content files after a page was copied into the database (here the "Online" and "Physical classroom" labels), so saving an older page doesn't fail on empty required fields.
+- Batches still have one monthly fee each; a classroom batch is set up as its own batch with the classroom fee.

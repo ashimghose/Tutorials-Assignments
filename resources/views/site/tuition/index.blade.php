@@ -32,20 +32,33 @@
     <section id="fees" class="border-y border-slate-200 bg-slate-50">
         <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6">
             <x-site.section-heading :eyebrow="$text['fees_eyebrow']" :title="$text['fees_title']" :lead="$text['fees_lead']" />
-            <div class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                @foreach ($content['plans'] as $plan)
+            {{-- Plans saved without a fee are left out, so a half-filled plan can't break the page. --}}
+            @php($plans = \App\Support\SiteContent::pricedPlans($content['plans'] ?? []))
+            <div class="mt-8 grid gap-4 {{ \App\Support\SiteContent::planColumns(count($plans)) }}">
+                @foreach ($plans as $plan)
                     <article class="flex flex-col rounded-xl border border-slate-200 bg-white p-5">
-                        <h3 class="font-semibold text-slate-900">{{ $plan['name'] }}</h3>
-                        <p class="mt-3"><span class="text-3xl font-bold text-slate-900">{{ \App\Support\Money::format($plan['price']) }}</span></p>
-                        <p class="text-sm text-slate-500">{{ $plan['period'] }}</p>
-                        <ul class="mt-4 space-y-1.5 text-sm text-slate-600">
-                            @foreach ($plan['features'] as $feature)
-                                <li class="flex gap-2"><span aria-hidden="true" class="text-tuition-700">&#10003;</span> {{ $feature }}</li>
-                            @endforeach
-                        </ul>
-                        <p class="mt-4 text-sm text-slate-500"><span class="font-medium text-slate-700">{{ $text['subjects_label'] }}:</span> {{ implode(', ', $plan['subjects']) }}</p>
+                        <h3 class="font-semibold text-slate-900">{{ $plan['name'] ?? '' }}</h3>
+                        @if (is_numeric($plan['classroom_price'] ?? null))
+                            <div class="mt-3 grid grid-cols-2 gap-3">
+                                <p><span class="block text-xs font-medium uppercase tracking-wide text-slate-500">{{ $text['online_label'] }}</span><span class="text-2xl font-bold text-slate-900">{{ \App\Support\Money::format((int) $plan['price']) }}</span></p>
+                                <p><span class="block text-xs font-medium uppercase tracking-wide text-slate-500">{{ $text['classroom_label'] }}</span><span class="text-2xl font-bold text-slate-900">{{ \App\Support\Money::format((int) $plan['classroom_price']) }}</span></p>
+                            </div>
+                        @else
+                            <p class="mt-3"><span class="text-3xl font-bold text-slate-900">{{ \App\Support\Money::format((int) $plan['price']) }}</span></p>
+                        @endif
+                        <p class="text-sm text-slate-500">{{ $plan['period'] ?? '' }}</p>
+                        @if (($plan['features'] ?? []) !== [])
+                            <ul class="mt-4 space-y-1.5 text-sm text-slate-600">
+                                @foreach ($plan['features'] as $feature)
+                                    <li class="flex gap-2"><span aria-hidden="true" class="text-tuition-700">&#10003;</span> {{ $feature }}</li>
+                                @endforeach
+                            </ul>
+                        @endif
+                        @if (($plan['subjects'] ?? []) !== [])
+                            <p class="mt-4 text-sm text-slate-500"><span class="font-medium text-slate-700">{{ $text['subjects_label'] }}:</span> {{ implode(', ', $plan['subjects']) }}</p>
+                        @endif
                         <div class="mt-auto pt-5">
-                            <x-site.form-link form="tuition" section="tuition" :page="$page" :interest="'Free demo: '.$plan['name']" variant="outline" class="w-full">{{ $text['plan_button'] }}</x-site.form-link>
+                            <x-site.form-link form="tuition" section="tuition" :page="$page" :interest="'Free demo: '.($plan['name'] ?? '')" variant="outline" class="w-full">{{ $text['plan_button'] }}</x-site.form-link>
                         </div>
                     </article>
                 @endforeach
