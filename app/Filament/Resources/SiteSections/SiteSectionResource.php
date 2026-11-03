@@ -148,6 +148,7 @@ class SiteSectionResource extends Resource
                     TagsInput::make('content.price_ranges')->label('Price question choices on the enquiry form'),
                 ]),
                 self::stepsTab(),
+                self::videosTab(),
                 self::faqsTab(),
                 self::waitlistTab(),
                 self::textTab([
@@ -166,6 +167,8 @@ class SiteSectionResource extends Resource
                     'plan_button' => 'Button on each fee plan',
                     'steps_eyebrow' => 'How it works: small heading',
                     'steps_title' => 'How it works: heading',
+                    'videos_eyebrow' => 'Videos: small heading',
+                    'videos_title' => 'Videos: heading',
                     'people_eyebrow' => 'Teachers: small heading',
                     'people_title' => 'Teachers: heading',
                     'testimonials_eyebrow' => 'Testimonials: small heading',
@@ -219,23 +222,7 @@ class SiteSectionResource extends Resource
                         ->collapsible()->reorderable()->maxItems(8),
                 ]),
                 self::stepsTab(),
-                // A YouTube link per video; only the video id is kept on the page.
-                Tab::make('Videos')->schema([
-                    Repeater::make('content.videos')->label('Videos')
-                        ->helperText('Upload the video to YouTube (public or unlisted) and paste its link. The section is hidden while this list is empty.')
-                        ->schema([
-                            TextInput::make('title')->required()->maxLength(80),
-                            TextInput::make('url')->label('YouTube link')->required()->maxLength(255)
-                                ->rule(fn () => function (string $attribute, mixed $value, Closure $fail): void {
-                                    if (YouTube::id((string) $value) === null) {
-                                        $fail('Paste a YouTube video link, for example https://youtu.be/…');
-                                    }
-                                }),
-                            TextInput::make('caption')->label('Short caption (optional)')->maxLength(160),
-                        ])
-                        ->itemLabel(fn (array $state): ?string => $state['title'] ?? null)
-                        ->collapsible()->reorderable()->maxItems(6),
-                ]),
+                self::videosTab(),
                 self::faqsTab(),
                 self::waitlistTab(),
                 self::textTab([
@@ -319,6 +306,7 @@ class SiteSectionResource extends Resource
                     TagsInput::make('content.price_ranges')->label('Budget question choices on the enquiry form'),
                 ]),
                 self::stepsTab(),
+                self::videosTab(),
                 self::faqsTab(),
                 self::waitlistTab(),
                 self::textTab([
@@ -342,6 +330,8 @@ class SiteSectionResource extends Resource
                     'address_note' => 'Note under the add-ons',
                     'steps_eyebrow' => 'How it works: small heading',
                     'steps_title' => 'How it works: heading',
+                    'videos_eyebrow' => 'Videos: small heading',
+                    'videos_title' => 'Videos: heading',
                     'people_eyebrow' => 'Experts: small heading',
                     'people_title' => 'Experts: heading',
                     'testimonials_eyebrow' => 'Testimonials: small heading',
@@ -433,6 +423,29 @@ class SiteSectionResource extends Resource
             Textarea::make('content.lead')->label('Intro under the title')->rows(2)->maxLength(400),
             Textarea::make('content.description')->label('Description for Google and link previews')->required()->rows(2)->maxLength(300),
         ];
+    }
+
+    /**
+     * A YouTube link per video; only the video id is kept on the page.
+     */
+    private static function videosTab(): Tab
+    {
+        return Tab::make('Videos')->schema([
+            Repeater::make('content.videos')->label('Videos')
+                ->helperText('Upload the video to YouTube (public or unlisted) and paste its link. The section is hidden while this list is empty.')
+                ->schema([
+                    TextInput::make('title')->required()->maxLength(80),
+                    TextInput::make('url')->label('YouTube link')->required()->maxLength(255)
+                        ->rule(fn () => function (string $attribute, mixed $value, Closure $fail): void {
+                            if (YouTube::id((string) $value) === null) {
+                                $fail('Paste a YouTube video link, for example https://youtu.be/…');
+                            }
+                        }),
+                    TextInput::make('caption')->label('Short caption (optional)')->maxLength(160),
+                ])
+                ->itemLabel(fn (array $state): ?string => $state['title'] ?? null)
+                ->collapsible()->reorderable()->maxItems(6),
+        ]);
     }
 
     /**

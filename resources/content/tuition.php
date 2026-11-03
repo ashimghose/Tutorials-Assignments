@@ -64,6 +64,10 @@ return [
         ['title' => 'Classes start', 'body' => 'You get the class link and timetable. Your child joins from home at class time.'],
     ],
 
+    // Short videos shown under "How it works". Paste a YouTube link in the
+    // admin; the section stays hidden while the list is empty.
+    'videos' => [],
+
     // Add real teacher profiles here: ['name' => '', 'subjects' => '', 'bio' => ''].
     // The section stays hidden while this list is empty.
     'teachers' => [],
@@ -134,6 +138,8 @@ return [
         'plan_button' => 'Book a free demo',
         'steps_eyebrow' => 'How it works',
         'steps_title' => 'From enquiry to first class',
+        'videos_eyebrow' => 'Watch',
+        'videos_title' => 'See how it works',
         'people_eyebrow' => 'Teachers',
         'people_title' => 'Meet the teachers',
         'testimonials_eyebrow' => 'Parents say',
