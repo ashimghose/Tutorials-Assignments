@@ -7,6 +7,7 @@
             <div>
                 <p class="text-sm font-semibold uppercase tracking-wide text-academic-700">{{ $text['eyebrow'] }}</p>
                 <h1 class="mt-2 max-w-3xl text-3xl font-bold tracking-tight text-slate-900 sm:text-5xl">{{ $content['hero']['title'] }}</h1>
+                <x-site.keyword-badges :keywords="$content['keywords'] ?? []" accent="academic" />
                 <p class="mt-5 max-w-2xl text-lg text-slate-600">{{ $content['hero']['lead'] }}</p>
                 <div class="mt-8 flex flex-col gap-3 sm:flex-row">
                     <x-site.form-link form="academic" section="academic" :page="$page" interest="General enquiry" variant="academic">{{ $text['quote_button'] }}</x-site.form-link>

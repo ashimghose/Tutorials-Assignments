@@ -453,7 +453,10 @@ class SiteSectionResource extends Resource
     private static function heroTab(): Tab
     {
         return Tab::make('Top of page')->schema([
-            TextInput::make('content.hero.title')->label('Headline')->required()->maxLength(160),
+            TextInput::make('content.hero.title')->label('Headline')->required()->maxLength(160)
+                ->helperText('Keep it short (about 8 words). Put the services you want to stand out in the highlighted keywords below.'),
+            TagsInput::make('content.keywords')->label('Highlighted keywords')
+                ->helperText('Shown as coloured badges under the headline. Type one and press Enter.'),
             Textarea::make('content.hero.lead')->label('Intro')->required()->rows(3)->maxLength(400),
             Repeater::make('content.highlights')->label('Three highlights')
                 ->schema([

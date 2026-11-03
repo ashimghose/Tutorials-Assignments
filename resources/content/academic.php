@@ -18,8 +18,17 @@ use App\Support\Money;
 return [
 
     'hero' => [
-        'title' => 'Guidance, editing and printing for your thesis, dissertation or research paper',
+        'title' => 'Thesis, dissertation and research paper support',
         'lead' => 'For Bachelors, Masters and PhD students in any stream. We help you structure, polish, format and check your own work, then print, bind and deliver it.',
+    ],
+
+    // Shown as highlighted badges under the headline (MKT-1).
+    'keywords' => [
+        'Editing and proofreading',
+        'Plagiarism and AI check with Turnitin report',
+        'Formatting to your university\'s rules',
+        'Printing and binding',
+        'Handwritten copy of your own work',
     ],
 
     'highlights' => [
@@ -150,7 +159,7 @@ return [
     // Keep the integrity notice: we help with the student's own work and
     // never supply work to submit as theirs (UGC 2018).
     'text' => [
-        'seo_title' => 'Thesis, dissertation and research paper editing, formatting and printing',
+        'seo_title' => 'Thesis, dissertation and research paper editing, Turnitin plagiarism and AI check, formatting and printing',
         'seo_description' => 'Guidance, editing, proofreading, formatting, similarity checks, printing and delivery for Bachelors, Masters and PhD students\' synopses, research papers, theses and dissertations.',
         'eyebrow' => 'Academic services for students aged 18 and over',
         'quote_button' => 'Get a price for your work',

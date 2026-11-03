@@ -176,3 +176,6 @@ Home, Tuition and Academic heroes show original flat SVG illustrations (public/i
 
 ## 2026-11-03 · Stock photos on the landing pages
 Tuition, Music and Academic show a row of three free-licence Pexels photos (chosen by the owner) under the highlights, as WebP at 640 and 1200 px (under 100 KB each), lazy-loaded with fixed width and height. The illustrations stay as heroes. Photos illustrate the kind of class and are never captioned as our own students or teachers; originals are in the project files (site-look/photos).
+
+## 2026-11-03 · Keyword badges under landing-page headlines
+Each landing page can show the section's main services as coloured badges under a short headline (`content.keywords`, edited under Top of page > Highlighted keywords). The academic headline the owner had typed listed every service in one sentence; a migration shortens it (only if unchanged) and the badges carry the keywords, worded so nothing offers to write the student's work (ACA).
