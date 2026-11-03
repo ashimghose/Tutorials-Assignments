@@ -32,6 +32,12 @@
             @endforeach
         </div>
 
+        <x-site.photo-row :photos="[
+            ['name' => 'academic-campus-students', 'alt' => 'Three college students working together with a laptop and books on campus'],
+            ['name' => 'academic-student-notes', 'alt' => 'A student writes notes beside her laptop'],
+            ['name' => 'academic-student-smiling', 'alt' => 'A student smiles while working at her desk'],
+        ]" />
+
         <div id="integrity" class="mt-6 rounded-xl border border-academic-100 bg-academic-50 p-5 sm:p-6">
             <h2 class="font-semibold text-slate-900">{{ $text['integrity_title'] }}</h2>
             <p class="mt-2 text-sm text-slate-700">{{ $text['integrity_body'] }}</p>

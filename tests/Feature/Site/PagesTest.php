@@ -233,3 +233,17 @@ test('AUTH-1 the header offers a log-in link once accounts are switched on', fun
         ->assertSee('My account')
         ->assertDontSee('Log in');
 });
+
+test('each landing page shows its row of lazy-loaded photos', function (string $path, string $first) {
+    $this->get($path)
+        ->assertOk()
+        ->assertSee('<img src="/images/photos/'.$first.'-640.webp"', false)
+        ->assertSee('loading="lazy"', false);
+
+    foreach (glob(public_path('images/photos/*.webp')) as $file) {
+        expect(filesize($file))->toBeLessThan(100_000);
+    }
+})->with([
+    'tuition' => ['/tuition', 'tuition-girl-online-class'],
+    'academic' => ['/academic', 'academic-campus-students'],
+]);
