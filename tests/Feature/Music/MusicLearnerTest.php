@@ -84,7 +84,7 @@ test('MUS-3 an adult music learner signs up directly, with no parent account', f
 
     Notification::assertSentOnDemandTimes(GuardianConsentRequest::class, 0);
     $user->markEmailAsVerified();
-    $this->get(route('dashboard'))->assertRedirect(route('music.home'));
+    $this->actingAs($user->fresh())->get(route('dashboard'))->assertRedirect(route('music.home'));
 });
 
 test('MUS-3 an adult must confirm 18+, and an under-18 must give a parent\'s email', function () {
