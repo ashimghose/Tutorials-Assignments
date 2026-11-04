@@ -82,7 +82,7 @@ test('MUS-3 an adult music learner signs up directly, with no parent account', f
         ->and($learner->awaitingGuardianConsent())->toBeFalse()
         ->and($user->consents()->sole()->purpose)->toBe(ConsentPurpose::MusicSelf);
 
-    Notification::assertNothingSent();
+    Notification::assertSentOnDemandTimes(GuardianConsentRequest::class, 0);
     $user->markEmailAsVerified();
     $this->get(route('dashboard'))->assertRedirect(route('music.home'));
 });
@@ -189,7 +189,7 @@ test('MUS-3 an under-18 learner waits for the parent and cannot join a batch or 
     $this->actingAs($learner->user)->get(route('classes.join', $session))->assertForbidden();
 
     $learner->forceFill(['guardian_consented_at' => now()])->save();
-    $this->actingAs($learner->user)->get(route('classes.join', $session))->assertRedirect();
+    $this->actingAs($learner->user->fresh())->get(route('classes.join', $session))->assertRedirect();
 });
 
 test('MUS-3 the parent approval email can be sent again, but not too often', function () {

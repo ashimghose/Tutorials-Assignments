@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Enums\ConsentPurpose;
+use App\Models\Consent;
 use App\Models\ParentProfile;
 use App\Models\Student;
 use App\Models\User;
@@ -42,7 +44,7 @@ class StudentFactory extends Factory
             'adult_declared_at' => $adult ? now() : null,
             'guardian_email' => $adult ? null : 'parent@example.com',
             'guardian_consented_at' => null,
-        ]);
+        ])->afterCreating(fn (Student $learner) => Consent::record($learner->user()->firstOrFail(), ConsentPurpose::MusicSelf, $learner));
     }
 
     /**
