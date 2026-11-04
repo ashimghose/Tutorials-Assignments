@@ -103,6 +103,14 @@ class Student extends Model
     }
 
     /**
+     * The mobile number to reach about fees: the parent's, or the music learner's own.
+     */
+    public function contactMobile(): ?string
+    {
+        return $this->isMusicLearner() ? $this->mobile : $this->parent->mobile;
+    }
+
+    /**
      * The account holder's page with this learner's classes and fees.
      */
     public function classesRoute(): string

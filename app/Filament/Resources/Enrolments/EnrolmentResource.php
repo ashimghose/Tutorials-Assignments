@@ -49,8 +49,8 @@ class EnrolmentResource extends Resource
                 // MUS-3: a music learner has their own account instead of a parent's.
                 TextColumn::make('student.parent.user.name')->label('Parent')->searchable()->placeholder('Own account (music)'),
                 TextColumn::make('mobile')->label('Mobile')
-                    ->state(fn (Enrolment $record): ?string => $record->student->parent?->mobile ?? $record->student->mobile)
-                    ->url(fn (Enrolment $record): ?string => ($mobile = $record->student->parent?->mobile ?? $record->student->mobile) ? 'https://wa.me/91'.$mobile : null, shouldOpenInNewTab: true),
+                    ->state(fn (Enrolment $record): ?string => $record->student->contactMobile())
+                    ->url(fn (Enrolment $record): ?string => $record->student->contactMobile() ? 'https://wa.me/91'.$record->student->contactMobile() : null, shouldOpenInNewTab: true),
                 $showBatch ? TextColumn::make('batch_id')->label('Batch')->formatStateUsing(fn (Enrolment $record): string => $record->batch->name()) : null,
                 TextColumn::make('status')->badge()
                     ->formatStateUsing(fn (EnrolmentStatus $state): string => $state->label())

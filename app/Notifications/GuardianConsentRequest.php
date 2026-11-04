@@ -29,7 +29,7 @@ class GuardianConsentRequest extends Notification implements ShouldQueue
 
     public function toMail(object $notifiable): MailMessage
     {
-        $name = $this->learner->user?->name ?? 'Your child';
+        $name = $this->learner->user->name;
         $app = config('app.name');
 
         return (new MailMessage)
