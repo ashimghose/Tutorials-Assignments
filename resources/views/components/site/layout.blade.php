@@ -43,7 +43,7 @@
 @endphp
 
 <!DOCTYPE html>
-<html lang="en-IN" class="scroll-pt-20">
+<html lang="en-IN" class="scroll-pt-24">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -96,10 +96,14 @@
         @endif
 
         <header class="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur">
-            <div class="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
-                <a href="{{ route('home') }}" class="flex items-center">
+            <div class="mx-auto flex h-20 max-w-6xl items-center justify-between gap-4 px-4 sm:px-6">
+                <a href="{{ route('home') }}" class="flex flex-col items-start">
                     {{-- The owner's logo artwork; its text is the alt text. Icon-only version: indian-assignments-icon.svg. --}}
-                    <img src="{{ $brand['logo'] }}" alt="{{ $brand['logo_alt'] }}" width="123" height="48" class="h-11 w-auto sm:h-12">
+                    <img src="{{ $brand['logo'] }}" alt="{{ $brand['logo_alt'] }}" width="123" height="48" class="h-10 w-auto sm:h-11">
+                    @if (filled(config('verticals.brand.tagline')))
+                        <span class="mt-0.5 text-[11px] leading-tight font-semibold tracking-wide text-tuition-700">{{ config('verticals.brand.tagline') }}</span>
+                        <span class="text-[10px] leading-tight tracking-wide text-brand-800">{{ config('verticals.brand.tagline_en') }}</span>
+                    @endif
                 </a>
 
                 <nav class="hidden items-center gap-1 lg:flex" aria-label="Main">
