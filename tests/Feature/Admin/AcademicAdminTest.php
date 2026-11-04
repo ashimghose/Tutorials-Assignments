@@ -50,7 +50,7 @@ test('ACA-1 ACA-2 the price list and add-ons are copied from the site content on
 
     $synopsis->update(['price_phd' => 450000]);
     $this->seed(AcademicCatalogueSeeder::class);
-    expect(Service::count())->toBe(6)->and($synopsis->fresh()->price_phd)->toBe(450000);
+    expect(Service::count())->toBe(7)->and($synopsis->fresh()->price_phd)->toBe(450000);
 });
 
 test('ACA-1 the public academic page shows the admin\'s price list', function () {
