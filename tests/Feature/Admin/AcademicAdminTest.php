@@ -40,7 +40,7 @@ test('ACA-6 the default statuses are seeded in order with their flags', function
 });
 
 test('ACA-1 ACA-2 the price list and add-ons are copied from the site content once', function () {
-    expect(Service::count())->toBe(6)->and(ServiceAddon::count())->toBe(6);
+    expect(Service::count())->toBe(7)->and(ServiceAddon::count())->toBe(6);
 
     $synopsis = Service::where('title', 'Synopsis guidance and review')->sole();
     expect($synopsis->price_phd)->toBe(400000)
