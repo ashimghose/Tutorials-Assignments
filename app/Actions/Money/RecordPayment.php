@@ -27,7 +27,8 @@ class RecordPayment
             'received_on' => $receivedOn->toDateString(),
         ]);
         $payment->forceFill([
-            'offering' => $for instanceof Enrolment ? Offering::Tuition : Offering::Academic,
+            // MUS-2: a music batch's fee counts as music in the money report.
+            'offering' => $for instanceof Enrolment ? $for->batch->offering : Offering::Academic,
             'enrolment_id' => $for instanceof Enrolment ? $for->id : null,
             'academic_order_id' => $for instanceof AcademicOrder ? $for->id : null,
             'recorded_by' => $by?->id,

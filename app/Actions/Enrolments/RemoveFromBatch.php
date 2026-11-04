@@ -22,6 +22,6 @@ class RemoveFromBatch
 
         AuditLog::record('enrolment.removed', $enrolment);
 
-        $enrolment->student->parent->user->notify(new RemovedFromBatch($enrolment));
+        $enrolment->student->accountHolder()?->notify(new RemovedFromBatch($enrolment));
     }
 }

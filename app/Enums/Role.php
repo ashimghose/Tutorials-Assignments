@@ -11,6 +11,7 @@ enum Role: string
     case Parent = 'parent';
     case Student = 'student';
     case AcademicStudent = 'academic_student';
+    case MusicStudent = 'music_student';
     case Teacher = 'teacher';
     case Admin = 'admin';
 
@@ -20,6 +21,7 @@ enum Role: string
             self::Parent => 'Parent',
             self::Student => 'School student',
             self::AcademicStudent => 'Academic student',
+            self::MusicStudent => 'Music learner',
             self::Teacher => 'Teacher / expert',
             self::Admin => 'Admin',
         };
@@ -34,6 +36,7 @@ enum Role: string
             self::Parent => 'parent.children',
             self::Student => 'student.home',
             self::AcademicStudent => 'academic.home',
+            self::MusicStudent => 'music.home',
             self::Teacher => 'teacher.home',
             self::Admin => 'filament.admin.pages.dashboard',
         };

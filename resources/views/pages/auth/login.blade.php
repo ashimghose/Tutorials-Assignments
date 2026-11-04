@@ -1,6 +1,6 @@
 <x-layouts::auth :title="__('Log in')">
     <div class="flex flex-col gap-6">
-        <x-auth-header :title="__('Log in to your account')" :description="__('Students: use the username your parent set up.')" />
+        <x-auth-header :title="__('Log in to your account')" :description="__('School students: use the username your parent set up. Everyone else, including music learners: use your email.')" />
 
         <!-- Session Status -->
         <x-auth-session-status class="text-center" :status="session('status')" />

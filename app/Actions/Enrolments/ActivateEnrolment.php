@@ -28,6 +28,6 @@ class ActivateEnrolment
 
         AuditLog::record('enrolment.activated', $enrolment, ['paid_through' => $paidThrough->toDateString(), 'source' => $source]);
 
-        $enrolment->student->parent->user->notify(new EnrolmentActivated($enrolment));
+        $enrolment->student->accountHolder()?->notify(new EnrolmentActivated($enrolment));
     }
 }

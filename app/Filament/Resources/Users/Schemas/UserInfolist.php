@@ -60,6 +60,17 @@ class UserInfolist
                         TextEntry::make('student.board')->label('Board'),
                         TextEntry::make('student.parent.user.name')->label('Parent'),
                     ]),
+                Section::make('Music learner')
+                    ->visible(fn (User $record): bool => $record->role === Role::MusicStudent)
+                    ->columns(2)
+                    ->schema([
+                        TextEntry::make('student.mobile')->label('Mobile')->placeholder('—'),
+                        TextEntry::make('student.adult_declared_at')->label('Declared 18+')->dateTime('j M Y, g:i a', $tz)->placeholder('No, under 18'),
+                        TextEntry::make('student.guardian_email')->label('Parent\'s email')->placeholder('—')
+                            ->visible(fn (User $record): bool => $record->student?->isMinorMusicLearner() ?? false),
+                        TextEntry::make('student.guardian_consented_at')->label('Parent approved')->dateTime('j M Y, g:i a', $tz)->placeholder('Not yet')
+                            ->visible(fn (User $record): bool => $record->student?->isMinorMusicLearner() ?? false),
+                    ]),
                 Section::make('Teacher')
                     ->visible(fn (User $record): bool => $record->role === Role::Teacher)
                     ->columns(2)

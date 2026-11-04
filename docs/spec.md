@@ -443,10 +443,19 @@ and it knows exactly what to build and test.
   admin-managed data, never hard-coded.
 
 - MUS-2 Lessons are group batches or 1-to-1 slots, priced monthly per
-  student, with an optional trial lesson.
+  student, with an optional trial lesson. Music batches share the tuition
+  batch, timetable, enrolment and "Fee received" screens, tagged by
+  section; a learner sees and joins music batches on "My music classes"
+  (`/my-music`). 1-to-1 slots come later.
 
-- MUS-3 Learners are minors (signed up by a parent with consent, like
-  school students) or adults (18+ self sign-up with their own consent).
+- MUS-3 Every learner signs up themselves on the Music sign-up tab; there
+  is no parent account for music (owner's decision, 4 Nov 2026). Adults
+  declare 18+ and consent for themselves. An under-18 learner gives a
+  parent's or guardian's email; the parent gets a signed link (valid 14
+  days) and approves without logging in. Until then the learner can log in
+  but cannot join a batch or class, and the account is deleted if nobody
+  approves in time. Under-18 learners get no in-app chat (CHAT-4: there is
+  no parent to include) and no marketing email.
 
 - MUS-4 Safeguarding for 1-to-1 lessons with a minor: the parent is
   always in the chat (CHAT-4), lessons and links are visible to the

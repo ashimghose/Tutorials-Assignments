@@ -34,9 +34,9 @@ class AppServiceProvider extends ServiceProvider
         $this->configureDefaults();
         $this->configureRateLimiting();
 
-        // NOT-1: a welcome email once a parent or academic student verifies their email.
+        // NOT-1: a welcome email once a parent, academic student or music learner verifies their email.
         Event::listen(function (Verified $event) {
-            if ($event->user instanceof User && in_array($event->user->role, [Role::Parent, Role::AcademicStudent], true)) {
+            if ($event->user instanceof User && in_array($event->user->role, [Role::Parent, Role::AcademicStudent, Role::MusicStudent], true)) {
                 $event->user->notify(new Welcome);
             }
         });

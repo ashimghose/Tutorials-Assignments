@@ -7,7 +7,7 @@ Route::middleware(['feature:accounts', 'auth'])->group(function () {
 
     // A school student's details and account belong to their parent.
     Route::livewire('settings/profile', 'pages::settings.profile')
-        ->middleware('role:parent,academic_student,teacher,admin')
+        ->middleware('role:parent,academic_student,music_student,teacher,admin')
         ->name('profile.edit');
 });
 

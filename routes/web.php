@@ -4,6 +4,7 @@ use App\Http\Controllers\ClassJoinController;
 use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\LeadController;
 use App\Http\Controllers\MessageAttachmentController;
+use App\Http\Controllers\MusicGuardianConsentController;
 use App\Http\Controllers\OrderFileController;
 use App\Http\Controllers\SiteController;
 use App\Http\Controllers\UnsubscribeController;
@@ -66,6 +67,11 @@ Route::middleware(['feature:accounts', 'auth', 'verified'])->group(function () {
         });
     });
 
+    // MUS-2, MUS-3: a music learner's own page; they sign up without a parent account.
+    Route::middleware(['role:music_student', 'feature:batches'])->prefix('my-music')->name('music.')->group(function () {
+        Route::livewire('/', 'pages::portal.music.home')->name('home');
+    });
+
     Route::middleware('role:teacher')->prefix('teacher')->name('teacher.')->group(function () {
         Route::livewire('/', 'pages::portal.teacher.home')->name('home');
         Route::middleware('feature:academic_orders')->group(function () {
@@ -92,6 +98,12 @@ Route::middleware(['feature:accounts', 'auth', 'verified'])->group(function () {
 Route::middleware(['feature:accounts', 'guest', 'signed'])->controller(InvitationController::class)->group(function () {
     Route::get('invitation/{user}', 'show')->name('invitation.show');
     Route::post('invitation/{user}', 'accept')->name('invitation.accept');
+});
+
+// MUS-3: a parent approves an under-18 music learner from the signed link in their email.
+Route::middleware(['feature:accounts', 'signed'])->controller(MusicGuardianConsentController::class)->group(function () {
+    Route::get('consent/music/{student}', 'show')->name('music.consent.show');
+    Route::post('consent/music/{student}', 'accept')->middleware('throttle:leads')->name('music.consent.accept');
 });
 
 // NOT-3: one-click unsubscribe from the signed link in each marketing email.

@@ -14,8 +14,8 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
 /**
- * Every child's place in every batch: new requests waiting for the fee,
- * active, paused and removed.
+ * Every student's place in every tuition or music batch: new requests
+ * waiting for the fee, active, paused and removed.
  */
 class EnrolmentResource extends Resource
 {
@@ -42,13 +42,15 @@ class EnrolmentResource extends Resource
     public static function enrolmentTable(Table $table, bool $showBatch): Table
     {
         return $table
-            ->modifyQueryUsing(fn ($query) => $query->with('student.parent.user', 'batch'))
+            ->modifyQueryUsing(fn ($query) => $query->with('student.parent.user', 'student.user', 'batch'))
             ->defaultSort('created_at', 'desc')
             ->columns(array_filter([
-                TextColumn::make('student.first_name')->label('Child')->searchable(),
-                TextColumn::make('student.parent.user.name')->label('Parent')->searchable(),
-                TextColumn::make('student.parent.mobile')->label('Mobile')
-                    ->url(fn (Enrolment $record): ?string => $record->student->parent->mobile ? 'https://wa.me/91'.$record->student->parent->mobile : null, shouldOpenInNewTab: true),
+                TextColumn::make('student.first_name')->label('Student')->searchable(),
+                // MUS-3: a music learner has their own account instead of a parent's.
+                TextColumn::make('student.parent.user.name')->label('Parent')->searchable()->placeholder('Own account (music)'),
+                TextColumn::make('mobile')->label('Mobile')
+                    ->state(fn (Enrolment $record): ?string => $record->student->parent?->mobile ?? $record->student->mobile)
+                    ->url(fn (Enrolment $record): ?string => ($mobile = $record->student->parent?->mobile ?? $record->student->mobile) ? 'https://wa.me/91'.$mobile : null, shouldOpenInNewTab: true),
                 $showBatch ? TextColumn::make('batch_id')->label('Batch')->formatStateUsing(fn (Enrolment $record): string => $record->batch->name()) : null,
                 TextColumn::make('status')->badge()
                     ->formatStateUsing(fn (EnrolmentStatus $state): string => $state->label())

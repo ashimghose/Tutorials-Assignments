@@ -2,6 +2,7 @@
 
 use App\Actions\Enrolments\RequestEnrolment;
 use App\Enums\EnrolmentStatus;
+use App\Enums\Offering;
 use App\Models\Batch;
 use App\Models\ClassSession;
 use App\Models\Enrolment;
@@ -42,6 +43,7 @@ new #[Title('Classes')] class extends Component {
     {
         return Batch::query()
             ->open()
+            ->forOffering(Offering::Tuition)
             ->whereIn('class_level', $this->children->pluck('class_level')->unique())
             ->with('teacher.user')
             ->withCount(['enrolments as seats_taken' => fn ($query) => $query->whereIn('status', EnrolmentStatus::holdingSeat())])
@@ -71,7 +73,7 @@ new #[Title('Classes')] class extends Component {
         $student = Student::query()->findOrFail($studentId);
         $this->authorize('request', [Enrolment::class, $student]);
 
-        $batch = Batch::query()->open()->findOrFail($batchId);
+        $batch = Batch::query()->open()->forOffering(Offering::Tuition)->findOrFail($batchId);
         abort_unless($batch->class_level === $student->class_level, 403);
 
         $request->handle($student, $batch);

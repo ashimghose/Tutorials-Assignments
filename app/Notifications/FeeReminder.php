@@ -34,6 +34,6 @@ class FeeReminder extends Notification implements ShouldQueue
             ->subject("Fee due {$when}: {$batch}")
             ->line("{$this->enrolment->student->first_name}'s fee for {$batch} is paid until {$this->enrolment->paid_through?->format('j M Y')}.")
             ->line('Please renew so classes continue without a break. We will send you the payment link on WhatsApp, or you can message us.')
-            ->action('See enrolments', route('parent.classes'));
+            ->action('See enrolments', route($this->enrolment->student->classesRoute()));
     }
 }

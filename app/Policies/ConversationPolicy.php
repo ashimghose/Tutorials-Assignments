@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Enums\Role;
 use App\Models\Conversation;
 use App\Models\User;
 
@@ -27,7 +28,17 @@ class ConversationPolicy
 
     public function create(User $user): bool
     {
-        return $user->isActive() && ($user->parentProfile !== null || $user->student !== null || $user->academicStudent !== null);
+        return $user->isActive() && $this->useMessages($user)
+            && ($user->parentProfile !== null || $user->student !== null || $user->academicStudent !== null);
+    }
+
+    /**
+     * CHAT-4, MUS-4: an under-18 music learner has no parent account to add
+     * to a conversation, so they don't get chat; they reach us on WhatsApp.
+     */
+    public function useMessages(User $user): bool
+    {
+        return ! ($user->hasRole(Role::MusicStudent) && ($user->student?->isMinorMusicLearner() ?? true));
     }
 
     public function reply(User $user, Conversation $conversation): bool

@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Enums\Role;
 use App\Models\ClassSession;
 use App\Models\Enrolment;
 use App\Models\User;
@@ -28,7 +29,11 @@ class ClassSessionPolicy
             return Response::allow();
         }
 
-        $student = $user->isStudent() ? $user->student : null;
+        // School students, and music learners (MUS-3) once a parent has approved an under-18 account.
+        $student = $user->hasRole(Role::Student, Role::MusicStudent) ? $user->student : null;
+        if ($student?->awaitingGuardianConsent()) {
+            return Response::deny(__('Your parent needs to approve your account first.'));
+        }
 
         return $student !== null && Enrolment::query()->whereBelongsTo($student)->whereBelongsTo($session->batch)->withAccess()->exists()
             ? Response::allow()

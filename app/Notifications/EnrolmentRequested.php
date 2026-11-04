@@ -9,7 +9,7 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
 /**
- * Tells the admins that a parent asked for a seat, so they can send the fee link.
+ * Tells the admins that a parent (or a music learner) asked for a seat, so they can send the fee link.
  */
 class EnrolmentRequested extends Notification implements ShouldQueue
 {
@@ -31,7 +31,9 @@ class EnrolmentRequested extends Notification implements ShouldQueue
 
         return (new MailMessage)
             ->subject('New enrolment request: '.$batch->name())
-            ->line("A parent asked for a place for {$this->enrolment->student->first_name} in {$batch->name()}.")
+            ->line($this->enrolment->student->isMusicLearner()
+                ? "Music learner {$this->enrolment->student->user?->name} asked for a place in {$batch->name()}."
+                : "A parent asked for a place for {$this->enrolment->student->first_name} in {$batch->name()}.")
             ->line('Send them the fee link, then mark the fee as received in the admin panel.')
             ->action('Open enrolments', url('/admin/enrolments'));
     }

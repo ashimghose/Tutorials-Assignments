@@ -12,6 +12,14 @@
                     <x-site.form-link form="music" section="music" :page="$page" interest="Free trial class" variant="music">{{ $text['demo_button'] }}</x-site.form-link>
                     <x-site.form-link form="music" section="music" :page="$page" interest="General enquiry" variant="outline">{{ $text['question_button'] }}</x-site.form-link>
                 </div>
+                @if (config('features.accounts') && config('features.batches'))
+                    {{-- MUS-3: learners sign up themselves; no parent account needed. --}}
+                    <p class="mt-4 text-sm text-slate-700" data-test="music-account-links">
+                        <a href="{{ route('register', ['as' => 'music']) }}" class="font-semibold text-music-700 underline">Sign up as a music learner</a>
+                        <span class="text-slate-400">·</span>
+                        <a href="{{ route('login') }}" class="font-semibold text-music-700 underline">Log in</a>
+                    </p>
+                @endif
                 <p class="mt-4 text-sm text-slate-500">{{ $text['styles_label'] }}: {{ implode(', ', $content['styles']) }}</p>
             </div>
             <x-site.hero-image name="guitar-group-class" alt="A live online guitar class: the teacher plays on a laptop screen while learners play along with their guitars" />

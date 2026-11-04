@@ -46,9 +46,10 @@ class ChangeClass
         $parents = Enrolment::query()
             ->whereBelongsTo($session->batch)
             ->withAccess()
-            ->with('student.parent.user')
+            ->with('student.parent.user', 'student.user')
             ->get()
-            ->map(fn (Enrolment $enrolment) => $enrolment->student->parent->user);
+            ->map(fn (Enrolment $enrolment) => $enrolment->student->accountHolder())
+            ->filter();
 
         return $parents->push($session->batch->teacher?->user)->filter()->unique('id')->values();
     }

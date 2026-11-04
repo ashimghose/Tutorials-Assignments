@@ -33,6 +33,6 @@ class EnrolmentActivated extends Notification implements ShouldQueue
             ->subject("{$name} is enrolled in {$this->enrolment->batch->name()}")
             ->line("Thank you. We have received the fee, and {$name} can join the classes of {$this->enrolment->batch->name()}.")
             ->line('Paid until: '.$this->enrolment->paid_through?->format('j M Y'))
-            ->action('See the timetable', route('parent.classes'));
+            ->action('See the timetable', route($this->enrolment->student->classesRoute()));
     }
 }

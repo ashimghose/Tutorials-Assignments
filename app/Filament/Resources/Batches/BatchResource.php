@@ -25,16 +25,19 @@ use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 
 /**
- * CLS-1: tuition batches with their weekly schedule (India time), teacher,
- * seats, monthly fee and Google Meet link.
+ * CLS-1, MUS-2: tuition and music batches with their weekly schedule (India
+ * time), teacher, seats, monthly fee and Google Meet link.
  */
 class BatchResource extends Resource
 {
@@ -52,12 +55,23 @@ class BatchResource extends Resource
 
         return $schema->columns(1)->components([
             Section::make('Batch')->columns(3)->schema([
-                TextInput::make('subject')->required()->maxLength(80)->placeholder('Maths'),
-                Select::make('class_level')->label('Class')->required()
+                // MUS-2: music batches have a name instead of a class and board.
+                Select::make('offering')->label('Section')->required()->default(Offering::Tuition->value)->live()
+                    ->options([Offering::Tuition->value => 'Tuition', Offering::Music->value => 'Music lessons'])
+                    ->afterStateUpdated(fn (Set $set) => $set('teacher_id', null)),
+                TextInput::make('subject')->required()->maxLength(80)
+                    ->label(fn (Get $get): string => self::isMusic($get('offering')) ? 'Batch name' : 'Subject')
+                    ->placeholder(fn (Get $get): string => self::isMusic($get('offering')) ? 'Guitar beginners (Saturday)' : 'Maths'),
+                Select::make('class_level')->label('Class')
+                    ->visible(fn (Get $get): bool => ! self::isMusic($get('offering')))
+                    ->required(fn (Get $get): bool => ! self::isMusic($get('offering')))
                     ->options(collect(range(1, 12))->mapWithKeys(fn (int $level) => [$level => "Class {$level}"])),
-                Select::make('board')->required()->options(array_combine([...$boards, 'Other'], [...$boards, 'Other'])),
+                Select::make('board')
+                    ->visible(fn (Get $get): bool => ! self::isMusic($get('offering')))
+                    ->required(fn (Get $get): bool => ! self::isMusic($get('offering')))
+                    ->options(array_combine([...$boards, 'Other'], [...$boards, 'Other'])),
                 Select::make('teacher_id')->label('Teacher')
-                    ->options(fn () => Teacher::query()->worksInOffering(Offering::Tuition)->with('user')->get()
+                    ->options(fn (Get $get) => Teacher::query()->worksInOffering(self::isMusic($get('offering')) ? Offering::Music : Offering::Tuition)->with('user')->get()
                         ->mapWithKeys(fn (Teacher $teacher) => [$teacher->id => $teacher->user->name])),
                 MoneyInput::make('monthly_fee')->label('Monthly fee')->required(),
                 TextInput::make('max_seats')->label('Seats')->integer()->minValue(1)->maxValue(50)->default(15)->required(),
@@ -87,17 +101,31 @@ class BatchResource extends Resource
                 ->withCount(['enrolments as seats_taken' => fn ($query) => $query->whereIn('status', EnrolmentStatus::holdingSeat())]))
             ->defaultSort('class_level')
             ->columns([
-                TextColumn::make('class_level')->label('Class')->sortable(),
+                TextColumn::make('offering')->label('Section')->badge()
+                    ->formatStateUsing(fn (Offering $state): string => $state->label())->color(fn (Offering $state): string => $state->color()),
+                TextColumn::make('class_level')->label('Class')->sortable()->placeholder('–'),
                 TextColumn::make('subject')->searchable(),
-                TextColumn::make('board'),
+                TextColumn::make('board')->placeholder('–'),
                 TextColumn::make('teacher.user.name')->label('Teacher')->placeholder('Not assigned'),
                 TextColumn::make('schedule')->label('Timetable')->state(fn (Batch $record): string => $record->scheduleSummary())->wrap(),
                 TextColumn::make('seats_taken')->label('Seats')->state(fn (Batch $record): string => "{$record->getAttribute('seats_taken')} / {$record->max_seats}"),
                 TextColumn::make('monthly_fee')->label('Fee')->formatStateUsing(fn (int $state): string => Money::format($state)),
                 IconColumn::make('is_active')->label('Running')->boolean(),
             ])
-            ->filters([TernaryFilter::make('is_active')->label('Running')->default(true)])
+            ->filters([
+                SelectFilter::make('offering')->label('Section')
+                    ->options([Offering::Tuition->value => 'Tuition', Offering::Music->value => 'Music lessons']),
+                TernaryFilter::make('is_active')->label('Running')->default(true),
+            ])
             ->recordActions([EditAction::make()]);
+    }
+
+    /**
+     * The section field's state is an enum on edit and a string on create.
+     */
+    private static function isMusic(mixed $offering): bool
+    {
+        return ($offering instanceof Offering ? $offering->value : $offering) === Offering::Music->value;
     }
 
     public static function getRelations(): array
