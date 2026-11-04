@@ -20,6 +20,14 @@ return [
     // Highlighted badges under the headline (MKT-1); none by default.
     'keywords' => [],
 
+    // CMS-1: the three photos under the highlights. An empty image keeps the
+    // photo that ships in public/images/photos (see the page view).
+    'photos' => [
+        ['image' => null, 'alt' => 'A school student takes notes during a live online class with a teacher on her laptop'],
+        ['image' => null, 'alt' => 'A teacher explains maths on a whiteboard to a class joining online'],
+        ['image' => null, 'alt' => 'A child listens to her teacher on a video call'],
+    ],
+
     'highlights' => [
         ['title' => 'Small live batches', 'body' => 'At most 15 students in a class, so every child can ask questions and be heard.'],
         ['title' => 'Notebook camera', 'body' => 'Teachers solve problems on paper or a whiteboard, the way your child will in the exam.'],

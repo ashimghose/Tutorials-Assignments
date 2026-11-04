@@ -10,7 +10,7 @@ function academicHeadlineMigration(): object
 
 test('MKT-1 the academic page shows a short headline with the services as badges', function () {
     $response = $this->get('/academic')->assertOk()
-        ->assertSee('<h1 class="mt-2 max-w-3xl text-3xl font-bold tracking-tight text-slate-900 sm:text-5xl">Thesis, dissertation and research paper support</h1>', false)
+        ->assertSee('<h1 class="mt-2 max-w-3xl text-3xl font-bold tracking-tight text-slate-900 sm:text-5xl">Assignments, thesis, dissertation and research paper support</h1>', false)
         ->assertSee('aria-label="What we offer"', false)
         ->assertSee('Turnitin plagiarism and AI check', false);
 

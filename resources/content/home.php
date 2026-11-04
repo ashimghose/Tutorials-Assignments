@@ -22,8 +22,8 @@ return [
         'academic' => [
             'eyebrow' => 'For college students, 18+',
             'title' => 'Academic services',
-            'body' => 'Guidance, editing, formatting and similarity checks for your synopsis, research paper, thesis or dissertation, plus printing, binding and delivery.',
-            'points' => ['Bachelors, Masters and PhD, any stream', 'Clear fixed prices, quotes for big jobs', 'Your work stays yours, and confidential'],
+            'body' => 'Guidance, editing, formatting and similarity checks for your assignments, synopsis, research paper, thesis or dissertation, plus printing, binding and delivery.',
+            'points' => ['Assignments from school to PhD, any stream', 'Clear fixed prices, quotes for big jobs', 'Your work stays yours, and confidential'],
         ],
         // Shown once music is switched on (FEATURE_VERTICAL_MUSIC).
         'music' => [

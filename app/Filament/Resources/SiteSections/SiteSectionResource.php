@@ -8,9 +8,11 @@ use App\Filament\Resources\SiteSections\Pages\ListSiteSections;
 use App\Filament\Support\MoneyInput;
 use App\Models\SiteSection;
 use App\Support\SiteLinks;
+use App\Support\SiteMedia;
 use App\Support\YouTube;
 use BackedEnum;
 use Closure;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\TagsInput;
@@ -90,7 +92,7 @@ class SiteSectionResource extends Resource
                     Textarea::make('content.hero.lead')->label('Intro')->required()->rows(3)->maxLength(400),
                 ]),
                 Tab::make('Offering cards')->schema(
-                    collect(['tuition' => 'Tuition card', 'academic' => 'Academic card', 'music' => 'Music card'])->map(fn (string $label, string $key) => Section::make($label)->schema([
+                    collect(['academic' => 'Academic card', 'tuition' => 'Tuition card', 'music' => 'Music card'])->map(fn (string $label, string $key) => Section::make($label)->schema([
                         TextInput::make("content.offerings.{$key}.eyebrow")->label('Small heading')->required()->maxLength(60),
                         TextInput::make("content.offerings.{$key}.title")->label('Title')->required()->maxLength(80),
                         Textarea::make("content.offerings.{$key}.body")->label('Text')->required()->rows(3)->maxLength(400),
@@ -128,6 +130,7 @@ class SiteSectionResource extends Resource
         return [
             Tabs::make()->tabs([
                 self::heroTab(),
+                self::photosTab(),
                 Tab::make('Fees')->schema([
                     TagsInput::make('content.boards')->label('Boards taught')->required(),
                     Repeater::make('content.plans')->label('Fee plans')
@@ -193,6 +196,7 @@ class SiteSectionResource extends Resource
         return [
             Tabs::make()->tabs([
                 self::heroTab(),
+                self::photosTab(),
                 Tab::make('Fees')->schema([
                     TagsInput::make('content.styles')->label('Instruments and singing styles')->required(),
                     Repeater::make('content.plans')->label('Fee plans')
@@ -269,6 +273,26 @@ class SiteSectionResource extends Resource
         return [
             Tabs::make()->tabs([
                 self::heroTab(),
+                Tab::make('Assignments')->schema([
+                    Text::make('The Assignments box under the top of the page: one card for college students and one for parents of school students.'),
+                    TextInput::make('content.assignments.eyebrow')->label('Small heading')->maxLength(60),
+                    TextInput::make('content.assignments.title')->label('Heading')->required()->maxLength(120),
+                    Textarea::make('content.assignments.lead')->label('Intro')->rows(2)->maxLength(400),
+                    Section::make('College and university card')->schema([
+                        TextInput::make('content.assignments.college_title')->label('Title')->required()->maxLength(120),
+                        Textarea::make('content.assignments.college_body')->label('Text')->required()->rows(3)->maxLength(600),
+                        TextInput::make('content.assignments.college_button')->label('Button')->required()->maxLength(60),
+                    ]),
+                    Section::make('School students card (for parents)')->schema([
+                        TextInput::make('content.assignments.school_title')->label('Title')->required()->maxLength(120),
+                        Textarea::make('content.assignments.school_body')->label('Text')->required()->rows(3)->maxLength(600)
+                            ->helperText('Keep it clear that a teacher guides the child and the child does the work.'),
+                        TextInput::make('content.assignments.school_button')->label('Button')->required()->maxLength(60),
+                        Textarea::make('content.assignments.school_message')->label('WhatsApp message the parent starts with')->rows(2)->maxLength(300)
+                            ->helperText('Sent to the Academic WhatsApp number (Website → Pages → Contact us).'),
+                    ]),
+                ]),
+                self::photosTab(),
                 Tab::make('Price list')->schema([
                     TagsInput::make('content.levels')->label('Levels')->required()
                         ->helperText('One per price column, in order: Bachelors, Masters, PhD. Each service has a price for these three; a level added after them shows the quote label.'),
@@ -355,7 +379,7 @@ class SiteSectionResource extends Resource
     {
         return [
             ...self::pageTopFields(),
-            ...collect(['tuition' => 'Tuition box', 'academic' => 'Academic box', 'music' => 'Music box'])->map(fn (string $label, string $key) => Section::make($label)->schema([
+            ...collect(['academic' => 'Academic box', 'tuition' => 'Tuition box', 'music' => 'Music box'])->map(fn (string $label, string $key) => Section::make($label)->schema([
                 TextInput::make("content.cards.{$key}.title")->label('Heading')->required()->maxLength(80),
                 Textarea::make("content.cards.{$key}.body")->label('Text')->required()->rows(2)->maxLength(300),
                 Grid::make(2)->schema([
@@ -423,6 +447,31 @@ class SiteSectionResource extends Resource
             Textarea::make('content.lead')->label('Intro under the title')->rows(2)->maxLength(400),
             Textarea::make('content.description')->label('Description for Google and link previews')->required()->rows(2)->maxLength(300),
         ];
+    }
+
+    /**
+     * CMS-1: the three photos under the highlights. An empty slot keeps the
+     * photo that ships with the site; uploads are shrunk to WebP on save.
+     */
+    private static function photosTab(): Tab
+    {
+        return Tab::make('Photos')->schema([
+            Repeater::make('content.photos')->label('Photos under the highlights')
+                ->helperText('Upload a JPG, PNG or WebP photo (up to 8 MB); it is cropped to 4:3 and compressed for you. Leave a slot empty to keep the photo the site came with. Do not caption stock photos as our own students or teachers.')
+                ->schema([
+                    FileUpload::make('image')->label('Photo')
+                        ->image()
+                        ->disk(fn (): string => config('site.media_disk'))
+                        ->directory(SiteMedia::DIRECTORY.'/originals')
+                        ->visibility('private')
+                        ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                        ->maxSize(8192),
+                    TextInput::make('alt')->label('Describe the photo')->required()->maxLength(160)
+                        ->helperText('For Google and for visitors who use a screen reader, e.g. "A child takes notes during an online class".'),
+                ])
+                ->itemLabel(fn (array $state): ?string => $state['alt'] ?? null)
+                ->minItems(3)->maxItems(3)->addable(false)->deletable(false)->reorderable()->collapsible(),
+        ]);
     }
 
     /**
