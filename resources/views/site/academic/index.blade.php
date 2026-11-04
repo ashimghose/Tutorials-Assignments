@@ -40,7 +40,7 @@
                     <h3 class="text-lg font-semibold text-slate-900">{{ $assignments['school_title'] ?? '' }}</h3>
                     <p class="mt-2 text-sm text-slate-700">{{ $assignments['school_body'] ?? '' }}</p>
                     <div class="mt-auto pt-5">
-                        <a href="https://wa.me/{{ \App\Support\SiteLinks::whatsappNumber('academic') }}?text={{ rawurlencode((string) ($assignments['school_message'] ?? '')) }}" target="_blank" rel="noopener" data-whatsapp="academic-school" class="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-[#1f7a4d] px-5 py-3 font-semibold text-white hover:bg-[#186440]">
+                        <a href="https://wa.me/{{ \App\Support\SiteLinks::whatsappNumber('academic') }}?text={{ rawurlencode((string) ($assignments['school_message'] ?? '')) }}" target="_blank" rel="noopener" data-school-assignments class="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-[#1f7a4d] px-5 py-3 font-semibold text-white hover:bg-[#186440]">
                             <x-site.whatsapp-icon class="size-5" />
                             <span>{{ $assignments['school_button'] ?? '' }}</span>
                         </a>
