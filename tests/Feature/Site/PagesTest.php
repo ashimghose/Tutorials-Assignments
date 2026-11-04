@@ -195,9 +195,18 @@ test('CMS-4 the sitemap lists every public page and guide', function () {
     $response->assertSee('<loc>'.route('resources.show', $article['slug']).'</loc><lastmod>'.$article['published'].'</lastmod>', false);
 });
 
+test('the tagline sits under the logo, Hindi first then English', function () {
+    $this->get('/')->assertSeeInOrder([
+        'indian-assignments-logo.svg',
+        'Shodh. Shiksha. Sangeet.',
+        'Research. Education. Music.',
+        'aria-label="Main"',
+    ], false);
+});
+
 test('the header logo is the Indian Assignments SVG, linked home', function () {
     $this->get('/')
-        ->assertSee('<a href="'.route('home').'" class="flex items-center">', false)
+        ->assertSee('<a href="'.route('home').'" class="flex flex-col items-start">', false)
         ->assertSee('<img src="/images/brand/indian-assignments-logo.svg" alt="Indian Assignments"', false);
 
     expect(file_get_contents(public_path('images/brand/indian-assignments-logo.svg')))->not->toContain('<script');

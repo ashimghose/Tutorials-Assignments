@@ -193,3 +193,7 @@ The owner asked for assignments (school to PhD) to be a main topic again. The ac
 - **Batches have a section** (`batches.offering`, default tuition). Music batches have a name instead of a class and board. A learner can only join a batch of their own kind (checked in `RequestEnrolment`). Music fees are recorded as music payments in the money report; music teachers' class pay still shows under Tuition there until payouts are split by section.
 - **No chat for under-18 music learners** (CHAT-4/MUS-4: no parent account to add); they reach us on WhatsApp. Adults can message us like academic students; a conversation about a music batch is also visible to its teacher, as for tuition.
 
+
+## 2026-11-04 · Tagline under the logo
+
+- The owner chose "Shodh. Shiksha. Sangeet." with "Research. Education. Music." under it, one word for each section (Academic, Tuition, Music). It sits under the header logo on every page; the header grows from 64 px to 80 px to fit. The text is in `config/verticals.php` (`BRAND_TAGLINE`, `BRAND_TAGLINE_EN`).

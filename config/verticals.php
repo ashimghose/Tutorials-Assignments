@@ -35,6 +35,9 @@ return [
     'brand' => [
         'logo' => env('BRAND_LOGO', '/images/brand/indian-assignments-logo.svg'),
         'logo_alt' => env('BRAND_LOGO_ALT', 'Indian Assignments'),
+        // Shown under the logo: Hindi (in English letters), then English.
+        'tagline' => env('BRAND_TAGLINE', 'Shodh. Shiksha. Sangeet.'),
+        'tagline_en' => env('BRAND_TAGLINE_EN', 'Research. Education. Music.'),
     ],
 
 ];
