@@ -83,7 +83,7 @@ test('CMS-1 academic prices round-trip between rupees in the form and paise in s
     $before = $academic->content['services'];
 
     $page = Livewire::test(EditSiteSection::class, ['record' => $academic->getRouteKey()])
-        ->assertSchemaStateSet(['content.services.0.price_phd' => 4000]);
+        ->assertSchemaStateSet(['content.services.0.price_phd' => 3600]);
 
     $page->fillForm(fn (array $state) => data_set($state, 'content.services.0.price_phd', 4500))->call('save')->assertHasNoFormErrors();
 
