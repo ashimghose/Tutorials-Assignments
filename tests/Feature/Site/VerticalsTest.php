@@ -144,11 +144,11 @@ test('VRT-1 teachers can work in any mix of sections', function () {
 test('VRT-4 the money report gets a music column once music is on', function () {
     $day = CarbonImmutable::parse('2026-11-02');
 
-    expect(array_keys(app(MoneyReport::class)->between($day, $day)))->toBe(['tuition', 'academic', 'total']);
+    expect(array_keys(app(MoneyReport::class)->between($day, $day)))->toBe(['academic', 'tuition', 'total']);
 
     musicOn();
 
-    expect(array_keys(app(MoneyReport::class)->between($day, $day)))->toBe(['tuition', 'academic', 'music', 'total'])
+    expect(array_keys(app(MoneyReport::class)->between($day, $day)))->toBe(['academic', 'tuition', 'music', 'total'])
         ->and(Offering::sectionOptions())->toBe(['academic' => 'Academic services', 'tuition' => 'Tuition', 'music' => 'Music lessons']);
 });
 
