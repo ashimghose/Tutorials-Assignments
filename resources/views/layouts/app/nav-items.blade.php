@@ -20,6 +20,13 @@
             {{ __('My orders') }}
         </flux:sidebar.item>
         @break
+    @case(\App\Enums\Role::MusicStudent)
+        @if (config('features.batches'))
+            <flux:sidebar.item icon="musical-note" :href="route('music.home')" :current="request()->routeIs('music.home')" wire:navigate>
+                {{ __('My music classes') }}
+            </flux:sidebar.item>
+        @endif
+        @break
     @case(\App\Enums\Role::Teacher)
         <flux:sidebar.item icon="home" :href="route('teacher.home')" :current="request()->routeIs('teacher.home')" wire:navigate>
             {{ __('Teacher home') }}
@@ -36,7 +43,8 @@
         </flux:sidebar.item>
         @break
 @endswitch
-@if (config('features.chat'))
+{{-- CHAT-4: no chat for an under-18 music learner, who has no parent account to include. --}}
+@if (config('features.chat') && auth()->user()->can('useMessages', \App\Models\Conversation::class))
     @php($unread = \App\Models\Conversation::query()->visibleTo(auth()->user())->whereNull('closed_at')->withUnreadFor(auth()->user())->get()->sum('unread_count'))
     <flux:sidebar.item icon="chat-bubble-left-right" :href="route('messages.index')" :current="request()->routeIs('messages.*')" :badge="$unread ?: null" wire:navigate>
         {{ __('Messages') }}

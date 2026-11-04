@@ -13,13 +13,18 @@ use Illuminate\Support\Facades\Notification;
 use Illuminate\Validation\ValidationException;
 
 /**
- * A parent asks for a seat for their child. The seat is held as "Waiting
+ * A parent asks for a seat for their child, or a music learner for themselves. The seat is held as "Waiting
  * for fee" until the fee is confirmed (PAY-2). The caller authorizes.
  */
 class RequestEnrolment
 {
     public function handle(Student $student, Batch $batch): Enrolment
     {
+        // MUS-2: music learners join music batches, school students tuition batches.
+        if ($student->isMusicLearner() !== $batch->isMusic()) {
+            throw ValidationException::withMessages(['batch' => __('This batch is not open to this learner.')]);
+        }
+
         if (! $batch->is_active) {
             throw ValidationException::withMessages(['batch' => __('This batch is not taking new students.')]);
         }

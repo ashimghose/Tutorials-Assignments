@@ -34,7 +34,7 @@ class EnrolmentActions
             ->icon(Heroicon::OutlinedCheckCircle)
             ->color('success')
             ->visible(fn (Enrolment $record): bool => $record->status !== EnrolmentStatus::Removed)
-            ->modalDescription('Use this after the fee has reached the bank account (Payment Link, UPI or cash). The parent gets an email and the child can join classes until this date.')
+            ->modalDescription('Use this after the fee has reached the bank account (Payment Link, UPI or cash). The parent (or the music learner) gets an email, and the student can join classes until this date.')
             ->schema([
                 DatePicker::make('paid_through')->label('Paid until')->required()
                     ->default(fn (Enrolment $record): string => self::nextPaidThrough($record)->toDateString()),
@@ -60,7 +60,7 @@ class EnrolmentActions
             ->color('danger')
             ->visible(fn (Enrolment $record): bool => $record->status !== EnrolmentStatus::Removed)
             ->schema([
-                Textarea::make('reason')->label('Reason (sent to the parent)')->required()->maxLength(255),
+                Textarea::make('reason')->label('Reason (sent to the parent or music learner)')->required()->maxLength(255),
             ])
             ->action(function (Enrolment $record, array $data, RemoveFromBatch $remove): void {
                 $remove->handle($record, $data['reason']);

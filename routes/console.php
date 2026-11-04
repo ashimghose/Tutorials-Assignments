@@ -16,6 +16,9 @@ Schedule::command('app:check-enrolments')->dailyAt('09:00')->timezone(config('ap
 // M6: delete order files after the retention period (privacy).
 Schedule::command('app:prune-order-files')->dailyAt('03:00')->timezone(config('app.display_timezone'));
 
+// MUS-3: delete under-18 music accounts that a parent didn't approve in time.
+Schedule::command('app:prune-unapproved-music-learners')->dailyAt('03:15')->timezone(config('app.display_timezone'));
+
 // M9: nightly encrypted database backup, kept 30 days, with an email if a
 // backup fails or is missing (spec: Security).
 Schedule::command('backup:clean')->dailyAt('01:30')->timezone(config('app.display_timezone'));

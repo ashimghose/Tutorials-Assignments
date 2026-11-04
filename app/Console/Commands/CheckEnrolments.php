@@ -29,9 +29,9 @@ class CheckEnrolments extends Command
                 ->where('status', EnrolmentStatus::Active)
                 ->whereDate('paid_through', $today->addDays($days)->toDateString())
                 ->where(fn ($query) => $query->whereNull('last_reminder_on')->orWhereDate('last_reminder_on', '<', $today->toDateString()))
-                ->with('student.parent.user', 'batch')
+                ->with('student.parent.user', 'student.user', 'batch')
                 ->each(function (Enrolment $enrolment) use ($days, $today, &$reminded) {
-                    $enrolment->student->parent->user->notify(new FeeReminder($enrolment, $days));
+                    $enrolment->student->accountHolder()?->notify(new FeeReminder($enrolment, $days));
                     $enrolment->forceFill(['last_reminder_on' => $today->toDateString()])->save();
                     $reminded++;
                 });
@@ -40,10 +40,10 @@ class CheckEnrolments extends Command
         Enrolment::query()
             ->where('status', EnrolmentStatus::Active)
             ->whereDate('paid_through', '<', $today->subDays(Enrolment::GRACE_DAYS)->toDateString())
-            ->with('student.parent.user', 'batch')
+            ->with('student.parent.user', 'student.user', 'batch')
             ->each(function (Enrolment $enrolment) use (&$paused) {
                 $enrolment->forceFill(['status' => EnrolmentStatus::Expired])->save();
-                $enrolment->student->parent->user->notify(new AccessPaused($enrolment));
+                $enrolment->student->accountHolder()?->notify(new AccessPaused($enrolment));
                 $paused++;
             });
 

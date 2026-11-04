@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\EnrolmentStatus;
 use App\Enums\NoticeAudience;
+use App\Enums\Role;
 use App\Observers\AuditAdminChanges;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
@@ -14,8 +15,8 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
 /**
- * NOT-2: a notice from the admin to all parents, the parents of one batch,
- * or all academic students. Shown on their pages and emailed.
+ * NOT-2: a notice from the admin to all parents, one batch (its parents or
+ * music learners), all academic students or all music learners. Shown on their pages and emailed.
  *
  * @property NoticeAudience $audience
  * @property Carbon|null $published_at
@@ -64,19 +65,25 @@ class Notice extends Model
             return;
         }
 
-        if ($user->parentProfile === null) {
+        // MUS-3: a music learner sees notices for music learners and their own batches.
+        $learner = $user->role === Role::MusicStudent ? $user->student : null;
+        $music = $learner !== null;
+
+        if ($user->parentProfile === null && ! $music) {
             $query->whereRaw('1 = 0');
 
             return;
         }
 
+        $studentIds = $learner !== null ? [$learner->id] : $user->parentProfile?->students()->pluck('id')->all() ?? [];
+
         $batchIds = Enrolment::query()
-            ->whereIn('student_id', $user->parentProfile->students()->select('id'))
+            ->whereIn('student_id', $studentIds)
             ->where('status', '!=', EnrolmentStatus::Removed)
             ->pluck('batch_id');
 
         $query->where(fn (Builder $query) => $query
-            ->where('audience', NoticeAudience::Parents)
+            ->where('audience', $music ? NoticeAudience::MusicLearners : NoticeAudience::Parents)
             ->orWhere(fn (Builder $query) => $query->where('audience', NoticeAudience::Batch)->whereIn('batch_id', $batchIds)));
     }
 
@@ -90,8 +97,12 @@ class Notice extends Model
         return match ($this->audience) {
             NoticeAudience::Parents => User::query()->whereHas('parentProfile')->where('status', 'active')->get(),
             NoticeAudience::AcademicStudents => User::query()->whereHas('academicStudent')->where('status', 'active')->get(),
-            NoticeAudience::Batch => User::query()->where('status', 'active')->whereHas('parentProfile.students.enrolments', fn (Builder $query) => $query
-                ->where('batch_id', $this->batch_id)->where('status', '!=', EnrolmentStatus::Removed))->get(),
+            // Under-18 music learners get notices only once their parent has approved.
+            NoticeAudience::MusicLearners => User::query()->where('role', Role::MusicStudent)->where('status', 'active')
+                ->whereHas('student', fn (Builder $query) => $query->where(fn (Builder $q) => $q->whereNotNull('adult_declared_at')->orWhereNotNull('guardian_consented_at')))->get(),
+            NoticeAudience::Batch => User::query()->where('status', 'active')->where(fn (Builder $users) => $users
+                ->whereHas('parentProfile.students.enrolments', fn (Builder $query) => $query->where('batch_id', $this->batch_id)->where('status', '!=', EnrolmentStatus::Removed))
+                ->orWhere(fn (Builder $q) => $q->where('role', Role::MusicStudent)->whereHas('student.enrolments', fn (Builder $query) => $query->where('batch_id', $this->batch_id)->where('status', '!=', EnrolmentStatus::Removed))))->get(),
         };
     }
 }

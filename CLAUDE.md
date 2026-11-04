@@ -25,6 +25,7 @@ Logged-in roles:
 - **Parent** – owns a family account, adds school-age children, gives consent, pays tuition fees.
 - **Student** – school student; login created by the parent; joins paid classes, watches recordings.
 - **Academic student** – adult (18+) self sign-up; orders academic services, tracks status.
+- **Music learner** – self sign-up, no parent account; an under-18 learner's parent approves by an emailed link (MUS-3). Joins music batches.
 - **Teacher / expert** – invited by admin; runs tuition batches and/or works on assigned academic orders.
 - **Admin** – manages people, batches, price lists, add-ons, order statuses, content, chat inbox, reports.
 

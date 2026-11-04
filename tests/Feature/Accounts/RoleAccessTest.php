@@ -10,6 +10,7 @@ function userWithRole(Role $role): User
         Role::Student => Student::factory()->create()->user,
         Role::Parent => User::factory()->parent()->create(),
         Role::AcademicStudent => User::factory()->academicStudent()->create(),
+        Role::MusicStudent => Student::factory()->musicLearner()->create()->user,
         Role::Teacher => User::factory()->teacher()->create(),
         Role::Admin => User::factory()->admin()->create(),
     };
@@ -19,6 +20,7 @@ $homes = [
     'parent' => [Role::Parent, 'parent.children'],
     'student' => [Role::Student, 'student.home'],
     'academic student' => [Role::AcademicStudent, 'academic.home'],
+    'music learner' => [Role::MusicStudent, 'music.home'],
     'teacher' => [Role::Teacher, 'teacher.home'],
 ];
 
@@ -50,7 +52,7 @@ test('AUTH-5 each role is refused every other role\'s home', function (Role $rol
 
 test('AUTH-5 only admins reach the admin panel', function (Role $role) {
     $this->actingAs(userWithRole($role))->get('/admin')->assertForbidden();
-})->with([Role::Parent, Role::Student, Role::AcademicStudent, Role::Teacher]);
+})->with([Role::Parent, Role::Student, Role::AcademicStudent, Role::MusicStudent, Role::Teacher]);
 
 test('an admin reaches the admin panel and its people list', function () {
     $this->actingAs(User::factory()->admin()->create());

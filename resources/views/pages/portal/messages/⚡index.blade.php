@@ -112,7 +112,11 @@ new #[Title('Messages')] class extends Component {
 
         $conversation = $start->handle(
             $user,
-            $user->academicStudent !== null ? Offering::Academic : Offering::Tuition,
+            match (true) {
+                $user->academicStudent !== null => Offering::Academic,
+                $user->hasRole(\App\Enums\Role::MusicStudent) => Offering::Music,
+                default => Offering::Tuition,
+            },
             $this->subject,
             $this->body,
             student: $this->children->firstWhere('id', $this->student_id),

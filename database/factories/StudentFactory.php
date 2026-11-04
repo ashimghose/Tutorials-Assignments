@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Enums\ConsentPurpose;
+use App\Models\Consent;
 use App\Models\ParentProfile;
 use App\Models\Student;
 use App\Models\User;
@@ -25,6 +27,24 @@ class StudentFactory extends Factory
             'board' => 'CBSE',
             'school' => null,
         ];
+    }
+
+    /**
+     * MUS-3: a music learner with their own account. Adult unless $adult is
+     * false, in which case a parent's approval is still awaited.
+     */
+    public function musicLearner(bool $adult = true): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'parent_id' => null,
+            'user_id' => User::factory()->musicStudent(),
+            'class_level' => null,
+            'board' => null,
+            'mobile' => '9876543210',
+            'adult_declared_at' => $adult ? now() : null,
+            'guardian_email' => $adult ? null : 'parent@example.com',
+            'guardian_consented_at' => null,
+        ])->afterCreating(fn (Student $learner) => Consent::record($learner->user()->firstOrFail(), ConsentPurpose::MusicSelf, $learner));
     }
 
     /**

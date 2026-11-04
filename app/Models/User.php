@@ -63,6 +63,11 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail, Pas
     {
         // A parent's children's logins go with the family account.
         static::deleting(function (User $user) {
+            // A music learner's profile goes with their account (MUS-3).
+            if ($user->role === Role::MusicStudent) {
+                $user->student?->delete();
+            }
+
             $user->parentProfile?->students()->with('user')->get()
                 ->each(fn (Student $student) => $student->user?->delete());
         });
@@ -103,7 +108,7 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail, Pas
     /**
      * ADM-5: active people are those with an active account who are still
      * with us: teachers without an end date in the past, school students
-     * (and their parents) with a current or pending place, and academic
+     * (and their parents) and music learners with a current or pending place, and academic
      * students with an order still open. Everyone else is "past".
      *
      * @param  Builder<User>  $query
@@ -117,6 +122,7 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail, Pas
             ->where('role', Role::Admin)
             ->orWhere(fn (Builder $q) => $q->where('role', Role::Teacher)->whereHas('teacher', fn (Builder $t) => $t->whereNull('active_to')->orWhere('active_to', '>=', $today)))
             ->orWhere(fn (Builder $q) => $q->where('role', Role::Student)->whereHas('student.enrolments', fn (Builder $e) => $e->whereIn('status', $current)))
+            ->orWhere(fn (Builder $q) => $q->where('role', Role::MusicStudent)->whereHas('student.enrolments', fn (Builder $e) => $e->whereIn('status', $current)))
             ->orWhere(fn (Builder $q) => $q->where('role', Role::Parent)->whereHas('parentProfile.students.enrolments', fn (Builder $e) => $e->whereIn('status', $current)))
             ->orWhere(fn (Builder $q) => $q->where('role', Role::AcademicStudent)->whereHas('academicStudent.orders.status', fn (Builder $s) => $s->where('is_final', false))));
 

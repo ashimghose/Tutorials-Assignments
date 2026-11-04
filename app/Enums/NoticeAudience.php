@@ -7,13 +7,15 @@ enum NoticeAudience: string
     case Parents = 'parents';
     case Batch = 'batch';
     case AcademicStudents = 'academic';
+    case MusicLearners = 'music';
 
     public function label(): string
     {
         return match ($this) {
             self::Parents => 'All parents',
-            self::Batch => 'Parents of one batch',
+            self::Batch => 'One batch (parents or music learners)',
             self::AcademicStudents => 'All academic students',
+            self::MusicLearners => 'All music learners',
         };
     }
 

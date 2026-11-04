@@ -3,6 +3,7 @@
 namespace App\Actions\Chat;
 
 use App\Enums\Offering;
+use App\Enums\Role;
 use App\Models\AcademicOrder;
 use App\Models\Batch;
 use App\Models\Conversation;
@@ -24,7 +25,7 @@ class StartConversation
 
     public function handle(User $starter, Offering $offering, string $subject, string $body, ?Student $student = null, ?Batch $batch = null, ?AcademicOrder $order = null, ?UploadedFile $attachment = null): Conversation
     {
-        if ($starter->isStudent()) {
+        if ($starter->isStudent() || $starter->hasRole(Role::MusicStudent)) {
             $student = $starter->student;
         }
 
@@ -40,7 +41,7 @@ class StartConversation
             ])->save();
 
             $members = [$starter->id];
-            if ($student !== null) {
+            if ($student?->parent !== null) {
                 $members[] = $student->parent->user_id;
             }
             $conversation->users()->attach(array_fill_keys(array_unique($members), ['is_member' => true]));

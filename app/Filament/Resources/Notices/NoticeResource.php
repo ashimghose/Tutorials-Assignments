@@ -65,7 +65,7 @@ class NoticeResource extends Resource
             ->defaultSort('id', 'desc')
             ->columns([
                 TextColumn::make('title')->searchable()->weight('medium'),
-                TextColumn::make('audience')->formatStateUsing(fn (NoticeAudience $state, Notice $record): string => $state === NoticeAudience::Batch ? 'Parents of '.$record->batch?->name() : $state->label()),
+                TextColumn::make('audience')->formatStateUsing(fn (NoticeAudience $state, Notice $record): string => $state === NoticeAudience::Batch ? 'Batch: '.$record->batch?->name() : $state->label()),
                 TextColumn::make('published_at')->label('Published')->dateTime('j M Y, g:i a', $tz)->placeholder('Draft'),
             ])
             ->headerActions([CreateAction::make()])

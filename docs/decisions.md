@@ -185,3 +185,11 @@ The three photos under each landing page's highlights can be replaced in the adm
 
 ## 2026-11-04 Assignments box on /academic; sections ordered Academic, Tuition, Music
 The owner asked for assignments (school to PhD) to be a main topic again. The academic page gets the word back in its headline, a first badge, and an Assignments box with a college card and a school card. School students are minors, so the school card asks parents to message the Academic WhatsApp number and says a teacher guides the child while the child does the work (ACA-3, academic-integrity rules). A guarded migration updates the live text only where it still holds what we shipped. Sections now list Academic services first, then Tuition, then Music (`Verticals::KEYS`, `Offering::sections()`).
+
+## 2026-11-04 · Music learner sign-up and login (MUS-2, MUS-3)
+
+- **No parent account for music.** The owner chose that every music learner signs up themselves (`Role::MusicStudent`). For under-18s, the DPDP Act still needs a parent's consent, so the owner chose **approval by email**: the learner types a parent's email, the parent gets a temporary signed link (14 days) and ticks "I agree" (`ConsentPurpose::MusicGuardian`, stored against the learner's account). No parent login. `app:prune-unapproved-music-learners` deletes unapproved under-18 accounts daily after the link expires.
+- **A music learner is a `students` row without a parent** (`parent_id`, `class_level` and `board` became nullable; new `mobile`, `adult_declared_at`, `guardian_email`, `guardian_consented_at`). This reuses enrolments, the Join check, fee reminders and the admin's "Fee received" button instead of copying them. `Student::accountHolder()` is who gets the emails: the parent, or the music learner.
+- **Batches have a section** (`batches.offering`, default tuition). Music batches have a name instead of a class and board. A learner can only join a batch of their own kind (checked in `RequestEnrolment`). Music fees are recorded as music payments in the money report; music teachers' class pay still shows under Tuition there until payouts are split by section.
+- **No chat for under-18 music learners** (CHAT-4/MUS-4: no parent account to add); they reach us on WhatsApp. Adults can message us like academic students; a conversation about a music batch is also visible to its teacher, as for tuition.
+

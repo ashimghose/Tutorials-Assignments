@@ -34,6 +34,6 @@ class AccessPaused extends Notification implements ShouldQueue
             ->subject("Classes paused: {$batch}")
             ->line("The fee for {$name}'s place in {$batch} has not been renewed, so {$name} can't join classes for now.")
             ->line('Renew the fee and access starts again straight away. Message us if you need help.')
-            ->action('See enrolments', route('parent.classes'));
+            ->action('See enrolments', route($this->enrolment->student->classesRoute()));
     }
 }

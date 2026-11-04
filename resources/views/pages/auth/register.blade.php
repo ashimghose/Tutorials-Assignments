@@ -1,17 +1,28 @@
+@php($musicOn = \App\Support\Verticals::enabled('music') && config('features.batches'))
+@php($accountType = $accountType === 'music' && ! $musicOn ? 'parent' : $accountType)
 @php($academic = $accountType === 'academic')
+@php($music = $accountType === 'music')
+@php($tabs = array_filter([
+    'parent' => __('Parent (tuition)'),
+    'academic' => __('Academic student'),
+    'music' => $musicOn ? __('Music learner') : null,
+]))
 
-<x-layouts::auth :title="$academic ? __('Sign up for academic services') : __('Parent sign-up')">
+<x-layouts::auth :title="match ($accountType) { 'academic' => __('Sign up for academic services'), 'music' => __('Sign up for music lessons'), default => __('Parent sign-up') }">
     <div class="flex flex-col gap-6">
         <x-auth-header
-            :title="$academic ? __('Create your academic account') : __('Create a parent account')"
-            :description="$academic
-                ? __('For Bachelors, Masters and PhD students aged 18 or over.')
-                : __('Parents sign up first, then add each child and create their login.')"
+            :title="match ($accountType) { 'academic' => __('Create your academic account'), 'music' => __('Create your music account'), default => __('Create a parent account') }"
+            :description="match ($accountType) {
+                'academic' => __('For Bachelors, Masters and PhD students aged 18 or over.'),
+                'music' => __('For anyone learning music with us. Under 18? A parent approves your account by email.'),
+                default => __('Parents sign up first, then add each child and create their login.'),
+            }"
         />
 
-        <nav class="grid grid-cols-2 gap-1 rounded-lg bg-zinc-100 p-1 text-sm font-medium" aria-label="{{ __('Account type') }}">
-            <a href="{{ route('register') }}" @class(['rounded-md px-3 py-2 text-center', 'bg-white text-brand-800 shadow-sm' => ! $academic, 'text-zinc-600' => $academic]) @if (! $academic) aria-current="page" @endif>{{ __('Parent (tuition)') }}</a>
-            <a href="{{ route('register', ['as' => 'academic']) }}" @class(['rounded-md px-3 py-2 text-center', 'bg-white text-brand-800 shadow-sm' => $academic, 'text-zinc-600' => ! $academic]) @if ($academic) aria-current="page" @endif>{{ __('Academic student') }}</a>
+        <nav @class(['grid gap-1 rounded-lg bg-zinc-100 p-1 text-sm font-medium', 'grid-cols-3' => count($tabs) === 3, 'grid-cols-2' => count($tabs) === 2]) aria-label="{{ __('Account type') }}">
+            @foreach ($tabs as $type => $label)
+                <a href="{{ route('register', $type === 'parent' ? [] : ['as' => $type]) }}" @class(['rounded-md px-2 py-2 text-center', 'bg-white text-brand-800 shadow-sm' => $accountType === $type, 'text-zinc-600' => $accountType !== $type]) @if ($accountType === $type) aria-current="page" @endif>{{ $label }}</a>
+            @endforeach
         </nav>
 
         <!-- Session Status -->
@@ -19,12 +30,12 @@
 
         <form method="POST" action="{{ route('register.store') }}" class="flex flex-col gap-6">
             @csrf
-            <input type="hidden" name="account_type" value="{{ $academic ? 'academic' : 'parent' }}">
+            <input type="hidden" name="account_type" value="{{ $accountType }}">
 
             <!-- Name -->
             <flux:input
                 name="name"
-                :label="$academic ? __('Your full name') : __('Parent\'s full name')"
+                :label="$academic || $music ? __('Your full name') : __('Parent\'s full name')"
                 :value="old('name')"
                 type="text"
                 required
@@ -89,6 +100,43 @@
                     {{ __('Under 18?') }}
                     <flux:link :href="route('tuition')">{{ __('Our Tuition section is for school students') }}</flux:link>.
                 </p>
+            @endif
+
+            @if ($music)
+                {{-- MUS-3: adults agree for themselves; a parent approves an under-18 learner by email. --}}
+                <fieldset class="flex flex-col gap-3" x-data="{ age: @js(old('age_group', '')) }">
+                    <legend class="mb-2 text-sm font-medium text-zinc-800">{{ __('How old are you?') }}</legend>
+                    <label class="flex items-center gap-3 text-sm text-zinc-800">
+                        <input type="radio" name="age_group" value="adult" x-model="age" class="size-4 accent-brand-700" required>
+                        {{ __('I am 18 or older') }}
+                    </label>
+                    <label class="flex items-center gap-3 text-sm text-zinc-800">
+                        <input type="radio" name="age_group" value="minor" x-model="age" class="size-4 accent-brand-700">
+                        {{ __('I am under 18') }}
+                    </label>
+                    <flux:error name="age_group" />
+
+                    <template x-if="age === 'adult'">
+                        <input type="hidden" name="adult" value="1">
+                    </template>
+
+                    <template x-if="age === 'minor'">
+                        <div class="flex flex-col gap-2">
+                            <flux:input
+                                name="guardian_email"
+                                :label="__('Parent\'s or guardian\'s email')"
+                                :value="old('guardian_email')"
+                                type="email"
+                                required
+                                placeholder="parent@example.com"
+                            />
+                            <p class="text-sm text-zinc-600">{{ __('We email them a link to approve your account. You can join a batch once they agree.') }}</p>
+                        </div>
+                    </template>
+                    @error('adult')
+                        <flux:error name="adult" />
+                    @enderror
+                </fieldset>
             @endif
 
             <flux:field variant="inline">

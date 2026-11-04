@@ -103,6 +103,14 @@ class UserFactory extends Factory
     }
 
     /**
+     * MUS-3: a music learner's own login (pair with Student::factory()->musicLearner()).
+     */
+    public function musicStudent(): static
+    {
+        return $this->state(fn (array $attributes) => ['role' => Role::MusicStudent]);
+    }
+
+    /**
      * A school student's login: a username and no email. Pass the child
      * record with ->for() on Student instead when the parent matters.
      */
