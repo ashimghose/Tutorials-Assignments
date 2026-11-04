@@ -24,7 +24,12 @@ return new class extends Migration
             return;
         }
 
-        $item = collect(SiteContent::sectionFile('academic')['services'])->firstWhere('name', self::TITLE);
+        /** @var list<array{name: string, body: string, prices: list<int|null>, turnaround: string, revisions: int}> $services */
+        $services = SiteContent::sectionFile('academic')['services'];
+        $item = collect($services)->firstWhere('name', self::TITLE);
+        if ($item === null) {
+            return;
+        }
 
         $service = Service::query()->create([
             'title' => self::TITLE,
