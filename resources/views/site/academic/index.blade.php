@@ -7,6 +7,7 @@
             <div>
                 <p class="text-sm font-semibold uppercase tracking-wide text-academic-700">{{ $text['eyebrow'] }}</p>
                 <h1 class="mt-2 max-w-3xl text-3xl font-bold tracking-tight text-slate-900 sm:text-5xl">{{ $content['hero']['title'] }}</h1>
+                <x-site.keyword-badges :keywords="$content['keywords'] ?? []" accent="academic" />
                 <p class="mt-5 max-w-2xl text-lg text-slate-600">{{ $content['hero']['lead'] }}</p>
                 <div class="mt-8 flex flex-col gap-3 sm:flex-row">
                     <x-site.form-link form="academic" section="academic" :page="$page" interest="General enquiry" variant="academic">{{ $text['quote_button'] }}</x-site.form-link>
@@ -22,6 +23,33 @@
         </div>
     </section>
 
+    @php($assignments = $content['assignments'] ?? null)
+    @if (is_array($assignments))
+        {{-- MKT-1: assignments from school to PhD. School students reach us through a parent (ACA-3). --}}
+        <section id="assignments" class="mx-auto max-w-6xl px-4 pt-12 sm:px-6">
+            <x-site.section-heading :eyebrow="$assignments['eyebrow'] ?? ''" :title="$assignments['title'] ?? ''" :lead="$assignments['lead'] ?? null" />
+            <div class="mt-8 grid gap-4 md:grid-cols-2">
+                <div class="flex flex-col rounded-xl border-2 border-academic-100 bg-academic-50 p-5 sm:p-6">
+                    <h3 class="text-lg font-semibold text-slate-900">{{ $assignments['college_title'] ?? '' }}</h3>
+                    <p class="mt-2 text-sm text-slate-700">{{ $assignments['college_body'] ?? '' }}</p>
+                    <div class="mt-auto pt-5">
+                        <x-site.form-link form="academic" section="academic" :page="$page" interest="Assignment" variant="academic">{{ $assignments['college_button'] ?? '' }}</x-site.form-link>
+                    </div>
+                </div>
+                <div class="flex flex-col rounded-xl border-2 border-tuition-100 bg-tuition-50 p-5 sm:p-6">
+                    <h3 class="text-lg font-semibold text-slate-900">{{ $assignments['school_title'] ?? '' }}</h3>
+                    <p class="mt-2 text-sm text-slate-700">{{ $assignments['school_body'] ?? '' }}</p>
+                    <div class="mt-auto pt-5">
+                        <a href="https://wa.me/{{ \App\Support\SiteLinks::whatsappNumber('academic') }}?text={{ rawurlencode((string) ($assignments['school_message'] ?? '')) }}" target="_blank" rel="noopener" data-school-assignments class="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-[#1f7a4d] px-5 py-3 font-semibold text-white hover:bg-[#186440]">
+                            <x-site.whatsapp-icon class="size-5" />
+                            <span>{{ $assignments['school_button'] ?? '' }}</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    @endif
+
     <section class="mx-auto max-w-6xl px-4 py-12 sm:px-6">
         <div class="grid gap-4 md:grid-cols-3">
             @foreach ($content['highlights'] as $highlight)
@@ -31,6 +59,8 @@
                 </div>
             @endforeach
         </div>
+
+        <x-site.photo-row :photos="$content['photos'] ?? []" :defaults="['academic-campus-students', 'academic-student-notes', 'academic-student-smiling']" />
 
         <div id="integrity" class="mt-6 rounded-xl border border-academic-100 bg-academic-50 p-5 sm:p-6">
             <h2 class="font-semibold text-slate-900">{{ $text['integrity_title'] }}</h2>
@@ -46,11 +76,13 @@
                     <article class="flex flex-col rounded-xl border border-slate-200 bg-white p-5">
                         <h3 class="font-semibold text-slate-900">{{ $service['name'] }}</h3>
                         <p class="mt-2 text-sm text-slate-600">{{ $service['body'] }}</p>
-                        <dl class="mt-4 grid grid-cols-3 gap-2 text-center">
+                        {{-- A level without a price (say one the admin just added) shows the quote label. --}}
+                        <dl @class(['mt-4 grid gap-2 text-center', 'grid-cols-3' => count($content['levels']) !== 4, 'grid-cols-2 sm:grid-cols-4' => count($content['levels']) === 4])>
                             @foreach ($content['levels'] as $index => $level)
+                                @php($price = $service['prices'][$index] ?? null)
                                 <div class="rounded-lg bg-slate-50 px-1 py-2">
                                     <dt class="text-xs font-medium text-slate-500">{{ $level }}</dt>
-                                    <dd class="mt-0.5 font-bold text-slate-900">{{ $service['prices'][$index] === null ? $text['quote_label'] : \App\Support\Money::format($service['prices'][$index]) }}</dd>
+                                    <dd class="mt-0.5 font-bold text-slate-900">{{ $price === null ? $text['quote_label'] : \App\Support\Money::format($price) }}</dd>
                                 </div>
                             @endforeach
                         </dl>
@@ -58,7 +90,7 @@
                             {{ $service['turnaround'] }}@if ($service['revisions'] !== null) &middot; {{ $service['revisions'] === 0 ? 'No revisions' : trans_choice(':count free revision|:count free revisions', $service['revisions']) }}@endif
                         </p>
                         <div class="mt-auto pt-5">
-                            <x-site.form-link form="academic" section="academic" :page="$page" :interest="$service['name']" variant="outline" class="w-full">{{ $service['prices'][0] === null ? $text['quote_only_button'] : $text['enquire_button'] }}</x-site.form-link>
+                            <x-site.form-link form="academic" section="academic" :page="$page" :interest="$service['name']" variant="outline" class="w-full">{{ ($service['prices'][0] ?? null) === null ? $text['quote_only_button'] : $text['enquire_button'] }}</x-site.form-link>
                         </div>
                     </article>
                 @endforeach
@@ -83,6 +115,15 @@
             <x-site.steps :steps="$content['steps']" accent="academic" />
         </div>
     </section>
+
+    @if (($content['videos'] ?? []) !== [])
+        <section id="videos" class="mx-auto max-w-6xl px-4 pb-16 sm:px-6">
+            <x-site.section-heading :eyebrow="$text['videos_eyebrow']" :title="$text['videos_title']" />
+            <div class="mt-8">
+                <x-site.videos :videos="$content['videos']" accent="academic" />
+            </div>
+        </section>
+    @endif
 
     @if ($content['experts'] !== [])
         <section id="experts" class="mx-auto max-w-6xl px-4 pb-16 sm:px-6">

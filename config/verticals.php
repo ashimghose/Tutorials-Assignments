@@ -26,8 +26,8 @@ $vertical = fn (string $name, bool $enabled) => [
 
 return [
 
-    'tuition' => $vertical('TUITION', true),
     'academic' => $vertical('ACADEMIC', true),
+    'tuition' => $vertical('TUITION', true),
     // MUS: the music page stays hidden until its copy and prices are ready.
     'music' => $vertical('MUSIC', false),
 

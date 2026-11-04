@@ -19,6 +19,17 @@ return [
         'lead' => 'Live group guitar classes with a real teacher, from your first chord to your first full song. Join from home with your own guitar, for ₹1,000 a month.',
     ],
 
+    // Highlighted badges under the headline (MKT-1); none by default.
+    'keywords' => [],
+
+    // CMS-1: the three photos under the highlights. An empty image keeps the
+    // photo that ships in public/images/photos (see the page view).
+    'photos' => [
+        ['image' => null, 'alt' => 'A learner with a guitar follows a teacher on a laptop screen'],
+        ['image' => null, 'alt' => 'A guitar teacher shows a music chart to learners on a video call'],
+        ['image' => null, 'alt' => 'A learner with a guitar waves hello at the start of an online class'],
+    ],
+
     'highlights' => [
         ['title' => 'A live teacher, not a video course', 'body' => 'The teacher watches your hands, listens to you play and corrects your fingers and strumming as you go.'],
         ['title' => 'Learn songs you know', 'body' => 'Chords and strumming patterns are taught through Bollywood, pop and folk songs, so practice never feels like homework.'],

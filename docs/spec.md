@@ -390,14 +390,17 @@ and it knows exactly what to build and test.
 
 - CHAT-6 A WhatsApp click-to-chat button on public pages, with a
   different pre-filled message for each section so you can tell which
-  offering the chat came from.
+  offering the chat came from. Each section can send chats to its own
+  number; the admin sets the numbers on the Contact page in /admin
+  (an empty one uses the number in the server settings).
 
 **Marketing and interest tracking (MKT)**, Phase 0 onwards
 
 - MKT-1 Two separate marketing sections, /tuition and /academic, each
   with its own hero, services and prices, how it works, teachers or
   experts, testimonials, FAQs and call to action, all editable by the
-  admin.
+  admin. A tuition fee plan may show a physical classroom fee next to
+  its online fee.
 
 - MKT-2 Admin creates campaign landing pages (headline, offer, form,
   expiry) for each offering, for example "Free synopsis review for PhD

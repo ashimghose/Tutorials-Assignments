@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Observers\AuditAdminChanges;
+use App\Support\SiteMedia;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
@@ -21,6 +22,18 @@ class SiteSection extends Model
 
     /** Pages that are a title, intro and Markdown body. */
     public const TEXT_PAGES = ['about', 'privacy', 'terms', 'refunds'];
+
+    protected static function booted(): void
+    {
+        // CMS-1: make the WebP copies of newly uploaded photos.
+        static::saving(function (SiteSection $section): void {
+            foreach ((array) ($section->content['photos'] ?? []) as $photo) {
+                if (is_string($photo['image'] ?? null) && $photo['image'] !== '') {
+                    SiteMedia::process($photo['image']);
+                }
+            }
+        });
+    }
 
     protected function casts(): array
     {

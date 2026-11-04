@@ -2,13 +2,17 @@
 
 namespace App\Filament\Resources\SiteSections;
 
+use App\Enums\Offering;
 use App\Filament\Resources\SiteSections\Pages\EditSiteSection;
 use App\Filament\Resources\SiteSections\Pages\ListSiteSections;
 use App\Filament\Support\MoneyInput;
 use App\Models\SiteSection;
+use App\Support\SiteLinks;
+use App\Support\SiteMedia;
 use App\Support\YouTube;
 use BackedEnum;
 use Closure;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\TagsInput;
@@ -88,7 +92,7 @@ class SiteSectionResource extends Resource
                     Textarea::make('content.hero.lead')->label('Intro')->required()->rows(3)->maxLength(400),
                 ]),
                 Tab::make('Offering cards')->schema(
-                    collect(['tuition' => 'Tuition card', 'academic' => 'Academic card', 'music' => 'Music card'])->map(fn (string $label, string $key) => Section::make($label)->schema([
+                    collect(['academic' => 'Academic card', 'tuition' => 'Tuition card', 'music' => 'Music card'])->map(fn (string $label, string $key) => Section::make($label)->schema([
                         TextInput::make("content.offerings.{$key}.eyebrow")->label('Small heading')->required()->maxLength(60),
                         TextInput::make("content.offerings.{$key}.title")->label('Title')->required()->maxLength(80),
                         Textarea::make("content.offerings.{$key}.body")->label('Text')->required()->rows(3)->maxLength(400),
@@ -126,13 +130,17 @@ class SiteSectionResource extends Resource
         return [
             Tabs::make()->tabs([
                 self::heroTab(),
+                self::photosTab(),
                 Tab::make('Fees')->schema([
                     TagsInput::make('content.boards')->label('Boards taught')->required(),
                     Repeater::make('content.plans')->label('Fee plans')
                         ->schema([
                             TextInput::make('name')->required()->maxLength(80),
-                            Grid::make(2)->schema([
-                                MoneyInput::make('price')->label('Fee')->required(),
+                            Grid::make(3)->schema([
+                                MoneyInput::make('price')->label('Online fee')->required(),
+                                // MKT-1: optional second price for classes at our centre.
+                                MoneyInput::make('classroom_price')->label('Physical classroom fee')
+                                    ->helperText('Leave empty if this plan is online only.'),
                                 TextInput::make('period')->required()->maxLength(60),
                             ]),
                             TagsInput::make('subjects'),
@@ -143,6 +151,7 @@ class SiteSectionResource extends Resource
                     TagsInput::make('content.price_ranges')->label('Price question choices on the enquiry form'),
                 ]),
                 self::stepsTab(),
+                self::videosTab(),
                 self::faqsTab(),
                 self::waitlistTab(),
                 self::textTab([
@@ -155,10 +164,14 @@ class SiteSectionResource extends Resource
                     'fees_eyebrow' => 'Fees: small heading',
                     'fees_title' => 'Fees: heading',
                     'fees_lead' => 'Fees: intro',
+                    'online_label' => 'Fees: word above the online fee',
+                    'classroom_label' => 'Fees: words above the physical classroom fee',
                     'subjects_label' => 'Word before each plan\'s subjects',
                     'plan_button' => 'Button on each fee plan',
                     'steps_eyebrow' => 'How it works: small heading',
                     'steps_title' => 'How it works: heading',
+                    'videos_eyebrow' => 'Videos: small heading',
+                    'videos_title' => 'Videos: heading',
                     'people_eyebrow' => 'Teachers: small heading',
                     'people_title' => 'Teachers: heading',
                     'testimonials_eyebrow' => 'Testimonials: small heading',
@@ -183,6 +196,7 @@ class SiteSectionResource extends Resource
         return [
             Tabs::make()->tabs([
                 self::heroTab(),
+                self::photosTab(),
                 Tab::make('Fees')->schema([
                     TagsInput::make('content.styles')->label('Instruments and singing styles')->required(),
                     Repeater::make('content.plans')->label('Fee plans')
@@ -212,23 +226,7 @@ class SiteSectionResource extends Resource
                         ->collapsible()->reorderable()->maxItems(8),
                 ]),
                 self::stepsTab(),
-                // A YouTube link per video; only the video id is kept on the page.
-                Tab::make('Videos')->schema([
-                    Repeater::make('content.videos')->label('Videos')
-                        ->helperText('Upload the video to YouTube (public or unlisted) and paste its link. The section is hidden while this list is empty.')
-                        ->schema([
-                            TextInput::make('title')->required()->maxLength(80),
-                            TextInput::make('url')->label('YouTube link')->required()->maxLength(255)
-                                ->rule(fn () => function (string $attribute, mixed $value, Closure $fail): void {
-                                    if (YouTube::id((string) $value) === null) {
-                                        $fail('Paste a YouTube video link, for example https://youtu.be/…');
-                                    }
-                                }),
-                            TextInput::make('caption')->label('Short caption (optional)')->maxLength(160),
-                        ])
-                        ->itemLabel(fn (array $state): ?string => $state['title'] ?? null)
-                        ->collapsible()->reorderable()->maxItems(6),
-                ]),
+                self::videosTab(),
                 self::faqsTab(),
                 self::waitlistTab(),
                 self::textTab([
@@ -275,8 +273,29 @@ class SiteSectionResource extends Resource
         return [
             Tabs::make()->tabs([
                 self::heroTab(),
+                Tab::make('Assignments')->schema([
+                    Text::make('The Assignments box under the top of the page: one card for college students and one for parents of school students.'),
+                    TextInput::make('content.assignments.eyebrow')->label('Small heading')->maxLength(60),
+                    TextInput::make('content.assignments.title')->label('Heading')->required()->maxLength(120),
+                    Textarea::make('content.assignments.lead')->label('Intro')->rows(2)->maxLength(400),
+                    Section::make('College and university card')->schema([
+                        TextInput::make('content.assignments.college_title')->label('Title')->required()->maxLength(120),
+                        Textarea::make('content.assignments.college_body')->label('Text')->required()->rows(3)->maxLength(600),
+                        TextInput::make('content.assignments.college_button')->label('Button')->required()->maxLength(60),
+                    ]),
+                    Section::make('School students card (for parents)')->schema([
+                        TextInput::make('content.assignments.school_title')->label('Title')->required()->maxLength(120),
+                        Textarea::make('content.assignments.school_body')->label('Text')->required()->rows(3)->maxLength(600)
+                            ->helperText('Keep it clear that a teacher guides the child and the child does the work.'),
+                        TextInput::make('content.assignments.school_button')->label('Button')->required()->maxLength(60),
+                        Textarea::make('content.assignments.school_message')->label('WhatsApp message the parent starts with')->rows(2)->maxLength(300)
+                            ->helperText('Sent to the Academic WhatsApp number (Website → Pages → Contact us).'),
+                    ]),
+                ]),
+                self::photosTab(),
                 Tab::make('Price list')->schema([
-                    TagsInput::make('content.levels')->label('Levels')->required(),
+                    TagsInput::make('content.levels')->label('Levels')->required()
+                        ->helperText('One per price column, in order: Bachelors, Masters, PhD. Each service has a price for these three; a level added after them shows the quote label.'),
                     // M6: with online orders on, services and add-ons have their own screens.
                     Text::make('Services, prices and add-ons are edited under Academic → Services and Add-ons.')
                         ->visible(fn (): bool => (bool) config('features.academic_orders')),
@@ -311,6 +330,7 @@ class SiteSectionResource extends Resource
                     TagsInput::make('content.price_ranges')->label('Budget question choices on the enquiry form'),
                 ]),
                 self::stepsTab(),
+                self::videosTab(),
                 self::faqsTab(),
                 self::waitlistTab(),
                 self::textTab([
@@ -334,6 +354,8 @@ class SiteSectionResource extends Resource
                     'address_note' => 'Note under the add-ons',
                     'steps_eyebrow' => 'How it works: small heading',
                     'steps_title' => 'How it works: heading',
+                    'videos_eyebrow' => 'Videos: small heading',
+                    'videos_title' => 'Videos: heading',
                     'people_eyebrow' => 'Experts: small heading',
                     'people_title' => 'Experts: heading',
                     'testimonials_eyebrow' => 'Testimonials: small heading',
@@ -357,7 +379,7 @@ class SiteSectionResource extends Resource
     {
         return [
             ...self::pageTopFields(),
-            ...collect(['tuition' => 'Tuition box', 'academic' => 'Academic box', 'music' => 'Music box'])->map(fn (string $label, string $key) => Section::make($label)->schema([
+            ...collect(['academic' => 'Academic box', 'tuition' => 'Tuition box', 'music' => 'Music box'])->map(fn (string $label, string $key) => Section::make($label)->schema([
                 TextInput::make("content.cards.{$key}.title")->label('Heading')->required()->maxLength(80),
                 Textarea::make("content.cards.{$key}.body")->label('Text')->required()->rows(2)->maxLength(300),
                 Grid::make(2)->schema([
@@ -366,8 +388,39 @@ class SiteSectionResource extends Resource
                 ]),
             ]))->values()->all(),
             TextInput::make('content.office_hours_note')->label('Note after the office hours')->required()->maxLength(200)
-                ->helperText('Office hours, email and WhatsApp numbers are server settings; ask Claude to change them.'),
+                ->helperText('Office hours and email are server settings; ask Claude to change them.'),
+            self::whatsappNumbersSection(),
         ];
+    }
+
+    /**
+     * CHAT-6, VRT-2: the WhatsApp number each section's buttons open. An
+     * empty field keeps the number set on the server, shown as the hint.
+     */
+    private static function whatsappNumbersSection(): Section
+    {
+        $fields = collect(['general' => 'General pages (home, about, guides…)'] + Offering::sectionOptions())
+            ->map(fn (string $label, string $key) => TextInput::make("content.whatsapp_numbers.{$key}")
+                ->label($key === 'general' ? $label : $label.' pages')
+                ->tel()
+                ->maxLength(20)
+                ->placeholder(function () use ($key): string {
+                    $current = SiteLinks::normaliseWhatsapp((string) config($key === 'general' ? 'site.whatsapp.number' : "site.whatsapp.numbers.{$key}"));
+
+                    return $current === '' ? '' : 'Now: '.$current;
+                })
+                ->rule(fn () => function (string $attribute, mixed $value, Closure $fail): void {
+                    $digits = SiteLinks::normaliseWhatsapp((string) $value);
+                    if ($digits !== '' && (strlen($digits) < 11 || strlen($digits) > 15)) {
+                        $fail('Enter a 10-digit mobile number, or the full number with its country code.');
+                    }
+                })
+                ->dehydrateStateUsing(fn (?string $state): ?string => filled($state) ? SiteLinks::normaliseWhatsapp($state) : null))
+            ->values()->all();
+
+        return Section::make('WhatsApp numbers')
+            ->description('The number each WhatsApp button opens a chat with. Type a 10-digit Indian mobile number (91 is added), or the full number with its country code. Leave a field empty to keep the number shown in it; a section left empty without one uses the general number.')
+            ->schema($fields);
     }
 
     /**
@@ -397,6 +450,58 @@ class SiteSectionResource extends Resource
     }
 
     /**
+     * CMS-1: the three photos under the highlights. An empty slot keeps the
+     * photo that ships with the site; uploads are shrunk to WebP on save.
+     */
+    private static function photosTab(): Tab
+    {
+        return Tab::make('Photos')->schema([
+            Repeater::make('content.photos')->label('Photos under the highlights')
+                ->helperText('Upload a JPG, PNG or WebP photo (up to 8 MB); it is cropped to 4:3 and compressed for you. Leave a slot empty to keep the photo the site came with. Do not caption stock photos as our own students or teachers.')
+                ->schema([
+                    FileUpload::make('image')->label('Photo')
+                        ->image()
+                        ->disk(fn (): string => config('site.media_disk'))
+                        ->directory(SiteMedia::DIRECTORY.'/originals')
+                        ->visibility('private')
+                        // The preview comes from our own /media route: the
+                        // browser can't fetch a private R2 link (CORS), which
+                        // left the slot stuck on "Loading" with no remove button.
+                        ->getUploadedFileUsing(fn (string $file): ?array => SiteMedia::preview($file))
+                        ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                        ->maxSize(8192),
+                    TextInput::make('alt')->label('Describe the photo')->required()->maxLength(160)
+                        ->helperText('For Google and for visitors who use a screen reader, e.g. "A child takes notes during an online class".'),
+                ])
+                ->itemLabel(fn (array $state): ?string => $state['alt'] ?? null)
+                ->minItems(3)->maxItems(3)->addable(false)->deletable(false)->reorderable()->collapsible(),
+        ]);
+    }
+
+    /**
+     * A YouTube link per video; only the video id is kept on the page.
+     */
+    private static function videosTab(): Tab
+    {
+        return Tab::make('Videos')->schema([
+            Repeater::make('content.videos')->label('Videos')
+                ->helperText('Upload the video to YouTube (public or unlisted) and paste its link. The section is hidden while this list is empty.')
+                ->schema([
+                    TextInput::make('title')->required()->maxLength(80),
+                    TextInput::make('url')->label('YouTube link')->required()->maxLength(255)
+                        ->rule(fn () => function (string $attribute, mixed $value, Closure $fail): void {
+                            if (YouTube::id((string) $value) === null) {
+                                $fail('Paste a YouTube video link, for example https://youtu.be/…');
+                            }
+                        }),
+                    TextInput::make('caption')->label('Short caption (optional)')->maxLength(160),
+                ])
+                ->itemLabel(fn (array $state): ?string => $state['title'] ?? null)
+                ->collapsible()->reorderable()->maxItems(6),
+        ]);
+    }
+
+    /**
      * The headings, buttons and short notes around a page's sections.
      *
      * @param  array<string, string>  $labels
@@ -414,7 +519,10 @@ class SiteSectionResource extends Resource
     private static function heroTab(): Tab
     {
         return Tab::make('Top of page')->schema([
-            TextInput::make('content.hero.title')->label('Headline')->required()->maxLength(160),
+            TextInput::make('content.hero.title')->label('Headline')->required()->maxLength(160)
+                ->helperText('Keep it short (about 8 words). Put the services you want to stand out in the highlighted keywords below.'),
+            TagsInput::make('content.keywords')->label('Highlighted keywords')
+                ->helperText('Shown as coloured badges under the headline. Type one and press Enter.'),
             Textarea::make('content.hero.lead')->label('Intro')->required()->rows(3)->maxLength(400),
             Repeater::make('content.highlights')->label('Three highlights')
                 ->schema([

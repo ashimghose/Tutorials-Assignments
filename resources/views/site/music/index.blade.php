@@ -7,6 +7,7 @@
             <div>
                 <p class="text-sm font-semibold uppercase tracking-wide text-music-700">{{ $text['eyebrow'] }}</p>
                 <h1 class="mt-2 max-w-3xl text-3xl font-bold tracking-tight text-slate-900 sm:text-5xl">{{ $content['hero']['title'] }}</h1>
+                <x-site.keyword-badges :keywords="$content['keywords'] ?? []" accent="music" />
                 <p class="mt-5 max-w-2xl text-lg text-slate-600">{{ $content['hero']['lead'] }}</p>
                 <div class="mt-8 flex flex-col gap-3 sm:flex-row">
                     <x-site.form-link form="music" section="music" :page="$page" interest="Free trial class" variant="music">{{ $text['demo_button'] }}</x-site.form-link>
@@ -35,6 +36,8 @@
                 </div>
             @endforeach
         </div>
+
+        <x-site.photo-row :photos="$content['photos'] ?? []" :defaults="['music-guitar-video-call', 'music-teacher-online', 'music-learner-waving']" />
     </section>
 
     @if (($content['chords'] ?? []) !== [])
@@ -84,7 +87,7 @@
         <section id="videos" class="mx-auto max-w-6xl px-4 pb-16 sm:px-6">
             <x-site.section-heading :eyebrow="$text['videos_eyebrow']" :title="$text['videos_title']" />
             <div class="mt-8">
-                <x-site.videos :videos="$content['videos']" />
+                <x-site.videos :videos="$content['videos']" accent="music" />
             </div>
         </section>
     @endif

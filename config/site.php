@@ -13,6 +13,10 @@
 
 return [
 
+    // CMS-1: where photos uploaded in the admin are stored. Defaults to the
+    // order files disk, which is R2 in production.
+    'media_disk' => env('SITE_MEDIA_DISK', env('ORDER_FILES_DISK', 'local')),
+
     'contact' => [
         'email' => env('CONTACT_EMAIL'),
         'office_hours' => env('OFFICE_HOURS', 'Monday to Saturday, 10 am to 7 pm IST'),

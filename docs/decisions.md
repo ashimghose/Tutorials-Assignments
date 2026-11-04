@@ -160,6 +160,32 @@ Home, Tuition and Academic heroes show original flat SVG illustrations (public/i
 - **Videos are YouTube links pasted in the admin.** Only the 11-character id is kept (`App\Support\YouTube`), and the page shows a styled play button; the `youtube-nocookie` player is added only when the visitor taps it (`resources/js/site.js`), so YouTube sets nothing before then. Free hosting, and no video files on our server or R2.
 - **Guides follow their section's switch:** a guide tagged music is hidden from the guides list, the home page and the sitemap while music is off.
 
+## 2026-11-03 · Online and physical classroom tuition fees (MKT-1)
+
+- Each tuition fee plan has an optional **physical classroom fee** next to its online fee (`classroom_price`, paise). A plan without one shows a single fee as before. Owner's fees: classes 1 to 7 ₹700 online / ₹1,000 classroom, 8 to 10 ₹1,000 / ₹1,500, 11 and 12 ₹1,500 / ₹2,000, per subject per month.
+- The tuition page skips a plan saved without a fee and copes with missing subjects or ticked points, so a half-finished admin edit can't take the page down. The fee grid uses as many columns as there are plans.
+- The admin edit form fills in text added to the content files after a page was copied into the database (here the "Online" and "Physical classroom" labels), so saving an older page doesn't fail on empty required fields.
+- Batches still have one monthly fee each; a classroom batch is set up as its own batch with the classroom fee.
+
+## 2026-11-03 · WhatsApp numbers set in the admin (CHAT-6, VRT-2)
+
+- The admin sets the WhatsApp number for the general pages and for each section on **Website → Pages → Contact us**, stored with that page's content (`whatsapp_numbers`). No new table: the numbers are site content, and the page edit is already audited.
+- A number set in the admin wins; an empty field falls back to `WHATSAPP_NUMBER_{SECTION}`, then the general number, so nothing changes until the admin types one.
+- Numbers are kept as digits only. A 10-digit number gets India's 91 in front, so the owner can type a mobile number as written.
+
+
+## 2026-11-03 · Stock photos on the landing pages
+Tuition, Music and Academic show a row of three free-licence Pexels photos (chosen by the owner) under the highlights, as WebP at 640 and 1200 px (under 100 KB each), lazy-loaded with fixed width and height. The illustrations stay as heroes. Photos illustrate the kind of class and are never captioned as our own students or teachers; originals are in the project files (site-look/photos).
+
+## 2026-11-03 · Keyword badges under landing-page headlines
+Each landing page can show the section's main services as coloured badges under a short headline (`content.keywords`, edited under Top of page > Highlighted keywords). The academic headline the owner had typed listed every service in one sentence; a migration shortens it (only if unchanged) and the badges carry the keywords, worded so nothing offers to write the student's work (ACA).
+
+## 2026-11-04 · Admin-uploaded photos on R2, served through /media
+The three photos under each landing page's highlights can be replaced in the admin (Pages > Photos). Originals go to `SITE_MEDIA_DISK` (defaults to `ORDER_FILES_DISK`, which is the private R2 bucket in production), so the Lightsail server stays stateless. On save, GD crops each to 4:3 and writes 640/1200 px WebP copies beside it (no new package). `/media/{name}-{640|1200}.webp` streams them with a one-year immutable cache and no session cookie, so Cloudflare caches them and R2 is rarely hit. Empty slots keep the built-in photos in public/images/photos.
+
+## 2026-11-04 Assignments box on /academic; sections ordered Academic, Tuition, Music
+The owner asked for assignments (school to PhD) to be a main topic again. The academic page gets the word back in its headline, a first badge, and an Assignments box with a college card and a school card. School students are minors, so the school card asks parents to message the Academic WhatsApp number and says a teacher guides the child while the child does the work (ACA-3, academic-integrity rules). A guarded migration updates the live text only where it still holds what we shipped. Sections now list Academic services first, then Tuition, then Music (`Verticals::KEYS`, `Offering::sections()`).
+
 ## 2026-11-04 · Music learner sign-up and login (MUS-2, MUS-3)
 
 - **No parent account for music.** The owner chose that every music learner signs up themselves (`Role::MusicStudent`). For under-18s, the DPDP Act still needs a parent's consent, so the owner chose **approval by email**: the learner types a parent's email, the parent gets a temporary signed link (14 days) and ticks "I agree" (`ConsentPurpose::MusicGuardian`, stored against the learner's account). No parent login. `app:prune-unapproved-music-learners` deletes unapproved under-18 accounts daily after the link expires.

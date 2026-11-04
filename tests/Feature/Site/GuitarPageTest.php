@@ -102,3 +102,9 @@ test('MUS a music page the admin has already edited is left alone', function () 
 
     expect($section->fresh()->content['hero']['title'])->toBe('Our own guitar classes');
 });
+
+test('MUS the music page shows its row of guitar class photos', function () {
+    $this->get('/music')->assertOk()
+        ->assertSee('<img src="/images/photos/music-guitar-video-call-640.webp"', false)
+        ->assertSee('alt="A learner with a guitar follows a teacher on a laptop screen"', false);
+});

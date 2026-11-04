@@ -99,3 +99,13 @@ test('MKT-6 guides come from the database, and unpublished or future ones stay h
     $this->get(route('resources.show', 'draft-guide'))->assertNotFound();
     $this->get(route('sitemap'))->assertSee(route('resources.show', 'live-guide'))->assertDontSee('draft-guide');
 });
+
+test('ACA-1 the academic page still loads when the admin adds a level that has no prices', function (bool $onlineOrders) {
+    config(['features.cms' => true, 'features.academic_orders' => $onlineOrders]);
+    setSection('academic', fn (array &$content) => $content['levels'][] = 'Diploma');
+
+    $this->get(route('academic'))
+        ->assertOk()
+        ->assertSee('Diploma')
+        ->assertSee(SiteContent::sectionFile('academic')['text']['quote_label']);
+})->with(['price list from the page' => false, 'price list from services' => true]);

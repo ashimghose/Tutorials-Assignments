@@ -6,7 +6,7 @@ use App\Support\SiteContent;
 dataset('public pages', [
     'home' => ['/', 'Learning support for school and beyond'],
     'tuition' => ['/tuition', 'Live online tuition for classes 1 to 12'],
-    'academic' => ['/academic', 'Guidance, editing and printing'],
+    'academic' => ['/academic', 'Assignments, thesis, dissertation and research paper support'],
     'resources' => ['/resources', 'Free guides'],
     'article' => ['/resources/how-to-structure-a-synopsis', 'How to structure a research synopsis'],
     'about' => ['/about', 'About us'],
@@ -81,7 +81,7 @@ test('MKT-1 tuition and academic sections show their prices and FAQs', function 
     config(['site.forms.tuition.url' => null, 'site.forms.academic.url' => null]);
 
     $this->get('/tuition')
-        ->assertSee('₹1,200')
+        ->assertSee('₹700')
         ->assertSee('Questions parents ask')
         ->assertSee('Book a free demo class')
         ->assertSee('"@type":"FAQPage"', false);
@@ -233,3 +233,17 @@ test('AUTH-1 the header offers a log-in link once accounts are switched on', fun
         ->assertSee('My account')
         ->assertDontSee('Log in');
 });
+
+test('each landing page shows its row of lazy-loaded photos', function (string $path, string $first) {
+    $this->get($path)
+        ->assertOk()
+        ->assertSee('<img src="/images/photos/'.$first.'-640.webp"', false)
+        ->assertSee('loading="lazy"', false);
+
+    foreach (glob(public_path('images/photos/*.webp')) as $file) {
+        expect(filesize($file))->toBeLessThan(100_000);
+    }
+})->with([
+    'tuition' => ['/tuition', 'tuition-girl-online-class'],
+    'academic' => ['/academic', 'academic-campus-students'],
+]);

@@ -16,10 +16,38 @@ final class SiteLinks
      */
     public static function whatsapp(string $section): string
     {
-        $number = preg_replace('/\D/', '', (string) (config("site.whatsapp.numbers.{$section}") ?: config('site.whatsapp.number')));
         $text = (string) (config("site.whatsapp.text.{$section}") ?? config('site.whatsapp.text.general'));
 
-        return 'https://wa.me/'.$number.'?text='.rawurlencode($text);
+        return 'https://wa.me/'.self::whatsappNumber($section).'?text='.rawurlencode($text);
+    }
+
+    /**
+     * CHAT-6, VRT-2: the number a section's chats go to. A number the admin
+     * set on the Contact page wins; otherwise the server setting
+     * (WHATSAPP_NUMBER_{SECTION}); a section without either uses the
+     * general number, again the admin's first.
+     */
+    public static function whatsappNumber(string $section): string
+    {
+        $admin = SiteContent::fromDatabase() ? (array) (SiteContent::section('contact')['whatsapp_numbers'] ?? []) : [];
+
+        $number = ($admin[$section] ?? null)
+            ?: config("site.whatsapp.numbers.{$section}")
+            ?: ($admin['general'] ?? null)
+            ?: config('site.whatsapp.number');
+
+        return self::normaliseWhatsapp((string) $number);
+    }
+
+    /**
+     * Digits only, without a leading 0, and with India's 91 in front of a
+     * 10-digit mobile number.
+     */
+    public static function normaliseWhatsapp(string $number): string
+    {
+        $digits = ltrim((string) preg_replace('/\D/', '', $number), '0');
+
+        return strlen($digits) === 10 ? '91'.$digits : $digits;
     }
 
     /**

@@ -17,6 +17,17 @@ return [
         'lead' => 'Small batches of up to 15 students, taught live by a teacher who knows your child by name. Join from home on a laptop, tablet or phone.',
     ],
 
+    // Highlighted badges under the headline (MKT-1); none by default.
+    'keywords' => [],
+
+    // CMS-1: the three photos under the highlights. An empty image keeps the
+    // photo that ships in public/images/photos (see the page view).
+    'photos' => [
+        ['image' => null, 'alt' => 'A school student takes notes during a live online class with a teacher on her laptop'],
+        ['image' => null, 'alt' => 'A teacher explains maths on a whiteboard to a class joining online'],
+        ['image' => null, 'alt' => 'A child listens to her teacher on a video call'],
+    ],
+
     'highlights' => [
         ['title' => 'Small live batches', 'body' => 'At most 15 students in a class, so every child can ask questions and be heard.'],
         ['title' => 'Notebook camera', 'body' => 'Teachers solve problems on paper or a whiteboard, the way your child will in the exam.'],
@@ -25,32 +36,29 @@ return [
 
     'boards' => ['CBSE', 'ICSE', 'Assam Board (ASSEB)'],
 
-    // PLACEHOLDER fees: monthly fee per subject, per child.
+    // Monthly fee per subject, per child (owner's fees, 2026-11-03). 'price' is
+    // the online fee; 'classroom_price' (optional) is the physical classroom fee.
     'plans' => [
         [
-            'name' => 'Classes 1 to 5',
-            'price' => Money::fromRupees(1200),
+            'name' => 'Classes 1 to 7',
+            'price' => Money::fromRupees(700),
+            'classroom_price' => Money::fromRupees(1000),
             'period' => 'per subject, per month',
-            'subjects' => ['Maths', 'English', 'EVS / Science', 'Hindi'],
+            'subjects' => ['Maths', 'English', 'EVS / Science', 'Social Science', 'Hindi'],
             'features' => ['3 live classes a week', '55 minutes each', 'Monthly progress note for parents'],
         ],
         [
-            'name' => 'Classes 6 to 8',
-            'price' => Money::fromRupees(1500),
-            'period' => 'per subject, per month',
-            'subjects' => ['Maths', 'Science', 'English', 'Social Science'],
-            'features' => ['3 live classes a week', '55 minutes each', 'Chapter tests every month'],
-        ],
-        [
-            'name' => 'Classes 9 and 10',
-            'price' => Money::fromRupees(2000),
+            'name' => 'Classes 8 to 10',
+            'price' => Money::fromRupees(1000),
+            'classroom_price' => Money::fromRupees(1500),
             'period' => 'per subject, per month',
             'subjects' => ['Maths', 'Science', 'English', 'Social Science'],
             'features' => ['3 live classes a week', '55 minutes each', 'Board exam practice papers'],
         ],
         [
             'name' => 'Classes 11 and 12',
-            'price' => Money::fromRupees(2500),
+            'price' => Money::fromRupees(1500),
+            'classroom_price' => Money::fromRupees(2000),
             'period' => 'per subject, per month',
             'subjects' => ['Physics', 'Chemistry', 'Maths', 'Biology', 'Accountancy', 'Economics'],
             'features' => ['3 live classes a week', '55 minutes each', 'Board and entrance exam practice'],
@@ -63,6 +71,10 @@ return [
         ['title' => 'Pay the monthly fee', 'body' => 'We send you a secure payment link. Pay by UPI, card or net banking.'],
         ['title' => 'Classes start', 'body' => 'You get the class link and timetable. Your child joins from home at class time.'],
     ],
+
+    // Short videos shown under "How it works". Paste a YouTube link in the
+    // admin; the section stays hidden while the list is empty.
+    'videos' => [],
 
     // Add real teacher profiles here: ['name' => '', 'subjects' => '', 'bio' => ''].
     // The section stays hidden while this list is empty.
@@ -106,9 +118,9 @@ return [
     // MKT-3 price question on the enquiry form, to test what people will pay.
     // PLACEHOLDER ranges.
     'price_ranges' => [
-        'Up to ₹1,500 a month per subject',
-        '₹1,500 to ₹2,500 a month per subject',
-        'More than ₹2,500 a month per subject',
+        'Up to ₹1,000 a month per subject',
+        '₹1,000 to ₹1,500 a month per subject',
+        'More than ₹1,500 a month per subject',
     ],
 
     'waitlist' => [
@@ -128,10 +140,14 @@ return [
         'fees_eyebrow' => 'Fees',
         'fees_title' => 'Simple monthly fees',
         'fees_lead' => 'One fee per subject, per child, per month. No admission fee, and the first class is a free demo.',
+        'online_label' => 'Online',
+        'classroom_label' => 'Physical classroom',
         'subjects_label' => 'Subjects',
         'plan_button' => 'Book a free demo',
         'steps_eyebrow' => 'How it works',
         'steps_title' => 'From enquiry to first class',
+        'videos_eyebrow' => 'Watch',
+        'videos_title' => 'See how it works',
         'people_eyebrow' => 'Teachers',
         'people_title' => 'Meet the teachers',
         'testimonials_eyebrow' => 'Parents say',

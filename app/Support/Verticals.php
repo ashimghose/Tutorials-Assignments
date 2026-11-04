@@ -12,7 +12,7 @@ use Illuminate\Http\Request;
 final class Verticals
 {
     /** The sections, in menu order. Each one's landing page has the same route name. */
-    public const KEYS = ['tuition', 'academic', 'music'];
+    public const KEYS = ['academic', 'tuition', 'music'];
 
     public static function exists(string $key): bool
     {
