@@ -104,6 +104,7 @@ class AcademicCatalogueSeeder extends Seeder
     private function serviceType(string $title): string
     {
         return match (true) {
+            Str::contains($title, 'assignment', ignoreCase: true) => 'Assignment',
             Str::contains($title, 'synopsis', ignoreCase: true) => 'Synopsis',
             Str::contains($title, 'research paper', ignoreCase: true) => 'Research paper',
             Str::contains($title, 'research book', ignoreCase: true) => 'Research book',

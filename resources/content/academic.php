@@ -68,6 +68,13 @@ return [
     // PLACEHOLDER prices, by level: [Bachelors, Masters, PhD]. null = quote only.
     'services' => [
         [
+            'name' => 'Assignment guidance',
+            'body' => 'One-to-one guidance on an assignment you are writing: understanding the question, planning and structure, finding and citing sources, and feedback on your draft. You write it; we guide you. School students to graduation pay the Bachelors price.',
+            'prices' => [Money::fromRupees(1600), Money::fromRupees(2600), Money::fromRupees(3600)],
+            'turnaround' => '3 working days',
+            'revisions' => 1,
+        ],
+        [
             'name' => 'Synopsis guidance and review',
             'body' => 'Feedback on your research question, objectives, methodology and structure, with a marked-up copy and a call to talk it through.',
             'prices' => [Money::fromRupees(1500), Money::fromRupees(2500), Money::fromRupees(4000)],
