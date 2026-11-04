@@ -31,6 +31,14 @@ return [
         'Handwritten copy of your own work',
     ],
 
+    // CMS-1: the three photos under the highlights. An empty image keeps the
+    // photo that ships in public/images/photos (see the page view).
+    'photos' => [
+        ['image' => null, 'alt' => 'Three college students working together with a laptop and books on campus'],
+        ['image' => null, 'alt' => 'A student writes notes beside her laptop'],
+        ['image' => null, 'alt' => 'A student smiles while working at her desk'],
+    ],
+
     'highlights' => [
         ['title' => 'Your work, made stronger', 'body' => 'Structure guidance, language editing and proofreading on the text you wrote.'],
         ['title' => 'Formatted to your university\'s rules', 'body' => 'Margins, headings, tables, figures, citations and reference lists in the style your university asks for.'],

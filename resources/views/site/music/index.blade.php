@@ -29,11 +29,7 @@
             @endforeach
         </div>
 
-        <x-site.photo-row :photos="[
-            ['name' => 'music-guitar-video-call', 'alt' => 'A learner with a guitar follows a teacher on a laptop screen'],
-            ['name' => 'music-teacher-online', 'alt' => 'A guitar teacher shows a music chart to learners on a video call'],
-            ['name' => 'music-learner-waving', 'alt' => 'A learner with a guitar waves hello at the start of an online class'],
-        ]" />
+        <x-site.photo-row :photos="$content['photos'] ?? []" :defaults="['music-guitar-video-call', 'music-teacher-online', 'music-learner-waving']" />
     </section>
 
     @if (($content['chords'] ?? []) !== [])

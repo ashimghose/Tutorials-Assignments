@@ -179,3 +179,6 @@ Tuition, Music and Academic show a row of three free-licence Pexels photos (chos
 
 ## 2026-11-03 · Keyword badges under landing-page headlines
 Each landing page can show the section's main services as coloured badges under a short headline (`content.keywords`, edited under Top of page > Highlighted keywords). The academic headline the owner had typed listed every service in one sentence; a migration shortens it (only if unchanged) and the badges carry the keywords, worded so nothing offers to write the student's work (ACA).
+
+## 2026-11-04 · Admin-uploaded photos on R2, served through /media
+The three photos under each landing page's highlights can be replaced in the admin (Pages > Photos). Originals go to `SITE_MEDIA_DISK` (defaults to `ORDER_FILES_DISK`, which is the private R2 bucket in production), so the Lightsail server stays stateless. On save, GD crops each to 4:3 and writes 640/1200 px WebP copies beside it (no new package). `/media/{name}-{640|1200}.webp` streams them with a one-year immutable cache and no session cookie, so Cloudflare caches them and R2 is rarely hit. Empty slots keep the built-in photos in public/images/photos.

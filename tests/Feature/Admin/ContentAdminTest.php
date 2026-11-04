@@ -196,3 +196,21 @@ test('CHAT-6 only an admin can change the WhatsApp numbers', function () {
 
     $this->get('/admin/site-sections/'.$contact->getRouteKey().'/edit')->assertForbidden();
 });
+
+test('CMS-1 the admin describes a photo on a section page and keeps the built-in ones', function () {
+    $tuition = SiteSection::where('key', 'tuition')->sole();
+
+    Livewire::test(EditSiteSection::class, ['record' => $tuition->getRouteKey()])
+        ->assertSee('Photos under the highlights')
+        ->fillForm(fn (array $state) => data_set($state, 'content.photos', array_map(
+            fn (array $photo) => [...$photo, 'alt' => 'New: '.$photo['alt']],
+            $state['content']['photos'],
+        )))
+        ->call('save')
+        ->assertHasNoFormErrors();
+
+    expect(array_values($tuition->fresh()->content['photos']))->toHaveCount(3);
+    $this->get(route('tuition'))->assertOk()
+        ->assertSee('alt="New: A school student takes notes', false)
+        ->assertSee('/images/photos/tuition-girl-online-class-640.webp', false);
+});

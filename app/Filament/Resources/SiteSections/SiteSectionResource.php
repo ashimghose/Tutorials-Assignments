@@ -8,9 +8,11 @@ use App\Filament\Resources\SiteSections\Pages\ListSiteSections;
 use App\Filament\Support\MoneyInput;
 use App\Models\SiteSection;
 use App\Support\SiteLinks;
+use App\Support\SiteMedia;
 use App\Support\YouTube;
 use BackedEnum;
 use Closure;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\TagsInput;
@@ -128,6 +130,7 @@ class SiteSectionResource extends Resource
         return [
             Tabs::make()->tabs([
                 self::heroTab(),
+                self::photosTab(),
                 Tab::make('Fees')->schema([
                     TagsInput::make('content.boards')->label('Boards taught')->required(),
                     Repeater::make('content.plans')->label('Fee plans')
@@ -193,6 +196,7 @@ class SiteSectionResource extends Resource
         return [
             Tabs::make()->tabs([
                 self::heroTab(),
+                self::photosTab(),
                 Tab::make('Fees')->schema([
                     TagsInput::make('content.styles')->label('Instruments and singing styles')->required(),
                     Repeater::make('content.plans')->label('Fee plans')
@@ -269,6 +273,7 @@ class SiteSectionResource extends Resource
         return [
             Tabs::make()->tabs([
                 self::heroTab(),
+                self::photosTab(),
                 Tab::make('Price list')->schema([
                     TagsInput::make('content.levels')->label('Levels')->required()
                         ->helperText('One per price column, in order: Bachelors, Masters, PhD. Each service has a price for these three; a level added after them shows the quote label.'),
@@ -423,6 +428,31 @@ class SiteSectionResource extends Resource
             Textarea::make('content.lead')->label('Intro under the title')->rows(2)->maxLength(400),
             Textarea::make('content.description')->label('Description for Google and link previews')->required()->rows(2)->maxLength(300),
         ];
+    }
+
+    /**
+     * CMS-1: the three photos under the highlights. An empty slot keeps the
+     * photo that ships with the site; uploads are shrunk to WebP on save.
+     */
+    private static function photosTab(): Tab
+    {
+        return Tab::make('Photos')->schema([
+            Repeater::make('content.photos')->label('Photos under the highlights')
+                ->helperText('Upload a JPG, PNG or WebP photo (up to 8 MB); it is cropped to 4:3 and compressed for you. Leave a slot empty to keep the photo the site came with. Do not caption stock photos as our own students or teachers.')
+                ->schema([
+                    FileUpload::make('image')->label('Photo')
+                        ->image()
+                        ->disk(fn (): string => config('site.media_disk'))
+                        ->directory(SiteMedia::DIRECTORY.'/originals')
+                        ->visibility('private')
+                        ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                        ->maxSize(8192),
+                    TextInput::make('alt')->label('Describe the photo')->required()->maxLength(160)
+                        ->helperText('For Google and for visitors who use a screen reader, e.g. "A child takes notes during an online class".'),
+                ])
+                ->itemLabel(fn (array $state): ?string => $state['alt'] ?? null)
+                ->minItems(3)->maxItems(3)->addable(false)->deletable(false)->reorderable()->collapsible(),
+        ]);
     }
 
     /**
