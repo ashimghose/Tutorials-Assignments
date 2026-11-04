@@ -23,6 +23,33 @@
         </div>
     </section>
 
+    @php($assignments = $content['assignments'] ?? null)
+    @if (is_array($assignments))
+        {{-- MKT-1: assignments from school to PhD. School students reach us through a parent (ACA-3). --}}
+        <section id="assignments" class="mx-auto max-w-6xl px-4 pt-12 sm:px-6">
+            <x-site.section-heading :eyebrow="$assignments['eyebrow'] ?? ''" :title="$assignments['title'] ?? ''" :lead="$assignments['lead'] ?? null" />
+            <div class="mt-8 grid gap-4 md:grid-cols-2">
+                <div class="flex flex-col rounded-xl border-2 border-academic-100 bg-academic-50 p-5 sm:p-6">
+                    <h3 class="text-lg font-semibold text-slate-900">{{ $assignments['college_title'] ?? '' }}</h3>
+                    <p class="mt-2 text-sm text-slate-700">{{ $assignments['college_body'] ?? '' }}</p>
+                    <div class="mt-auto pt-5">
+                        <x-site.form-link form="academic" section="academic" :page="$page" interest="Assignment" variant="academic">{{ $assignments['college_button'] ?? '' }}</x-site.form-link>
+                    </div>
+                </div>
+                <div class="flex flex-col rounded-xl border-2 border-tuition-100 bg-tuition-50 p-5 sm:p-6">
+                    <h3 class="text-lg font-semibold text-slate-900">{{ $assignments['school_title'] ?? '' }}</h3>
+                    <p class="mt-2 text-sm text-slate-700">{{ $assignments['school_body'] ?? '' }}</p>
+                    <div class="mt-auto pt-5">
+                        <a href="https://wa.me/{{ \App\Support\SiteLinks::whatsappNumber('academic') }}?text={{ rawurlencode((string) ($assignments['school_message'] ?? '')) }}" target="_blank" rel="noopener" data-whatsapp="academic-school" class="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-[#1f7a4d] px-5 py-3 font-semibold text-white hover:bg-[#186440]">
+                            <x-site.whatsapp-icon class="size-5" />
+                            <span>{{ $assignments['school_button'] ?? '' }}</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    @endif
+
     <section class="mx-auto max-w-6xl px-4 py-12 sm:px-6">
         <div class="grid gap-4 md:grid-cols-3">
             @foreach ($content['highlights'] as $highlight)

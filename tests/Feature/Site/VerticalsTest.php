@@ -149,7 +149,7 @@ test('VRT-4 the money report gets a music column once music is on', function () 
     musicOn();
 
     expect(array_keys(app(MoneyReport::class)->between($day, $day)))->toBe(['tuition', 'academic', 'music', 'total'])
-        ->and(Offering::sectionOptions())->toBe(['tuition' => 'Tuition', 'academic' => 'Academic services', 'music' => 'Music lessons']);
+        ->and(Offering::sectionOptions())->toBe(['academic' => 'Academic services', 'tuition' => 'Tuition', 'music' => 'Music lessons']);
 });
 
 test('VRT-3 a section is found from its domain or its path', function () {

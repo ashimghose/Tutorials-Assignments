@@ -18,17 +18,35 @@ use App\Support\Money;
 return [
 
     'hero' => [
-        'title' => 'Thesis, dissertation and research paper support',
-        'lead' => 'For Bachelors, Masters and PhD students in any stream. We help you structure, polish, format and check your own work, then print, bind and deliver it.',
+        'title' => 'Assignments, thesis, dissertation and research paper support',
+        'lead' => 'For Bachelors, Masters and PhD students in any stream, from term assignments to the final thesis. We help you structure, polish, format and check your own work, then print, bind and deliver it.',
     ],
 
     // Shown as highlighted badges under the headline (MKT-1).
     'keywords' => [
+        'Assignments: school to PhD',
         'Editing and proofreading',
         'Plagiarism and AI check with Turnitin report',
         'Formatting to your university\'s rules',
         'Printing and binding',
         'Handwritten copy of your own work',
+    ],
+
+    // MKT-1: assignments are their own topic, separate from the synopsis,
+    // thesis and dissertation work below. School students are minors, so a
+    // parent gets in touch and a teacher guides the child, who does the work
+    // (ACA-3, ACA integrity rules).
+    'assignments' => [
+        'eyebrow' => 'Assignments',
+        'title' => 'Assignment help, from school to PhD',
+        'lead' => 'Assignments are not the same as a synopsis, thesis or dissertation. They are the shorter tasks, reports and projects set through the year, at every level from school to PhD.',
+        'college_title' => 'College and university assignments',
+        'college_body' => 'Bachelors, Masters and PhD coursework, reports and projects. We guide your structure and sources, edit and proofread, check plagiarism and AI with a Turnitin report, format to your guidelines, and print or make a handwritten copy of your own work.',
+        'college_button' => 'Get a price for your assignment',
+        'school_title' => 'School holiday assignments (classes 1 to 12)',
+        'school_body' => 'Schools set holiday homework and projects in the summer, Puja and winter breaks. Parents, message us and a teacher will guide your child in live online sessions while your child does the work.',
+        'school_button' => 'Parents: message us on WhatsApp',
+        'school_message' => 'Hello, I am a parent. I would like a teacher to guide my child with school holiday assignments. My child\'s class: ',
     ],
 
     // CMS-1: the three photos under the highlights. An empty image keeps the
@@ -171,8 +189,8 @@ return [
     // Keep the integrity notice: we help with the student's own work and
     // never supply work to submit as theirs (UGC 2018).
     'text' => [
-        'seo_title' => 'Thesis, dissertation and research paper editing, Turnitin plagiarism and AI check, formatting and printing',
-        'seo_description' => 'Guidance, editing, proofreading, formatting, similarity checks, printing and delivery for Bachelors, Masters and PhD students\' synopses, research papers, theses and dissertations.',
+        'seo_title' => 'Assignment, thesis, dissertation and research paper editing, Turnitin plagiarism and AI check, formatting and printing',
+        'seo_description' => 'Guidance, editing, proofreading, formatting, similarity checks, printing and delivery for Bachelors, Masters and PhD students\' assignments, synopses, research papers, theses and dissertations.',
         'eyebrow' => 'Academic services for students aged 18 and over',
         'quote_button' => 'Get a price for your work',
         'prices_button' => 'See the price list',

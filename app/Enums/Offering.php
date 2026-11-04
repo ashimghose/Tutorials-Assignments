@@ -11,8 +11,8 @@ use App\Support\Verticals;
  */
 enum Offering: string
 {
-    case Tuition = 'tuition';
     case Academic = 'academic';
+    case Tuition = 'tuition';
     case Music = 'music';
     case Both = 'both';
 
@@ -47,7 +47,7 @@ enum Offering: string
     public static function sections(): array
     {
         return array_values(array_filter(
-            [self::Tuition, self::Academic, self::Music],
+            [self::Academic, self::Tuition, self::Music],
             fn (self $offering) => Verticals::enabled($offering->value),
         ));
     }

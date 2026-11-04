@@ -6,7 +6,7 @@ use App\Support\SiteContent;
 dataset('public pages', [
     'home' => ['/', 'Learning support for school and beyond'],
     'tuition' => ['/tuition', 'Live online tuition for classes 1 to 12'],
-    'academic' => ['/academic', 'Thesis, dissertation and research paper support'],
+    'academic' => ['/academic', 'Assignments, thesis, dissertation and research paper support'],
     'resources' => ['/resources', 'Free guides'],
     'article' => ['/resources/how-to-structure-a-synopsis', 'How to structure a research synopsis'],
     'about' => ['/about', 'About us'],
