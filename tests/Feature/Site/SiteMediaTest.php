@@ -85,3 +85,18 @@ test('CMS-1 a file that is not an image is refused when the page is saved', func
 
     tuitionWithPhoto(SiteMedia::DIRECTORY.'/originals/bad.jpg');
 })->throws(RuntimeException::class);
+
+test('CMS-1 the admin preview of a saved photo loads from this site, so it can be removed', function () {
+    $image = uploadSitePhoto('class.jpg');
+    tuitionWithPhoto($image);
+
+    $preview = SiteMedia::preview($image);
+
+    expect($preview['url'])->toBe(SiteMedia::url($image, 640))
+        ->and($preview['url'])->toStartWith(config('app.url'))
+        ->and($preview['type'])->toBe('image/webp')
+        ->and($preview['size'])->toBeGreaterThan(0)
+        ->and(SiteMedia::preview('site-media/originals/missing.jpg'))->toBeNull();
+
+    $this->get($preview['url'])->assertOk();
+});
