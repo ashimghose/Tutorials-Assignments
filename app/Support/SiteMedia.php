@@ -18,6 +18,9 @@ class SiteMedia
 
     public const WIDTHS = [640, 1200];
 
+    /** Width => height of each 4:3 copy. */
+    private const SIZES = [640 => 480, 1200 => 900];
+
     public static function disk(): Filesystem
     {
         return Storage::disk(config('site.media_disk'));
@@ -58,9 +61,9 @@ class SiteMedia
         $x = intdiv($width - $cropWidth, 2);
         $y = intdiv($height - $cropHeight, 2);
 
-        foreach (self::WIDTHS as $target) {
-            $copy = imagecreatetruecolor($target, intdiv($target * 3, 4));
-            imagecopyresampled($copy, $source, 0, 0, $x, $y, $target, intdiv($target * 3, 4), $cropWidth, $cropHeight);
+        foreach (self::SIZES as $target => $targetHeight) {
+            $copy = imagecreatetruecolor($target, $targetHeight);
+            imagecopyresampled($copy, $source, 0, 0, $x, $y, $target, $targetHeight, $cropWidth, $cropHeight);
 
             ob_start();
             imagewebp($copy, null, 72);
