@@ -37,6 +37,28 @@ class SiteMedia
         return route('media', ['path' => basename(self::variant($image, $width))]);
     }
 
+    /**
+     * CMS-1: what the admin's upload field shows for a saved photo: the
+     * 640 px copy, served from this site so the browser can load it.
+     *
+     * @return array{name: string, size: int, type: string, url: string}|null
+     */
+    public static function preview(string $image): ?array
+    {
+        $variant = self::variant($image, self::WIDTHS[0]);
+        $disk = self::disk();
+        if (! $disk->exists($variant)) {
+            return null;
+        }
+
+        return [
+            'name' => basename($image),
+            'size' => $disk->size($variant),
+            'type' => 'image/webp',
+            'url' => self::url($image, self::WIDTHS[0]),
+        ];
+    }
+
     /** Makes the WebP copies of an uploaded original, unless they exist already. */
     public static function process(string $image): void
     {

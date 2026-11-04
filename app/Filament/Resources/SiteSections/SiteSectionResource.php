@@ -464,6 +464,10 @@ class SiteSectionResource extends Resource
                         ->disk(fn (): string => config('site.media_disk'))
                         ->directory(SiteMedia::DIRECTORY.'/originals')
                         ->visibility('private')
+                        // The preview comes from our own /media route: the
+                        // browser can't fetch a private R2 link (CORS), which
+                        // left the slot stuck on "Loading" with no remove button.
+                        ->getUploadedFileUsing(fn (string $file): ?array => SiteMedia::preview($file))
                         ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
                         ->maxSize(8192),
                     TextInput::make('alt')->label('Describe the photo')->required()->maxLength(160)
