@@ -9,6 +9,7 @@ use App\Models\Conversation;
 use App\Models\Student;
 use App\Models\User;
 use App\Notifications\TeacherInvitation;
+use Database\Seeders\AcademicCatalogueSeeder;
 use Illuminate\Support\Facades\Notification;
 use Livewire\Livewire;
 
@@ -90,7 +91,10 @@ test('ADM-7 AUTH-6 accounts with children, orders or messages, staff and the adm
     expect($this->admin->can('delete', $user))->toBeFalse();
 })->with([
     'parent with a child' => [fn () => tap(User::factory()->parent()->create(), fn (User $u) => Student::factory()->for($u->parentProfile, 'parent')->create())],
-    'academic student with an order' => [fn () => tap(User::factory()->academicStudent()->create(), fn (User $u) => AcademicOrder::factory()->for($u->academicStudent)->create())],
+    'academic student with an order' => [fn () => tap(User::factory()->academicStudent()->create(), function (User $u) {
+        test()->seed(AcademicCatalogueSeeder::class);
+        AcademicOrder::factory()->for($u->academicStudent)->create();
+    })],
     'parent with a conversation' => [fn () => tap(User::factory()->parent()->create(), fn (User $u) => Conversation::factory()->startedBy($u)->create())],
     'teacher' => [fn () => User::factory()->teacher()->create()],
     'the admin themself' => [fn () => test()->admin],
