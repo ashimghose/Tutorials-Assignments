@@ -154,8 +154,8 @@ final class ClientRules
      */
     private static function message(string $field, string $rule, array $messages, ?string $attribute, array $replace = [], ?string $key = null): string
     {
-        $text = $messages["{$field}.{$rule}"] ?? $messages[$rule] ?? __('validation.'.($key ?? $rule));
-        $name = $attribute ?? (trans()->has("validation.attributes.{$field}") ? __("validation.attributes.{$field}") : str_replace('_', ' ', Str::snake($field)));
+        $text = $messages["{$field}.{$rule}"] ?? $messages[$rule] ?? self::translate('validation.'.($key ?? $rule));
+        $name = $attribute ?? (trans()->has("validation.attributes.{$field}") ? self::translate("validation.attributes.{$field}") : str_replace('_', ' ', Str::snake($field)));
 
         $replace = ['attribute' => $name, ...$replace];
         foreach ($replace as $search => $value) {
@@ -167,6 +167,13 @@ final class ClientRules
         }
 
         return $text;
+    }
+
+    private static function translate(string $key): string
+    {
+        $text = __($key);
+
+        return is_string($text) ? $text : $key;
     }
 
     /**
