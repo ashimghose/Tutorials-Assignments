@@ -40,7 +40,7 @@ class StudentFactory extends Factory
             'user_id' => User::factory()->musicStudent(),
             'class_level' => null,
             'board' => null,
-            'mobile' => '9876543210',
+            'mobile' => '+919876543210',
             'adult_declared_at' => $adult ? now() : null,
             'guardian_email' => $adult ? null : 'parent@example.com',
             'guardian_consented_at' => null,

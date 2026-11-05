@@ -20,17 +20,17 @@
             :separator="__('Or confirm with password')"
         />
 
-        <form method="POST" action="{{ route('password.confirm.store') }}" class="flex flex-col gap-6">
+        <form method="POST" action="{{ route('password.confirm.store') }}" class="flex flex-col gap-6" data-checks novalidate>
             @csrf
 
             <flux:input
                 name="password"
                 :label="__('Password')"
                 type="password"
-                required
                 autocomplete="current-password"
                 :placeholder="__('Password')"
                 viewable
+                :attributes="\App\Support\ClientRules::for('password', ['required', 'string'])"
             />
 
             <flux:button variant="primary" type="submit" class="w-full" data-test="confirm-password-button">

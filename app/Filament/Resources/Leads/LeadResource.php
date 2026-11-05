@@ -10,6 +10,7 @@ use App\Filament\Resources\Leads\Pages\ViewLead;
 use App\Filament\Support\OfferingOptions;
 use App\Models\AuditLog;
 use App\Models\Lead;
+use App\Support\Phone;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
@@ -55,7 +56,7 @@ class LeadResource extends Resource
         return $schema->components([
             Section::make('Contact')->columns(2)->schema([
                 TextEntry::make('name'),
-                TextEntry::make('mobile')->url(fn (Lead $record): string => self::whatsappUrl($record), shouldOpenInNewTab: true),
+                TextEntry::make('mobile')->formatStateUsing(fn (?string $state): string => Phone::display($state))->url(fn (Lead $record): string => self::whatsappUrl($record), shouldOpenInNewTab: true),
                 TextEntry::make('email')->placeholder('—'),
                 IconEntry::make('marketing_consent')->label('Agreed to news and offers')->boolean(),
             ]),
@@ -90,7 +91,7 @@ class LeadResource extends Resource
             ->columns([
                 TextColumn::make('created_at')->label('Received')->dateTime('j M, g:i a', timezone: config('app.display_timezone'))->sortable(),
                 TextColumn::make('name')->searchable(),
-                TextColumn::make('mobile')->searchable()->url(fn (Lead $record): string => self::whatsappUrl($record), shouldOpenInNewTab: true),
+                TextColumn::make('mobile')->searchable()->formatStateUsing(fn (?string $state): string => Phone::display($state))->url(fn (Lead $record): string => self::whatsappUrl($record), shouldOpenInNewTab: true),
                 TextColumn::make('offering')->label('Section')->badge()->color(fn (string $state): string => Offering::tryFrom($state)?->color() ?? 'gray'),
                 TextColumn::make('kind')->formatStateUsing(fn (LeadKind $state): string => $state->label()),
                 TextColumn::make('interest')->limit(30)->toggleable(),
@@ -132,7 +133,7 @@ class LeadResource extends Resource
 
     public static function whatsappUrl(Lead $lead): string
     {
-        return 'https://wa.me/91'.$lead->mobile;
+        return Phone::whatsappUrl($lead->mobile);
     }
 
     public static function getPages(): array

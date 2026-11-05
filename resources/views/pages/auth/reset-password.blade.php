@@ -1,3 +1,4 @@
+@php($passwordRules = app(\App\Actions\Fortify\ResetUserPassword::class)->rules()['password'])
 <x-layouts::auth :title="__('Reset password')">
     <div class="flex flex-col gap-6">
         <x-auth-header :title="__('Reset password')" :description="__('Please enter your new password below')" />
@@ -5,7 +6,7 @@
         <!-- Session Status -->
         <x-auth-session-status class="text-center" :status="session('status')" />
 
-        <form method="POST" action="{{ route('password.update') }}" class="flex flex-col gap-6">
+        <form method="POST" action="{{ route('password.update') }}" class="flex flex-col gap-6" data-checks novalidate>
             @csrf
             <!-- Token -->
             <input type="hidden" name="token" value="{{ request()->route('token') }}">
@@ -16,8 +17,8 @@
                 value="{{ request('email') }}"
                 :label="__('Email')"
                 type="email"
-                required
                 autocomplete="email"
+                :attributes="\App\Support\ClientRules::for('email', ['required', 'email'])"
             />
 
             <!-- Password -->
@@ -25,11 +26,11 @@
                 name="password"
                 :label="__('Password')"
                 type="password"
-                required
                 autocomplete="new-password"
                 :placeholder="__('Password')"
                 passwordrules="{{ \Illuminate\Validation\Rules\Password::defaults()->toPasswordRulesString() }}"
                 viewable
+                :attributes="\App\Support\ClientRules::for('password', $passwordRules)"
             />
 
             <!-- Confirm Password -->
@@ -37,7 +38,6 @@
                 name="password_confirmation"
                 :label="__('Confirm password')"
                 type="password"
-                required
                 autocomplete="new-password"
                 :placeholder="__('Confirm password')"
                 passwordrules="{{ \Illuminate\Validation\Rules\Password::defaults()->toPasswordRulesString() }}"

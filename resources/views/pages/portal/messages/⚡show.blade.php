@@ -21,6 +21,11 @@ use Livewire\WithFileUploads;
 | the sender sees "Seen" once someone else has read their message.
 */
 new #[Title('Messages')] class extends Component {
+    /** The forms show these same rules to the browser (App\Support\ClientRules). */
+    private const array BODY_RULES = ['required', 'string', 'max:5000'];
+
+    private const array REPORT_RULES = ['required', 'string', 'max:255'];
+
     use WithFileUploads;
 
     public Conversation $conversation;
@@ -70,7 +75,7 @@ new #[Title('Messages')] class extends Component {
     {
         $this->authorize('reply', $this->conversation);
         $this->validate([
-            'body' => ['required', 'string', 'max:5000'],
+            'body' => self::BODY_RULES,
             'attachment' => PostMessage::attachmentRules(),
         ], ['attachment.mimetypes' => __('Attach an image, PDF or Word (.docx) file.')]);
         PostMessage::ensureNotTooFast(Auth::user());
@@ -95,7 +100,7 @@ new #[Title('Messages')] class extends Component {
     {
         $message = $this->conversation->messages()->findOrFail((int) $this->reporting);
         $this->authorize('report', $message);
-        $this->validate(['report_reason' => ['required', 'string', 'max:255']]);
+        $this->validate(['report_reason' => self::REPORT_RULES]);
 
         $message->forceFill(['reported_at' => now(), 'reported_by' => Auth::id(), 'report_reason' => $this->report_reason])->save();
 
@@ -206,8 +211,8 @@ new #[Title('Messages')] class extends Component {
     </div>
 
     @can('reply', $conversation)
-        <form wire:submit="send" class="space-y-2 rounded-xl border border-zinc-200 bg-white p-3">
-            <flux:textarea wire:model="body" :placeholder="__('Write a message')" rows="3" :aria-label="__('Message')" required />
+        <form wire:submit="send" class="space-y-2 rounded-xl border border-zinc-200 bg-white p-3" data-checks novalidate>
+            <flux:textarea wire:model="body" :placeholder="__('Write a message')" rows="3" :aria-label="__('Message')" :attributes="\App\Support\ClientRules::for('body', self::BODY_RULES)" />
             <flux:error name="body" />
             <div class="flex flex-wrap items-center justify-between gap-2">
                 <input type="file" wire:model="attachment" accept=".jpg,.jpeg,.png,.webp,.pdf,.docx" aria-label="{{ __('Attach a file') }}" class="block max-w-full text-sm text-zinc-700 file:me-3 file:rounded-md file:border-0 file:bg-zinc-100 file:px-3 file:py-2 file:font-medium">
@@ -220,10 +225,10 @@ new #[Title('Messages')] class extends Component {
     @endcan
 
     <flux:modal name="report" class="w-full max-w-md">
-        <form wire:submit="report" class="space-y-4">
+        <form wire:submit="report" class="space-y-4" data-checks novalidate>
             <flux:heading size="lg">{{ __('Report this message') }}</flux:heading>
             <flux:text>{{ __('Tell us what is wrong. Only the admin team sees reports.') }}</flux:text>
-            <flux:textarea wire:model="report_reason" :label="__('Reason')" rows="3" required />
+            <flux:textarea wire:model="report_reason" :label="__('Reason')" rows="3" :attributes="\App\Support\ClientRules::for('report_reason', self::REPORT_RULES)" />
             <div class="flex justify-end gap-2">
                 <flux:modal.close><flux:button variant="filled">{{ __('Cancel') }}</flux:button></flux:modal.close>
                 <flux:button type="submit" variant="danger">{{ __('Report') }}</flux:button>

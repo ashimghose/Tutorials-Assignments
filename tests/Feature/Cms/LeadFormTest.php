@@ -59,7 +59,7 @@ test('CMS-3 MKT-3 a demo booking is stored with the campaign the visitor arrived
     expect($lead->kind)->toBe(LeadKind::Demo)
         ->and($lead->offering)->toBe('tuition')
         ->and($lead->status)->toBe(LeadStatus::New)
-        ->and($lead->mobile)->toBe('9876543210')
+        ->and($lead->mobile)->toBe('+919876543210')
         ->and($lead->utm_source)->toBe('whatsapp')
         ->and($lead->utm_medium)->toBe('status')
         ->and($lead->utm_campaign)->toBe('oct-demo')

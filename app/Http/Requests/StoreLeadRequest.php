@@ -31,11 +31,7 @@ class StoreLeadRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:120'],
-            'mobile' => $this->mobileRules(),
-            'email' => ['nullable', 'email', 'max:255'],
-            'class_or_service' => ['nullable', 'string', 'max:160'],
-            'message' => ['nullable', 'string', 'max:2000'],
+            ...$this->fieldRules(),
             'price_range' => ['nullable', 'string', Rule::in(LeadForms::priceRanges($this->offering()))],
             'interest' => ['nullable', 'string', 'max:160'],
             'section' => ['nullable', 'in:tuition,academic,music,general'],
@@ -47,17 +43,33 @@ class StoreLeadRequest extends FormRequest
     }
 
     /**
+     * The fields people type in. The form shows these same rules to the
+     * browser (x-site.lead-form), so both check the same things.
+     *
+     * @return array<string, array<int, mixed>>
+     */
+    public function fieldRules(): array
+    {
+        return [
+            'name' => ['required', 'string', 'max:120'],
+            'mobile_country' => $this->mobileCountryRules(),
+            'mobile' => $this->mobileRules(),
+            'email' => ['nullable', 'email', 'max:255'],
+            'class_or_service' => ['nullable', 'string', 'max:160'],
+            'message' => ['nullable', 'string', 'max:2000'],
+        ];
+    }
+
+    /**
      * @return array<string, string>
      */
     public function messages(): array
     {
-        return [
-            'mobile.regex' => __('Enter a 10-digit Indian mobile number.'),
-        ];
+        return [];
     }
 
     public function normalisedMobile(): string
     {
-        return $this->normaliseMobile((string) $this->input('mobile'));
+        return $this->normaliseMobile((string) $this->input('mobile'), $this->input('mobile_country'));
     }
 }

@@ -14,7 +14,7 @@
 
         <x-passkey-verify />
 
-        <form method="POST" action="{{ route('login.store') }}" class="flex flex-col gap-6">
+        <form method="POST" action="{{ route('login.store') }}" class="flex flex-col gap-6" data-checks novalidate>
             @csrf
 
             <!-- Email address, or a school student's username -->
@@ -23,10 +23,10 @@
                 :label="__('Email or username')"
                 :value="old('email')"
                 type="text"
-                required
                 autofocus
                 autocomplete="username"
                 autocapitalize="none"
+                :attributes="\App\Support\ClientRules::for('email', ['required', 'string'])"
             />
 
             <!-- Password -->
@@ -35,10 +35,10 @@
                     name="password"
                     :label="__('Password')"
                     type="password"
-                    required
                     autocomplete="current-password"
                     :placeholder="__('Password')"
                     viewable
+                    :attributes="\App\Support\ClientRules::for('password', ['required', 'string'])"
                 />
 
                 @if (Route::has('password.request'))

@@ -91,12 +91,20 @@ test('ACA-4 printing asks for a delivery address, and without it no address is k
         ->call('place')
         ->assertHasErrors(['delivery_address', 'delivery_city', 'delivery_pincode']);
 
-    $page->set('delivery_address', '12 College Street')->set('delivery_city', 'Kolkata')->set('delivery_state', 'West Bengal')->set('delivery_pincode', '700073')
+    // The delivery mobile starts as the student's own and is checked for its country.
+    $page->assertSet('delivery_phone_country', 'IN')
+        ->set('delivery_address', '12 College Street')->set('delivery_city', 'Kolkata')->set('delivery_state', 'West Bengal')->set('delivery_pincode', '700073')
+        ->set('delivery_phone', '12345')
+        ->call('place')
+        ->assertHasErrors(['delivery_phone']);
+
+    $page->set('delivery_phone_country', 'AE')->set('delivery_phone', '050 123 4567')
         ->call('place')
         ->assertHasNoErrors();
 
     $order = AcademicOrder::sole();
     expect($order->delivery_city)->toBe('Kolkata')
+        ->and($order->delivery_phone)->toBe('+971501234567')
         ->and($order->total)->toBe((800000 + 2 * 60000) * 118 / 100)
         ->and($order->addons()->sole()->quantity)->toBe(2);
 });

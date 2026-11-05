@@ -39,7 +39,7 @@ class DemoSeeder extends Seeder
 
         $parentUser = $this->user('parent@example.com', 'Asha Verma (demo)', Role::Parent);
         $parent = ParentProfile::query()->whereBelongsTo($parentUser)->first()
-            ?? ParentProfile::query()->make(['mobile' => '9876543210'])->user()->associate($parentUser);
+            ?? ParentProfile::query()->make(['mobile' => '+919876543210'])->user()->associate($parentUser);
         $parent->save();
 
         $childUser = User::query()->where('username', 'riyademo')->first() ?? new User(['name' => 'Riya', 'password' => 'password']);
@@ -68,7 +68,7 @@ class DemoSeeder extends Seeder
         $this->call(AcademicCatalogueSeeder::class);
         $studentUser = $this->user('student@example.com', 'Priya Sen (demo)', Role::AcademicStudent);
         if (! AcademicStudent::query()->whereBelongsTo($studentUser)->exists()) {
-            $profile = AcademicStudent::query()->make(['mobile' => '9123456780', 'university' => 'University of Calcutta', 'course' => 'MA English', 'level' => 'masters']);
+            $profile = AcademicStudent::query()->make(['mobile' => '+919123456780', 'university' => 'University of Calcutta', 'course' => 'MA English', 'level' => 'masters']);
             $profile->forceFill(['adult_declared_at' => now()])->user()->associate($studentUser)->save();
         }
         $expertUser = $this->user('expert@example.com', 'Arjun Rao (demo)', Role::Teacher);

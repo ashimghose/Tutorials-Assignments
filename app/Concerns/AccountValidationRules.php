@@ -3,25 +3,40 @@
 namespace App\Concerns;
 
 use App\Models\User;
+use App\Rules\MobileNumber;
+use App\Support\Phone;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Validation\Rule;
 
 trait AccountValidationRules
 {
     /**
-     * An Indian mobile number: 10 digits starting 6 to 9, with an optional
-     * +91 or 0 in front. Store it with normaliseMobile().
+     * A mobile number for the country picked next to it, checked with
+     * Google's libphonenumber. Store it with normaliseMobile().
      *
      * @return array<int, ValidationRule|array<mixed>|string>
      */
-    protected function mobileRules(): array
+    protected function mobileRules(bool $required = true, string $countryField = 'mobile_country'): array
     {
-        return ['required', 'string', 'regex:/^(?:\+?91[\s-]?|0)?[6-9]\d{4}[\s-]?\d{5}$/'];
+        return [$required ? 'required' : 'nullable', 'string', 'max:30', new MobileNumber($countryField)];
     }
 
-    protected function normaliseMobile(string $mobile): string
+    /**
+     * The country of a mobile number, as an ISO 3166 code. Left out means India.
+     *
+     * @return array<int, ValidationRule|array<mixed>|string>
+     */
+    protected function mobileCountryRules(): array
     {
-        return substr(preg_replace('/\D/', '', $mobile), -10);
+        return ['nullable', 'string', Rule::in(Phone::countries())];
+    }
+
+    /**
+     * The number in E.164 form, e.g. +919876543210.
+     */
+    protected function normaliseMobile(string $mobile, ?string $country = null): string
+    {
+        return Phone::e164($mobile, $country) ?? $mobile;
     }
 
     /**

@@ -16,6 +16,9 @@ use Livewire\WithFileUploads;
 | revisions left; add files and ask for a revision.
 */
 new #[Title('Order')] class extends Component {
+    /** The form shows these same rules to the browser (App\Support\ClientRules). */
+    private const array REVISION_NOTE_RULES = ['required', 'string', 'max:500'];
+
     use WithFileUploads;
 
     public AcademicOrder $order;
@@ -51,7 +54,7 @@ new #[Title('Order')] class extends Component {
     public function requestRevision(ChangeOrderStatus $change): void
     {
         $this->authorize('requestRevision', $this->order);
-        $this->validate(['revision_note' => ['required', 'string', 'max:500']]);
+        $this->validate(['revision_note' => self::REVISION_NOTE_RULES]);
 
         $status = OrderStatus::query()->where('is_revision', true)->ordered()->first();
         abort_if($status === null, 404);
@@ -146,9 +149,9 @@ new #[Title('Order')] class extends Component {
     </div>
 
     <flux:modal name="revision" class="w-full max-w-md">
-        <form wire:submit="requestRevision" class="space-y-4">
+        <form wire:submit="requestRevision" class="space-y-4" data-checks novalidate>
             <flux:heading size="lg">{{ __('Ask for a revision') }}</flux:heading>
-            <flux:textarea wire:model="revision_note" :label="__('What should we change?')" rows="4" required />
+            <flux:textarea wire:model="revision_note" :label="__('What should we change?')" rows="4" :attributes="\App\Support\ClientRules::for('revision_note', self::REVISION_NOTE_RULES)" />
             <div class="flex justify-end gap-2">
                 <flux:modal.close><flux:button variant="filled">{{ __('Cancel') }}</flux:button></flux:modal.close>
                 <flux:button type="submit" variant="primary">{{ __('Send') }}</flux:button>

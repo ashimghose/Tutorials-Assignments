@@ -4,6 +4,10 @@
 @php($accountType = $accountType === 'music' && ! $musicOn ? 'parent' : $accountType)
 @php($academic = $accountType === 'academic')
 @php($music = $accountType === 'music')
+@php($signUp = app(\App\Actions\Fortify\CreateNewUser::class))
+@php($rules = $signUp->rules($accountType, $music, (bool) $google))
+@php($messages = $signUp->messages($accountType))
+@php($check = fn (string $field) => \App\Support\ClientRules::for($field, $rules[$field] ?? [], $messages))
 @php($tabs = array_filter([
     'parent' => __('Parent (tuition)'),
     'academic' => __('Academic student'),
@@ -41,7 +45,7 @@
             </div>
         @endif
 
-        <form method="POST" action="{{ route($google ? 'google.finish.store' : 'register.store') }}" class="flex flex-col gap-6">
+        <form method="POST" action="{{ route($google ? 'google.finish.store' : 'register.store') }}" class="flex flex-col gap-6" data-checks novalidate>
             @csrf
             <input type="hidden" name="account_type" value="{{ $accountType }}">
 
@@ -51,9 +55,9 @@
                 :label="$academic || $music ? __('Your full name') : __('Parent\'s full name')"
                 :value="old('name', $google['name'] ?? '')"
                 type="text"
-                required
                 autofocus
                 autocomplete="name"
+                :attributes="$check('name')"
             />
 
             @unless ($google)
@@ -63,23 +67,14 @@
                     :label="__('Email address')"
                     :value="old('email')"
                     type="email"
-                    required
                     autocomplete="email"
                     placeholder="email@example.com"
+                    :attributes="$check('email')"
                 />
             @endunless
 
             <!-- Mobile -->
-            <flux:input
-                name="mobile"
-                :label="__('Mobile number')"
-                :value="old('mobile')"
-                type="tel"
-                required
-                autocomplete="tel-national"
-                inputmode="tel"
-                placeholder="98765 43210"
-            />
+            <x-phone-field name="mobile" :label="__('Mobile number')" :rules="$rules['mobile']" :messages="$messages" />
 
             @unless ($google)
                 <!-- Password -->
@@ -87,9 +82,9 @@
                     name="password"
                     :label="__('Password')"
                     type="password"
-                    required
                     autocomplete="new-password"
                     :placeholder="__('Password')"
+                    :attributes="$check('password')"
                     passwordrules="{{ \Illuminate\Validation\Rules\Password::defaults()->toPasswordRulesString() }}"
                     viewable
                 />
@@ -109,7 +104,7 @@
 
             @if ($academic)
                 <flux:field variant="inline">
-                    <flux:checkbox name="adult" value="1" :checked="old('adult')" />
+                    <flux:checkbox name="adult" value="1" :checked="old('adult')" :attributes="$check('adult')" />
                     <flux:label>{{ __('I am 18 or older') }}</flux:label>
                     <flux:error name="adult" />
                 </flux:field>
@@ -124,7 +119,7 @@
                 <fieldset class="flex flex-col gap-3" x-data="{ age: @js(old('age_group', '')) }">
                     <legend class="mb-2 text-sm font-medium text-zinc-800">{{ __('How old are you?') }}</legend>
                     <label class="flex items-center gap-3 text-sm text-zinc-800">
-                        <input type="radio" name="age_group" value="adult" x-model="age" class="size-4 accent-brand-700" required>
+                        <input type="radio" name="age_group" value="adult" x-model="age" class="size-4 accent-brand-700" {{ $check('age_group') }}>
                         {{ __('I am 18 or older') }}
                     </label>
                     <label class="flex items-center gap-3 text-sm text-zinc-800">
@@ -144,8 +139,8 @@
                                 :label="__('Parent\'s or guardian\'s email')"
                                 :value="old('guardian_email')"
                                 type="email"
-                                required
                                 placeholder="parent@example.com"
+                                :attributes="\App\Support\ClientRules::for('guardian_email', $signUp->rules('music', true)['guardian_email'], $messages)"
                             />
                             <p class="text-sm text-zinc-600">{{ __('We email them a link to approve your account. You can join a batch once they agree.') }}</p>
                         </div>
@@ -157,7 +152,7 @@
             @endif
 
             <flux:field variant="inline">
-                <flux:checkbox name="consent" value="1" :checked="old('consent')" />
+                <flux:checkbox name="consent" value="1" :checked="old('consent')" :attributes="$check('consent')" />
                 <flux:label>
                     <span>{{ __('I agree to the') }} <flux:link :href="route('privacy')" target="_blank">{{ __('privacy policy') }}</flux:link> {{ __('and') }} <flux:link :href="route('terms')" target="_blank">{{ __('terms') }}</flux:link>.</span>
                 </flux:label>

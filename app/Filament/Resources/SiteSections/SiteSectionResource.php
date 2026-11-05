@@ -7,6 +7,7 @@ use App\Filament\Resources\SiteSections\Pages\EditSiteSection;
 use App\Filament\Resources\SiteSections\Pages\ListSiteSections;
 use App\Filament\Support\MoneyInput;
 use App\Models\SiteSection;
+use App\Support\Phone;
 use App\Support\SiteLinks;
 use App\Support\SiteMedia;
 use App\Support\YouTube;
@@ -410,9 +411,10 @@ class SiteSectionResource extends Resource
                     return $current === '' ? '' : 'Now: '.$current;
                 })
                 ->rule(fn () => function (string $attribute, mixed $value, Closure $fail): void {
+                    // Checked with Google's libphonenumber, like every other mobile number on the site.
                     $digits = SiteLinks::normaliseWhatsapp((string) $value);
-                    if ($digits !== '' && (strlen($digits) < 11 || strlen($digits) > 15)) {
-                        $fail('Enter a 10-digit mobile number, or the full number with its country code.');
+                    if ($digits !== '' && ! Phone::isValid('+'.$digits)) {
+                        $fail('Enter a valid mobile number: 10 digits for India, or the full number with its country code.');
                     }
                 })
                 ->dehydrateStateUsing(fn (?string $state): ?string => filled($state) ? SiteLinks::normaliseWhatsapp($state) : null))

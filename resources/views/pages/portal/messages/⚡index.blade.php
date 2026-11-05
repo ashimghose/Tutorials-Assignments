@@ -20,6 +20,11 @@ use Livewire\WithFileUploads;
 | and (for parents, school students and academic students) a new message.
 */
 new #[Title('Messages')] class extends Component {
+    /** The form shows these same rules to the browser (App\Support\ClientRules). */
+    private const array SUBJECT_RULES = ['required', 'string', 'max:160'];
+
+    private const array BODY_RULES = ['required', 'string', 'max:5000'];
+
     use WithFileUploads;
 
     public string $subject = '';
@@ -100,8 +105,8 @@ new #[Title('Messages')] class extends Component {
         $this->authorize('create', Conversation::class);
 
         $this->validate([
-            'subject' => ['required', 'string', 'max:160'],
-            'body' => ['required', 'string', 'max:5000'],
+            'subject' => self::SUBJECT_RULES,
+            'body' => self::BODY_RULES,
             // Only your own child, their batches, and your own orders (checked on the server).
             'student_id' => ['nullable', 'integer', Rule::in($this->children->pluck('id')->all())],
             'batch_id' => ['nullable', 'integer', Rule::in($this->batches->pluck('id')->all())],
@@ -193,7 +198,7 @@ new #[Title('Messages')] class extends Component {
 
     @can('create', \App\Models\Conversation::class)
         <flux:modal name="new-message" class="w-full max-w-lg">
-            <form wire:submit="start" class="space-y-4">
+            <form wire:submit="start" class="space-y-4" data-checks novalidate>
                 <flux:heading size="lg">{{ __('New message') }}</flux:heading>
 
                 @if ($this->children->isNotEmpty())
@@ -220,8 +225,8 @@ new #[Title('Messages')] class extends Component {
                     </flux:select>
                 @endif
 
-                <flux:input wire:model="subject" :label="__('Subject')" maxlength="160" required />
-                <flux:textarea wire:model="body" :label="__('Message')" rows="5" required />
+                <flux:input wire:model="subject" :label="__('Subject')" :attributes="\App\Support\ClientRules::for('subject', self::SUBJECT_RULES)" />
+                <flux:textarea wire:model="body" :label="__('Message')" rows="5" :attributes="\App\Support\ClientRules::for('body', self::BODY_RULES)" />
 
                 <flux:field>
                     <flux:label>{{ __('Attach a file (optional)') }}</flux:label>

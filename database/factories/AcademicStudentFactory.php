@@ -18,7 +18,7 @@ class AcademicStudentFactory extends Factory
     {
         return [
             'user_id' => fn () => UserFactory::makeUserWithoutProfile(User::factory()->academicStudent())->id,
-            'mobile' => '97'.fake()->numerify('########'),
+            'mobile' => '+9197'.fake()->numerify('########'),
             'university' => 'University of Delhi',
             'course' => 'M.A. English',
             'level' => 'Masters',

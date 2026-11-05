@@ -31,7 +31,7 @@ test('AUTH-1 a parent signs up with mobile and consent, then must verify their e
     $user = User::where('email', 'asha@example.com')->sole();
 
     expect($user->role)->toBe(Role::Parent)
-        ->and($user->parentProfile->mobile)->toBe('9876543210')
+        ->and($user->parentProfile->mobile)->toBe('+919876543210')
         ->and($user->hasVerifiedEmail())->toBeFalse();
 
     $consent = $user->consents()->sole();

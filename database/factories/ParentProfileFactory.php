@@ -18,7 +18,7 @@ class ParentProfileFactory extends Factory
     {
         return [
             'user_id' => fn () => UserFactory::makeUserWithoutProfile(User::factory()->parent())->id,
-            'mobile' => '98'.fake()->numerify('########'),
+            'mobile' => '+9198'.fake()->numerify('########'),
         ];
     }
 }

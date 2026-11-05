@@ -61,13 +61,15 @@ new #[Title('My children')] class extends Component {
         return [...SiteContent::section('tuition')['boards'], 'Other'];
     }
 
-    public function addChild(): void
+    /**
+     * The add-child form's rules; the form shows the same rules to the
+     * browser (App\Support\ClientRules).
+     *
+     * @return array<string, array<int, mixed>>
+     */
+    protected function childRules(): array
     {
-        $this->authorize('create', Student::class);
-
-        $this->username = strtolower(trim($this->username));
-
-        $validated = $this->validate([
+        return [
             'first_name' => ['required', 'string', 'max:60'],
             'class_level' => ['required', 'integer', 'between:1,12'],
             'board' => ['required', 'string', 'in:'.implode(',', $this->boards)],
@@ -75,9 +77,32 @@ new #[Title('My children')] class extends Component {
             'username' => $this->usernameRules(),
             'password' => $this->passwordRules(),
             'consent' => ['accepted'],
-        ], [
-            'consent.accepted' => __('Please give consent so we can hold your child\'s details.'),
-        ]);
+        ];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    protected function childMessages(): array
+    {
+        return ['consent.accepted' => __('Please give consent so we can hold your child\'s details.')];
+    }
+
+    /**
+     * @return array<string, array<int, mixed>>
+     */
+    protected function newPasswordRules(): array
+    {
+        return ['new_password' => ['required', 'string', Password::default(), 'confirmed']];
+    }
+
+    public function addChild(): void
+    {
+        $this->authorize('create', Student::class);
+
+        $this->username = strtolower(trim($this->username));
+
+        $validated = $this->validate($this->childRules(), $this->childMessages());
 
         DB::transaction(function () use ($validated) {
             $parent = Auth::user();
@@ -117,7 +142,7 @@ new #[Title('My children')] class extends Component {
         $student = $this->findChild((int) $this->resetStudentId);
         $this->authorize('update', $student);
 
-        $this->validate(['new_password' => ['required', 'string', Password::default(), 'confirmed']]);
+        $this->validate($this->newPasswordRules());
 
         $student->user->forceFill([
             'password' => $this->new_password,
@@ -210,37 +235,39 @@ new #[Title('My children')] class extends Component {
     @endforelse
 
     <flux:modal name="add-child" class="w-full max-w-lg">
-        <form wire:submit="addChild" class="space-y-5">
+        @php($rules = $this->childRules())
+        @php($check = fn (string $field) => \App\Support\ClientRules::for($field, $rules[$field], $this->childMessages()))
+        <form wire:submit="addChild" class="space-y-5" data-checks novalidate>
             <div>
                 <flux:heading size="lg">{{ __('Add a child') }}</flux:heading>
                 <flux:subheading>{{ __('We only ask for what we need to place them in the right class.') }}</flux:subheading>
             </div>
 
-            <flux:input wire:model="first_name" :label="__('First name')" required autocomplete="off" />
+            <flux:input wire:model="first_name" :label="__('First name')" autocomplete="off" :attributes="$check('first_name')" />
 
             <div class="grid gap-4 sm:grid-cols-2">
-                <flux:select wire:model="class_level" :label="__('Class')" :placeholder="__('Choose…')" required>
+                <flux:select wire:model="class_level" :label="__('Class')" :placeholder="__('Choose…')" :attributes="$check('class_level')->except(['min', 'max', 'data-msg-min', 'data-msg-max'])">
                     @foreach (range(1, 12) as $level)
                         <flux:select.option :value="$level">{{ __('Class :class', ['class' => $level]) }}</flux:select.option>
                     @endforeach
                 </flux:select>
 
-                <flux:select wire:model="board" :label="__('Board')" :placeholder="__('Choose…')" required>
+                <flux:select wire:model="board" :label="__('Board')" :placeholder="__('Choose…')" :attributes="$check('board')">
                     @foreach ($this->boards as $option)
                         <flux:select.option :value="$option">{{ $option }}</flux:select.option>
                     @endforeach
                 </flux:select>
             </div>
 
-            <flux:input wire:model="school" :label="__('School (optional)')" autocomplete="off" />
+            <flux:input wire:model="school" :label="__('School (optional)')" autocomplete="off" :attributes="$check('school')" />
 
-            <flux:input wire:model="username" :label="__('Username for logging in')" :description="__('Lower-case letters and numbers, at least 4 characters.')" required autocomplete="off" autocapitalize="none" />
+            <flux:input wire:model="username" :label="__('Username for logging in')" :description="__('Lower-case letters and numbers, at least 4 characters.')" autocomplete="off" autocapitalize="none" data-lowercase :attributes="$check('username')" />
 
-            <flux:input wire:model="password" :label="__('Password')" type="password" required autocomplete="new-password" viewable />
-            <flux:input wire:model="password_confirmation" :label="__('Confirm password')" type="password" required autocomplete="new-password" viewable />
+            <flux:input wire:model="password" :label="__('Password')" type="password" autocomplete="new-password" viewable :attributes="$check('password')" />
+            <flux:input wire:model="password_confirmation" :label="__('Confirm password')" type="password" autocomplete="new-password" viewable />
 
             <flux:field variant="inline">
-                <flux:checkbox wire:model="consent" />
+                <flux:checkbox wire:model="consent" :attributes="$check('consent')" />
                 <flux:label>{{ __('I am this child\'s parent or guardian and I consent to :app holding these details to provide tuition, as set out in the privacy policy.', ['app' => config('app.name')]) }}</flux:label>
                 <flux:error name="consent" />
             </flux:field>
@@ -255,11 +282,11 @@ new #[Title('My children')] class extends Component {
     </flux:modal>
 
     <flux:modal name="reset-password" class="w-full max-w-md">
-        <form wire:submit="resetPassword" class="space-y-5">
+        <form wire:submit="resetPassword" class="space-y-5" data-checks novalidate>
             <flux:heading size="lg">{{ __('Reset your child\'s password') }}</flux:heading>
 
-            <flux:input wire:model="new_password" :label="__('New password')" type="password" required autocomplete="new-password" viewable />
-            <flux:input wire:model="new_password_confirmation" :label="__('Confirm new password')" type="password" required autocomplete="new-password" viewable />
+            <flux:input wire:model="new_password" :label="__('New password')" type="password" autocomplete="new-password" viewable :attributes="\App\Support\ClientRules::for('new_password', $this->newPasswordRules()['new_password'])" />
+            <flux:input wire:model="new_password_confirmation" :label="__('Confirm new password')" type="password" autocomplete="new-password" viewable />
 
             <div class="flex justify-end gap-2">
                 <flux:modal.close>
