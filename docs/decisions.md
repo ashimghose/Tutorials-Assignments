@@ -197,3 +197,11 @@ The owner asked for assignments (school to PhD) to be a main topic again. The ac
 ## 2026-11-04 · Tagline under the logo
 
 - The owner chose "Shodh. Shiksha. Sangeet." with "Research. Education. Music." under it, one word for each section (Academic, Tuition, Music). It sits under the header logo on every page; the header grows from 64 px to 80 px to fit. The text is in `config/verticals.php` (`BRAND_TAGLINE`, `BRAND_TAGLINE_EN`).
+
+## 2026-11-05 · Sign in with Google (AUTH-7)
+
+- The owner asked for Google login and approved the one new package, `laravel/socialite` (Laravel's official, free OAuth package). The Google OAuth client is free; `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` in `.env` switch the button on, and it stays hidden while they are empty.
+- Login and sign-up were already one page each. One email still holds one account type (`users.role`); letting one person be both a parent and an academic student would touch every role check, so it waits until there is demand.
+- A verified Google email logs in to the account with that email and links it (`users.google_id`), which also verifies the email. A new person goes to the normal sign-up form without email and password fields, so the parent-account, 18+ and music-guardian rules (AUTH-1, ACA-3, MUS-3) are unchanged. Nothing is saved until they submit it; the Google profile waits in the session.
+- School students (username logins) can't use Google. Two-factor still applies. A Google-only account has no password, so "confirm it's you" before security settings is done by signing in to the same Google account again, and they can then set a password there without a current one.
+
