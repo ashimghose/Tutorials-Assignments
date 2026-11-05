@@ -12,6 +12,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -165,13 +166,19 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail, Pas
 
     /**
      * ADM-7: an account with nothing attached yet (a test or abandoned
-     * sign-up) may be deleted by the admin. Anything with children,
-     * orders, classes or messages is deactivated instead (AUTH-6).
+     * sign-up) may be deleted by the admin. A family counts while no child
+     * has a class place or a conversation. Anything with orders, classes or
+     * messages is deactivated instead (AUTH-6).
      */
     public function isUnused(): bool
     {
+        // A child with a class place, or a conversation about them, is in use.
+        $usedChild = fn (Builder $q) => $q->has('enrolments')
+            ->orWhereExists(fn (QueryBuilder $c) => $c->from('conversations')->whereColumn('conversations.student_id', 'students.id'));
+
         $empty = match ($this->role) {
-            Role::Parent => ! $this->parentProfile?->students()->exists(),
+            Role::Parent => ! $this->parentProfile?->students()->where($usedChild)->exists(),
+            Role::Student => $this->student !== null && ! Student::query()->whereKey($this->student->getKey())->where($usedChild)->exists(),
             Role::AcademicStudent => ! $this->academicStudent?->orders()->exists(),
             Role::MusicStudent => ! $this->student?->enrolments()->exists(),
             default => false,

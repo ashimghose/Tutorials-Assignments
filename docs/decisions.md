@@ -208,4 +208,4 @@ The owner asked for assignments (school to PhD) to be a main topic again. The ac
 ## 2026-11-05 · Admin can delete unused accounts (ADM-7)
 
 The owner made a test parent and could only deactivate it. Deactivation stays the rule (AUTH-6), so a real family's children, fees and messages can't be wiped by mistake. A **Delete** action now appears only for an account with nothing attached: a parent with no children, an academic student with no orders, a music learner with no enrolments, and no conversations; teachers, admins and school students never. The audit log keeps the id and role, not the name or email. Someone who joined with Google has no password, so deleting their own account in Settings asks them to type DELETE instead.
-
+- 2026-11-05 update: test families too. A school student, or a parent, counts as unused while no child has a class place or a conversation about them. Deleting a parent removes their children; deleting a school student removes the child's details with the login.
