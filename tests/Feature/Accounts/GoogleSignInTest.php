@@ -257,4 +257,3 @@ test('AUTH-7 a Google-only account deletes itself by typing DELETE', function ()
     Livewire::test('pages::settings.delete-user-modal')->set('password', 'DELETE')->call('deleteUser')->assertHasNoErrors();
     expect($user->fresh())->toBeNull();
 });
-
