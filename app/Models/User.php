@@ -173,12 +173,15 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail, Pas
     public function isUnused(): bool
     {
         // A child with a class place, or a conversation about them, is in use.
-        $usedChild = fn (Builder $q) => $q->has('enrolments')
-            ->orWhereExists(fn (QueryBuilder $c) => $c->from('conversations')->whereColumn('conversations.student_id', 'students.id'));
+        $usedChild = function (Builder $query): void {
+            $query->has('enrolments')->orWhereExists(function (QueryBuilder $conversations): void {
+                $conversations->from('conversations')->whereColumn('conversations.student_id', 'students.id');
+            });
+        };
 
         $empty = match ($this->role) {
-            Role::Parent => ! $this->parentProfile?->students()->where($usedChild)->exists(),
-            Role::Student => $this->student !== null && ! Student::query()->whereKey($this->student->getKey())->where($usedChild)->exists(),
+            Role::Parent => $this->parentProfile?->students()->where($usedChild)->doesntExist() ?? true,
+            Role::Student => $this->student !== null && Student::query()->whereKey($this->student->getKey())->where($usedChild)->doesntExist(),
             Role::AcademicStudent => ! $this->academicStudent?->orders()->exists(),
             Role::MusicStudent => ! $this->student?->enrolments()->exists(),
             default => false,
