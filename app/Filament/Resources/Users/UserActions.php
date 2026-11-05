@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Users;
 
 use App\Enums\AccountStatus;
+use App\Enums\Role;
 use App\Models\AuditLog;
 use App\Models\User;
 use Filament\Actions\Action;
@@ -43,13 +44,16 @@ class UserActions
             ->color('danger')
             ->requiresConfirmation()
             ->modalHeading('Delete this account for good?')
-            ->modalDescription('Only for accounts with no children, orders, classes or messages, such as a test sign-up. This cannot be undone.')
+            ->modalDescription('Only for accounts with no orders, classes or messages, such as a test sign-up. A parent\'s children and a child\'s details are deleted too. This cannot be undone.')
             ->visible(fn (User $record): bool => Gate::allows('delete', $record))
             ->action(function (User $record, Component $livewire): void {
                 Gate::authorize('delete', $record);
 
                 AuditLog::record('user.deleted', $record, ['role' => $record->role?->value]);
+                // A school student's details go with their login; a parent's children go with theirs.
+                $student = $record->role === Role::Student ? $record->student : null;
                 $record->delete();
+                $student?->delete();
 
                 Notification::make()->title('Account deleted')->success()->send();
                 $livewire->redirect(UserResource::getUrl('index'));

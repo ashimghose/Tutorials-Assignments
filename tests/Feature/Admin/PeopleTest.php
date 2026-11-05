@@ -6,6 +6,7 @@ use App\Filament\Resources\Users\Pages\ViewUser;
 use App\Models\AcademicOrder;
 use App\Models\AuditLog;
 use App\Models\Conversation;
+use App\Models\Enrolment;
 use App\Models\Student;
 use App\Models\User;
 use App\Notifications\TeacherInvitation;
@@ -84,13 +85,29 @@ test('ADM-7 the admin deletes an unused account, such as a test sign-up, and it 
         ->and($log->user_id)->toBe($this->admin->id);
 });
 
+test('ADM-7 a test family is deleted with its children, and a test child with their details', function () {
+    $parent = User::factory()->parent()->create();
+    $child = Student::factory()->for($parent->parentProfile, 'parent')->for(User::factory()->student())->create();
+    $other = Student::factory()->for(User::factory()->student())->create();
+
+    Livewire::test(ListUsers::class)->callTableAction('delete', $other->user);
+    expect(Student::find($other->id))->toBeNull();
+
+    Livewire::test(ListUsers::class)->callTableAction('delete', $parent);
+    expect(User::find($parent->id))->toBeNull()
+        ->and(User::find($child->user_id))->toBeNull()
+        ->and(Student::find($child->id))->toBeNull();
+});
+
 test('ADM-7 AUTH-6 accounts with children, orders or messages, staff and the admin can only be deactivated', function (Closure $make) {
     $user = $make();
 
     Livewire::test(ListUsers::class)->assertTableActionHidden('delete', $user);
     expect($this->admin->can('delete', $user))->toBeFalse();
 })->with([
-    'parent with a child' => [fn () => tap(User::factory()->parent()->create(), fn (User $u) => Student::factory()->for($u->parentProfile, 'parent')->create())],
+    'parent whose child has a class place' => [fn () => tap(User::factory()->parent()->create(), fn (User $u) => Enrolment::factory()->for(Student::factory()->for($u->parentProfile, 'parent'))->create())],
+    'school student with a class place' => [fn () => tap(User::factory()->student()->create(), fn (User $u) => Enrolment::factory()->for(Student::factory()->for($u))->create())],
+    'parent with a conversation about their child' => [fn () => tap(User::factory()->parent()->create(), fn (User $u) => Conversation::factory()->create(['student_id' => Student::factory()->for($u->parentProfile, 'parent')->create()->id]))],
     'academic student with an order' => [fn () => tap(User::factory()->academicStudent()->create(), function (User $u) {
         test()->seed(AcademicCatalogueSeeder::class);
         AcademicOrder::factory()->for($u->academicStudent)->create();
