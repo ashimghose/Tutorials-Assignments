@@ -27,7 +27,7 @@ new class extends Component {
 }; ?>
 
 <flux:modal name="confirm-user-deletion" :show="$errors->isNotEmpty()" focusable class="max-w-lg">
-    <form method="POST" wire:submit="deleteUser" class="space-y-6">
+    <form method="POST" wire:submit="deleteUser" class="space-y-6" data-checks novalidate>
         <div>
             <flux:heading size="lg">{{ __('Are you sure you want to delete your account?') }}</flux:heading>
 
@@ -41,9 +41,9 @@ new class extends Component {
         </div>
 
         @if (auth()->user()->password === null)
-            <flux:input wire:model="password" :label="__('Type DELETE')" autocomplete="off" />
+            <flux:input wire:model="password" :label="__('Type DELETE')" autocomplete="off" :attributes="\App\Support\ClientRules::for('password', ['required', 'in:DELETE'])" />
         @else
-            <flux:input wire:model="password" :label="__('Password')" type="password" viewable />
+            <flux:input wire:model="password" :label="__('Password')" type="password" viewable :attributes="\App\Support\ClientRules::for('password', $this->currentPasswordRules())" />
         @endif
 
         <div class="flex justify-end space-x-2 rtl:space-x-reverse">

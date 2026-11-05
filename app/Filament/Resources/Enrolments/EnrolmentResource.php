@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Enrolments;
 use App\Enums\EnrolmentStatus;
 use App\Filament\Resources\Enrolments\Pages\ListEnrolments;
 use App\Models\Enrolment;
+use App\Support\Phone;
 use BackedEnum;
 use Filament\Actions\ActionGroup;
 use Filament\Resources\Resource;
@@ -49,8 +50,8 @@ class EnrolmentResource extends Resource
                 // MUS-3: a music learner has their own account instead of a parent's.
                 TextColumn::make('student.parent.user.name')->label('Parent')->searchable()->placeholder('Own account (music)'),
                 TextColumn::make('mobile')->label('Mobile')
-                    ->state(fn (Enrolment $record): ?string => $record->student->contactMobile())
-                    ->url(fn (Enrolment $record): ?string => $record->student->contactMobile() ? 'https://wa.me/91'.$record->student->contactMobile() : null, shouldOpenInNewTab: true),
+                    ->state(fn (Enrolment $record): ?string => $record->student->contactMobile() ? Phone::display($record->student->contactMobile()) : null)
+                    ->url(fn (Enrolment $record): ?string => $record->student->contactMobile() ? Phone::whatsappUrl($record->student->contactMobile()) : null, shouldOpenInNewTab: true),
                 $showBatch ? TextColumn::make('batch_id')->label('Batch')->formatStateUsing(fn (Enrolment $record): string => $record->batch->name()) : null,
                 TextColumn::make('status')->badge()
                     ->formatStateUsing(fn (EnrolmentStatus $state): string => $state->label())

@@ -166,7 +166,7 @@ test('AUTH-7 AUTH-1 a parent finishes Google sign-up with mobile and consent, al
         ->and($user->role)->toBe(Role::Parent)
         ->and($user->password)->toBeNull()
         ->and($user->hasVerifiedEmail())->toBeTrue()
-        ->and($user->parentProfile->mobile)->toBe('9876543210')
+        ->and($user->parentProfile->mobile)->toBe('+919876543210')
         ->and($user->consents()->sole()->purpose)->toBe(ConsentPurpose::ParentAccount)
         ->and(session(GoogleSignIn::SESSION_KEY))->toBeNull();
 

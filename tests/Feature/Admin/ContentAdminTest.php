@@ -164,17 +164,17 @@ test('CHAT-6 the admin sets each section\'s WhatsApp number on the contact page'
         ->fillForm(fn (array $state) => data_set($state, 'content.whatsapp_numbers', [
             'general' => '',
             'tuition' => '98765 43210',
-            'academic' => '+44 7700 900123',
+            'academic' => '+971 50 123 4567',
             'music' => '',
         ]))
         ->call('save')
         ->assertHasNoFormErrors();
 
-    expect($contact->fresh()->content['whatsapp_numbers'])->toMatchArray(['tuition' => '919876543210', 'academic' => '447700900123']);
+    expect($contact->fresh()->content['whatsapp_numbers'])->toMatchArray(['tuition' => '919876543210', 'academic' => '971501234567']);
 
     // The admin's number wins; an empty field keeps the server setting.
     $this->get(route('tuition'))->assertSee('https://wa.me/919876543210?text=', false);
-    $this->get(route('academic'))->assertSee('https://wa.me/447700900123?text=', false);
+    $this->get(route('academic'))->assertSee('https://wa.me/971501234567?text=', false);
     $this->get(route('music'))->assertSee('https://wa.me/919000000003?text=', false);
     $this->get(route('about'))->assertSee('https://wa.me/919000000001?text=', false);
 });

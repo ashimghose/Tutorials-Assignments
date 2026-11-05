@@ -19,6 +19,9 @@ use Livewire\WithFileUploads;
 | and moves the order to the statuses the admin allows experts to set.
 */
 new #[Title('Order')] class extends Component {
+    /** The form shows these same rules to the browser (App\Support\ClientRules). */
+    private const array NOTE_RULES = ['nullable', 'string', 'max:500'];
+
     use WithFileUploads;
 
     public AcademicOrder $order;
@@ -69,7 +72,7 @@ new #[Title('Order')] class extends Component {
     {
         $this->validate([
             'status_id' => ['required', Rule::exists('order_statuses', 'id')],
-            'note' => ['nullable', 'string', 'max:500'],
+            'note' => self::NOTE_RULES,
         ]);
         $status = OrderStatus::query()->findOrFail((int) $this->status_id);
         $this->authorize('setStatus', [$this->order, $status]);
@@ -140,14 +143,14 @@ new #[Title('Order')] class extends Component {
         <div class="space-y-6 lg:col-span-2">
             @if ($order->isPaid() && ! $order->isClosed() && $this->statuses->isNotEmpty())
                 <flux:card>
-                    <form wire:submit="setStatus" class="space-y-3">
+                    <form wire:submit="setStatus" class="space-y-3" data-checks novalidate>
                         <flux:heading>{{ __('Update status') }}</flux:heading>
-                        <flux:select wire:model="status_id" :placeholder="__('Choose…')" :aria-label="__('New status')">
+                        <flux:select wire:model="status_id" :placeholder="__('Choose…')" :aria-label="__('New status')" :attributes="\App\Support\ClientRules::for('status_id', ['required'])">
                             @foreach ($this->statuses as $option)
                                 <flux:select.option :value="$option->id">{{ $option->name }}</flux:select.option>
                             @endforeach
                         </flux:select>
-                        <flux:textarea wire:model="note" :label="__('Note for the student (optional)')" rows="2" />
+                        <flux:textarea wire:model="note" :label="__('Note for the student (optional)')" rows="2" :attributes="\App\Support\ClientRules::for('note', self::NOTE_RULES)" />
                         <flux:error name="status" />
                         <flux:button type="submit" size="sm" variant="primary">{{ __('Update') }}</flux:button>
                     </form>

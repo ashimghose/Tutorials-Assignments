@@ -16,10 +16,12 @@
         'music' => 'bg-music-700 hover:bg-music-800',
         default => 'bg-tuition-700 hover:bg-tuition-800',
     };
+    $rules = (new \App\Http\Requests\StoreLeadRequest)->fieldRules();
+    $check = fn (string $field) => \App\Support\ClientRules::for($field, $rules[$field]);
     $input = 'mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-base text-slate-900 focus:border-brand-700 focus:outline-none focus:ring-2 focus:ring-brand-100';
 @endphp
 
-<form method="POST" action="{{ $action }}" class="space-y-5" novalidate>
+<form method="POST" action="{{ $action }}" class="space-y-5" data-checks novalidate>
     @csrf
     <input type="hidden" name="interest" value="{{ old('interest', $interest) }}">
     <input type="hidden" name="section" value="{{ $section }}">
@@ -29,35 +31,31 @@
         <p class="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-800" role="alert">Please check the highlighted fields.</p>
     @endif
 
-    <div>
+    <div data-field>
         <label for="lead-name" class="text-sm font-medium text-slate-800">{{ $offering === 'tuition' ? 'Parent\'s name' : 'Your name' }}</label>
-        <input id="lead-name" name="name" type="text" value="{{ old('name') }}" required autocomplete="name" class="{{ $input }}">
-        @error('name') <p class="mt-1 text-sm text-red-700">{{ $message }}</p> @enderror
+        <input id="lead-name" name="name" type="text" value="{{ old('name') }}" autocomplete="name" {{ $check('name')->class($input) }}>
+        @error('name') <p data-server-error class="mt-1 text-sm text-red-700">{{ $message }}</p> @enderror
     </div>
 
     <div class="grid gap-5 sm:grid-cols-2">
-        <div>
-            <label for="lead-mobile" class="text-sm font-medium text-slate-800">Mobile (WhatsApp)</label>
-            <input id="lead-mobile" name="mobile" type="tel" inputmode="tel" value="{{ old('mobile') }}" required autocomplete="tel-national" placeholder="98765 43210" class="{{ $input }}">
-            @error('mobile') <p class="mt-1 text-sm text-red-700">{{ $message }}</p> @enderror
-        </div>
-        <div>
+        <x-phone-field name="mobile" id="lead-mobile" label="Mobile (WhatsApp)" :rules="$rules['mobile']" site />
+        <div data-field>
             <label for="lead-email" class="text-sm font-medium text-slate-800">Email <span class="font-normal text-slate-500">(optional)</span></label>
-            <input id="lead-email" name="email" type="email" value="{{ old('email') }}" autocomplete="email" class="{{ $input }}">
-            @error('email') <p class="mt-1 text-sm text-red-700">{{ $message }}</p> @enderror
+            <input id="lead-email" name="email" type="email" value="{{ old('email') }}" autocomplete="email" {{ $check('email')->class($input) }}>
+            @error('email') <p data-server-error class="mt-1 text-sm text-red-700">{{ $message }}</p> @enderror
         </div>
     </div>
 
-    <div>
+    <div data-field>
         <label for="lead-class" class="text-sm font-medium text-slate-800">{{ match ($offering) { 'tuition' => 'Child\'s class, board and subjects', 'music' => 'Learner\'s age and guitar experience', default => 'Level, service and deadline' } }}</label>
-        <input id="lead-class" name="class_or_service" type="text" value="{{ old('class_or_service') }}" placeholder="{{ match ($offering) { 'tuition' => 'Class 8, CBSE, Maths and Science', 'music' => 'Age 12, never played before', default => 'Masters, thesis editing, due 15 March' } }}" class="{{ $input }}">
-        @error('class_or_service') <p class="mt-1 text-sm text-red-700">{{ $message }}</p> @enderror
+        <input id="lead-class" name="class_or_service" type="text" value="{{ old('class_or_service') }}" {{ $check('class_or_service') }} placeholder="{{ match ($offering) { 'tuition' => 'Class 8, CBSE, Maths and Science', 'music' => 'Age 12, never played before', default => 'Masters, thesis editing, due 15 March' } }}" class="{{ $input }}">
+        @error('class_or_service') <p data-server-error class="mt-1 text-sm text-red-700">{{ $message }}</p> @enderror
     </div>
 
-    <div>
+    <div data-field>
         <label for="lead-message" class="text-sm font-medium text-slate-800">Anything else? <span class="font-normal text-slate-500">(optional)</span></label>
-        <textarea id="lead-message" name="message" rows="3" class="{{ $input }}">{{ old('message') }}</textarea>
-        @error('message') <p class="mt-1 text-sm text-red-700">{{ $message }}</p> @enderror
+        <textarea id="lead-message" name="message" rows="3" {{ $check('message')->class($input) }}>{{ old('message') }}</textarea>
+        @error('message') <p data-server-error class="mt-1 text-sm text-red-700">{{ $message }}</p> @enderror
     </div>
 
     @if ($priceRanges !== [])
@@ -71,7 +69,7 @@
                     </label>
                 @endforeach
             </div>
-            @error('price_range') <p class="mt-1 text-sm text-red-700">{{ $message }}</p> @enderror
+            @error('price_range') <p data-server-error class="mt-1 text-sm text-red-700">{{ $message }}</p> @enderror
         </fieldset>
     @endif
 

@@ -8,8 +8,10 @@ use App\Http\Middleware\CaptureUtm;
 use App\Models\AcademicOrder;
 use App\Models\Service;
 use App\Models\ServiceAddon;
+use App\Rules\MobileNumber;
 use App\Services\PriceBreakdown;
 use App\Services\Pricing;
+use App\Support\Phone;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
@@ -47,6 +49,7 @@ new #[Title('New order')] class extends Component {
 
     public string $delivery_name = '';
     public string $delivery_phone = '';
+    public string $delivery_phone_country = Phone::DEFAULT_COUNTRY;
     public string $delivery_address = '';
     public string $delivery_city = '';
     public string $delivery_state = '';
@@ -62,7 +65,7 @@ new #[Title('New order')] class extends Component {
         $this->stream = (string) $profile->stream;
         $this->level = AcademicLevel::tryFrom((string) $profile->level)?->value ?? '';
         $this->delivery_name = Auth::user()->name;
-        $this->delivery_phone = (string) $profile->mobile;
+        ['country' => $this->delivery_phone_country, 'number' => $this->delivery_phone] = Phone::split($profile->mobile);
         $this->service_id = (string) request()->query('service', '');
     }
 
@@ -135,11 +138,15 @@ new #[Title('New order')] class extends Component {
         $this->quantities = array_map(fn (mixed $quantity) => is_bool($quantity) ? (int) $quantity : $quantity, $this->quantities);
     }
 
-    public function place(PlaceOrder $place): void
+    /**
+     * The order form's rules. The form shows the same rules to the browser
+     * (App\Support\ClientRules), so both check the same things.
+     *
+     * @return array<string, array<int, mixed>>
+     */
+    protected function rules(): array
     {
-        $this->authorize('create', AcademicOrder::class);
-
-        $validated = $this->validate([
+        return [
             'service_id' => ['required', Rule::exists('services', 'id')->where('is_active', true)],
             'level' => ['required', Rule::enum(AcademicLevel::class)],
             'university' => ['required', 'string', 'max:160'],
@@ -154,17 +161,34 @@ new #[Title('New order')] class extends Component {
             'quantities.*' => ['nullable', 'integer', 'min:0', 'max:'.Pricing::MAX_COPIES],
             'uploads' => ['array', 'max:'.config('academic.max_files')],
             'uploads.*' => StoreOrderFile::rules(),
-            'delivery_name' => [Rule::requiredIf($this->needsAddress), 'nullable', 'string', 'max:120'],
-            'delivery_phone' => [Rule::requiredIf($this->needsAddress), 'nullable', 'regex:/^[6-9]\d{9}$/'],
-            'delivery_address' => [Rule::requiredIf($this->needsAddress), 'nullable', 'string', 'max:255'],
-            'delivery_city' => [Rule::requiredIf($this->needsAddress), 'nullable', 'string', 'max:80'],
-            'delivery_state' => [Rule::requiredIf($this->needsAddress), 'nullable', 'string', 'max:80'],
-            'delivery_pincode' => [Rule::requiredIf($this->needsAddress), 'nullable', 'digits:6'],
-        ], [
+            'delivery_name' => [Rule::requiredIf(fn () => $this->needsAddress), 'nullable', 'string', 'max:120'],
+            'delivery_phone_country' => ['nullable', 'string', Rule::in(Phone::countries())],
+            'delivery_phone' => [Rule::requiredIf(fn () => $this->needsAddress), 'nullable', 'string', 'max:30', new MobileNumber('delivery_phone_country')],
+            'delivery_address' => [Rule::requiredIf(fn () => $this->needsAddress), 'nullable', 'string', 'max:255'],
+            'delivery_city' => [Rule::requiredIf(fn () => $this->needsAddress), 'nullable', 'string', 'max:80'],
+            'delivery_state' => [Rule::requiredIf(fn () => $this->needsAddress), 'nullable', 'string', 'max:80'],
+            'delivery_pincode' => [Rule::requiredIf(fn () => $this->needsAddress), 'nullable', 'digits:6'],
+        ];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    protected function messages(): array
+    {
+        return [
             'uploads.*.mimetypes' => __('Upload PDF or Word (.docx) files only.'),
             'uploads.*.max' => __('Each file can be up to 25 MB.'),
-            'delivery_phone.regex' => __('Enter a 10-digit Indian mobile number.'),
-        ]);
+        ];
+    }
+
+    public function place(PlaceOrder $place): void
+    {
+        $this->authorize('create', AcademicOrder::class);
+
+        $validated = $this->validate();
+        $validated['delivery_phone'] = Phone::e164($validated['delivery_phone'] ?? null, $validated['delivery_phone_country'] ?? null);
+        unset($validated['delivery_phone_country']);
 
         // Collect a delivery address only when printing or courier is in the order.
         if (! $this->needsAddress) {
@@ -197,16 +221,18 @@ new #[Title('New order')] class extends Component {
         <flux:subheading>{{ __('We guide, edit, format, check and print your own work. We do not write it for you.') }}</flux:subheading>
     </div>
 
-    <form wire:submit="place" class="space-y-8">
+    @php($rules = $this->rules())
+    @php($check = fn (string $field) => \App\Support\ClientRules::for($field, $rules[$field], $this->messages()))
+    <form wire:submit="place" class="space-y-8" data-checks novalidate>
         <div class="space-y-4">
             <flux:heading size="lg">{{ __('Service') }}</flux:heading>
             <div class="grid gap-4 sm:grid-cols-2">
-                <flux:select wire:model.live="service_id" :label="__('Service')" :placeholder="__('Choose…')" required>
+                <flux:select wire:model.live="service_id" :label="__('Service')" :placeholder="__('Choose…')" :attributes="$check('service_id')">
                     @foreach ($this->services as $option)
                         <flux:select.option :value="$option->id">{{ $option->title }}</flux:select.option>
                     @endforeach
                 </flux:select>
-                <flux:select wire:model.live="level" :label="__('Level')" :placeholder="__('Choose…')" required>
+                <flux:select wire:model.live="level" :label="__('Level')" :placeholder="__('Choose…')" :attributes="$check('level')">
                     @foreach (\App\Enums\AcademicLevel::cases() as $option)
                         <flux:select.option :value="$option->value">{{ $option->label() }}</flux:select.option>
                     @endforeach
@@ -226,17 +252,17 @@ new #[Title('New order')] class extends Component {
         <div class="space-y-4">
             <flux:heading size="lg">{{ __('Your work') }}</flux:heading>
             <div class="grid gap-4 sm:grid-cols-2">
-                <flux:input wire:model="university" :label="__('University')" required />
-                <flux:input wire:model="course" :label="__('Course')" required />
-                <flux:input wire:model="stream" :label="__('Stream or subject (optional)')" />
-                <flux:input wire:model="deadline" type="date" :label="__('Deadline')" required />
+                <flux:input wire:model="university" :label="__('University')" :attributes="$check('university')" />
+                <flux:input wire:model="course" :label="__('Course')" :attributes="$check('course')" />
+                <flux:input wire:model="stream" :label="__('Stream or subject (optional)')" :attributes="$check('stream')" />
+                <flux:input wire:model="deadline" type="date" :label="__('Deadline')" :attributes="$check('deadline')" />
             </div>
-            <flux:input wire:model="topic" :label="__('Topic or title')" required />
+            <flux:input wire:model="topic" :label="__('Topic or title')" :attributes="$check('topic')" />
             <div class="grid gap-4 sm:grid-cols-2">
-                <flux:input wire:model="pages" type="number" min="1" :label="__('Pages (optional)')" />
-                <flux:input wire:model="words" type="number" min="1" :label="__('Words (optional)')" />
+                <flux:input wire:model="pages" type="number" :label="__('Pages (optional)')" :attributes="$check('pages')" />
+                <flux:input wire:model="words" type="number" :label="__('Words (optional)')" :attributes="$check('words')" />
             </div>
-            <flux:textarea wire:model="notes" :label="__('Notes (optional)')" :placeholder="__('Your university\'s style guide, what you want us to focus on…')" rows="3" />
+            <flux:textarea wire:model="notes" :attributes="$check('notes')" :label="__('Notes (optional)')" :placeholder="__('Your university\'s style guide, what you want us to focus on…')" rows="3" />
             <flux:field>
                 <flux:label>{{ __('Your files (optional)') }}</flux:label>
                 <flux:description>{{ __('Your draft and your university\'s guidelines. PDF or Word (.docx), up to 25 MB each, 5 files at most.') }}</flux:description>
@@ -272,14 +298,14 @@ new #[Title('New order')] class extends Component {
             <div class="space-y-4">
                 <flux:heading size="lg">{{ __('Delivery address') }}</flux:heading>
                 <div class="grid gap-4 sm:grid-cols-2">
-                    <flux:input wire:model="delivery_name" :label="__('Name')" required />
-                    <flux:input wire:model="delivery_phone" type="tel" :label="__('Mobile')" required />
+                    <flux:input wire:model="delivery_name" :label="__('Name')" :attributes="$check('delivery_name')" />
+                    <x-phone-field model="delivery_phone" country-model="delivery_phone_country" :country="$delivery_phone_country" :label="__('Mobile')" :rules="$rules['delivery_phone']" wire:key="delivery-phone" />
                 </div>
-                <flux:input wire:model="delivery_address" :label="__('Address')" required />
+                <flux:input wire:model="delivery_address" :label="__('Address')" :attributes="$check('delivery_address')" />
                 <div class="grid gap-4 sm:grid-cols-3">
-                    <flux:input wire:model="delivery_city" :label="__('City')" required />
-                    <flux:input wire:model="delivery_state" :label="__('State')" required />
-                    <flux:input wire:model="delivery_pincode" inputmode="numeric" :label="__('PIN code')" required />
+                    <flux:input wire:model="delivery_city" :label="__('City')" :attributes="$check('delivery_city')" />
+                    <flux:input wire:model="delivery_state" :label="__('State')" :attributes="$check('delivery_state')" />
+                    <flux:input wire:model="delivery_pincode" :label="__('PIN code')" :attributes="$check('delivery_pincode')" />
                 </div>
             </div>
         @endif

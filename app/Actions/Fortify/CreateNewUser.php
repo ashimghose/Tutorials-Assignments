@@ -49,6 +49,47 @@ class CreateNewUser implements CreatesNewUsers
     }
 
     /**
+     * The sign-up rules. The form shows the same rules to the browser
+     * (App\Support\ClientRules), so both check the same things.
+     *
+     * @return array<string, array<int, mixed>>
+     */
+    public function rules(string $type, bool $minor = false, bool $google = false): array
+    {
+        $academic = $type === 'academic';
+        $music = $type === 'music';
+
+        return [
+            'account_type' => ['required', Rule::in(Verticals::enabled('music') && config('features.batches') ? ['parent', 'academic', 'music'] : ['parent', 'academic'])],
+            ...$this->profileRules(),
+            'mobile_country' => $this->mobileCountryRules(),
+            'mobile' => $this->mobileRules(),
+            'password' => $google ? [] : $this->passwordRules(),
+            'age_group' => $music ? ['required', 'in:adult,minor'] : ['prohibited'],
+            'adult' => $academic || ($music && ! $minor) ? ['accepted'] : ['prohibited'],
+            'guardian_email' => $minor ? ['required', 'string', 'lowercase', 'email', 'max:255', 'different:email'] : ['prohibited'],
+            'consent' => ['accepted'],
+            'marketing' => ['nullable', 'boolean'],
+        ];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function messages(string $type): array
+    {
+        return [
+            'adult.accepted' => $type === 'music'
+                ? __('Please confirm you are 18 or older, or choose "Under 18".')
+                : __('Academic services are for students aged 18 or over. School students join through a parent on our Tuition page.'),
+            'age_group.required' => __('Please tell us if you are 18 or older.'),
+            'guardian_email.required' => __('Enter your parent\'s or guardian\'s email so they can approve your account.'),
+            'guardian_email.different' => __('Your parent\'s email must be different from your own.'),
+            'consent.accepted' => __('Please agree to the privacy policy to create an account.'),
+        ];
+    }
+
+    /**
      * @param  array<string, string>  $input
      */
     private function register(array $input, ?string $googleId = null): User
@@ -58,26 +99,7 @@ class CreateNewUser implements CreatesNewUsers
         $music = $type === 'music';
         $minor = $music && ($input['age_group'] ?? null) === 'minor';
 
-        Validator::make($input, [
-            'account_type' => ['required', Rule::in(Verticals::enabled('music') && config('features.batches') ? ['parent', 'academic', 'music'] : ['parent', 'academic'])],
-            ...$this->profileRules(),
-            'mobile' => $this->mobileRules(),
-            'password' => $googleId === null ? $this->passwordRules() : [],
-            'age_group' => $music ? ['required', 'in:adult,minor'] : ['prohibited'],
-            'adult' => $academic || ($music && ! $minor) ? ['accepted'] : ['prohibited'],
-            'guardian_email' => $minor ? ['required', 'string', 'lowercase', 'email', 'max:255', 'different:email'] : ['prohibited'],
-            'consent' => ['accepted'],
-            'marketing' => ['nullable', 'boolean'],
-        ], [
-            'adult.accepted' => $music
-                ? __('Please confirm you are 18 or older, or choose "Under 18".')
-                : __('Academic services are for students aged 18 or over. School students join through a parent on our Tuition page.'),
-            'age_group.required' => __('Please tell us if you are 18 or older.'),
-            'guardian_email.required' => __('Enter your parent\'s or guardian\'s email so they can approve your account.'),
-            'guardian_email.different' => __('Your parent\'s email must be different from your own.'),
-            'consent.accepted' => __('Please agree to the privacy policy to create an account.'),
-            'mobile.regex' => __('Enter a 10-digit Indian mobile number.'),
-        ])->validate();
+        Validator::make($input, $this->rules($type, $minor, $googleId !== null), $this->messages($type))->validate();
 
         $user = DB::transaction(function () use ($input, $academic, $music, $minor, $googleId) {
             $user = new User([
@@ -98,7 +120,7 @@ class CreateNewUser implements CreatesNewUsers
             ])->save();
 
             if ($academic) {
-                $user->academicStudent()->make(['mobile' => $this->normaliseMobile($input['mobile'])])
+                $user->academicStudent()->make(['mobile' => $this->normaliseMobile($input['mobile'], $input['mobile_country'] ?? null)])
                     ->forceFill(['adult_declared_at' => now()])
                     ->save();
                 Consent::record($user, ConsentPurpose::AcademicSelf);
@@ -106,13 +128,13 @@ class CreateNewUser implements CreatesNewUsers
                 // MUS-3: the learner's own profile, without a parent account.
                 $learner = $user->student()->make(['first_name' => Str::limit(Str::before(trim($input['name']), ' '), 60, '')]);
                 $learner->forceFill([
-                    'mobile' => $this->normaliseMobile($input['mobile']),
+                    'mobile' => $this->normaliseMobile($input['mobile'], $input['mobile_country'] ?? null),
                     'adult_declared_at' => $minor ? null : now(),
                     'guardian_email' => $minor ? $input['guardian_email'] : null,
                 ])->save();
                 Consent::record($user, ConsentPurpose::MusicSelf, $learner);
             } else {
-                $user->parentProfile()->create(['mobile' => $this->normaliseMobile($input['mobile'])]);
+                $user->parentProfile()->create(['mobile' => $this->normaliseMobile($input['mobile'], $input['mobile_country'] ?? null)]);
                 Consent::record($user, ConsentPurpose::ParentAccount);
             }
 

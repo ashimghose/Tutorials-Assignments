@@ -1,4 +1,6 @@
 import { initConsent } from './consent';
+import { initFormChecks } from './form-checks';
+import { initPhoneFields } from './phone-field';
 
 // MKT-3: remember the campaign a visitor arrived from (utm_source, utm_medium,
 // utm_campaign) for this browser tab, and add it to every Google Form link so
@@ -93,6 +95,8 @@ export function decorateFormLinks(utm) {
 
 decorateFormLinks(captureUtm());
 initConsent();
+initFormChecks();
+initPhoneFields();
 
 // Click-to-play videos (x-site.videos): load the youtube-nocookie player only
 // after the visitor taps play, so YouTube sees nothing before that.

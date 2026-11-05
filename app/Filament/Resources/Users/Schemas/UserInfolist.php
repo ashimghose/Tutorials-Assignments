@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Users\Schemas;
 use App\Enums\AccountStatus;
 use App\Enums\Role;
 use App\Models\User;
+use App\Support\Phone;
 use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
@@ -33,7 +34,7 @@ class UserInfolist
                 Section::make('Parent')
                     ->visible(fn (User $record): bool => $record->role === Role::Parent)
                     ->schema([
-                        TextEntry::make('parentProfile.mobile')->label('Mobile'),
+                        TextEntry::make('parentProfile.mobile')->label('Mobile')->formatStateUsing(fn (?string $state): string => Phone::display($state)),
                         RepeatableEntry::make('parentProfile.students')
                             ->label('Children')
                             ->columns(3)
@@ -47,7 +48,7 @@ class UserInfolist
                     ->visible(fn (User $record): bool => $record->role === Role::AcademicStudent)
                     ->columns(2)
                     ->schema([
-                        TextEntry::make('academicStudent.mobile')->label('Mobile'),
+                        TextEntry::make('academicStudent.mobile')->label('Mobile')->formatStateUsing(fn (?string $state): string => Phone::display($state)),
                         TextEntry::make('academicStudent.adult_declared_at')->label('Declared 18+')->dateTime('j M Y, g:i a', $tz),
                         TextEntry::make('academicStudent.university')->label('University')->placeholder('—'),
                         TextEntry::make('academicStudent.course')->label('Course')->placeholder('—'),
@@ -64,7 +65,7 @@ class UserInfolist
                     ->visible(fn (User $record): bool => $record->role === Role::MusicStudent)
                     ->columns(2)
                     ->schema([
-                        TextEntry::make('student.mobile')->label('Mobile')->placeholder('—'),
+                        TextEntry::make('student.mobile')->label('Mobile')->formatStateUsing(fn (?string $state): string => Phone::display($state))->placeholder('—'),
                         TextEntry::make('student.adult_declared_at')->label('Declared 18+')->dateTime('j M Y, g:i a', $tz)->placeholder('No, under 18'),
                         TextEntry::make('student.guardian_email')->label('Parent\'s email')->placeholder('—')
                             ->visible(fn (User $record): bool => $record->student?->isMinorMusicLearner() ?? false),

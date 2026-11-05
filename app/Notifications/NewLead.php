@@ -4,6 +4,7 @@ namespace App\Notifications;
 
 use App\Enums\Offering;
 use App\Models\Lead;
+use App\Support\Phone;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -34,7 +35,7 @@ class NewLead extends Notification implements ShouldQueue
             ->subject("New {$offering} ".strtolower($this->lead->kind->label()).": {$this->lead->name}")
             ->line("{$this->lead->name} sent a ".strtolower($this->lead->kind->label()).'.')
             ->line('Interest: '.($this->lead->interest ?: '—'))
-            ->line('Mobile: '.$this->lead->mobile)
+            ->line('Mobile: '.Phone::display($this->lead->mobile))
             ->line('Source: '.($this->lead->utm_source ?: 'unknown'))
             ->action('Open in the admin panel', url("/admin/leads/{$this->lead->id}"));
     }

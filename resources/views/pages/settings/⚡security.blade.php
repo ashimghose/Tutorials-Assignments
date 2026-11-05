@@ -177,31 +177,30 @@ new #[Title('Security settings')] class extends Component {
         :heading="$hasPassword ? __('Update password') : __('Set a password')"
         :subheading="$hasPassword ? __('Ensure your account is using a long, random password to stay secure') : __('You sign in with Google. Add a password if you also want to log in with your email.')"
     >
-        <form method="POST" wire:submit="updatePassword" class="mt-6 space-y-6">
+        <form method="POST" wire:submit="updatePassword" class="mt-6 space-y-6" data-checks novalidate>
             @if ($hasPassword)
                 <flux:input
                     wire:model="current_password"
                     :label="__('Current password')"
                     type="password"
-                    required
                     autocomplete="current-password"
                     viewable
+                    :attributes="\App\Support\ClientRules::for('current_password', $this->currentPasswordRules())"
                 />
             @endif
             <flux:input
                 wire:model="password"
                 :label="__('New password')"
                 type="password"
-                required
                 autocomplete="new-password"
                 passwordrules="{{ \Illuminate\Validation\Rules\Password::defaults()->toPasswordRulesString() }}"
                 viewable
+                :attributes="\App\Support\ClientRules::for('password', $this->passwordRules())"
             />
             <flux:input
                 wire:model="password_confirmation"
                 :label="__('Confirm password')"
                 type="password"
-                required
                 autocomplete="new-password"
                 passwordrules="{{ \Illuminate\Validation\Rules\Password::defaults()->toPasswordRulesString() }}"
                 viewable

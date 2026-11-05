@@ -8,6 +8,7 @@ use App\Models\AcademicOrder;
 use App\Models\OrderFile;
 use App\Models\OrderStatus;
 use App\Support\Money;
+use App\Support\Phone;
 use BackedEnum;
 use Filament\Actions\ViewAction;
 use Filament\Infolists\Components\RepeatableEntry;
@@ -61,7 +62,8 @@ class AcademicOrderResource extends Resource
                 TextEntry::make('level')->formatStateUsing(fn (AcademicOrder $record): string => $record->level->label()),
                 TextEntry::make('academicStudent.user.name')->label('Student'),
                 TextEntry::make('academicStudent.mobile')->label('Mobile')
-                    ->url(fn (AcademicOrder $record): string => 'https://wa.me/91'.$record->academicStudent->mobile, shouldOpenInNewTab: true),
+                    ->formatStateUsing(fn (?string $state): string => Phone::display($state))
+                    ->url(fn (AcademicOrder $record): string => Phone::whatsappUrl($record->academicStudent->mobile), shouldOpenInNewTab: true),
                 TextEntry::make('university'),
                 TextEntry::make('course')->formatStateUsing(fn (AcademicOrder $record): string => trim($record->course.($record->stream ? ' · '.$record->stream : ''))),
                 TextEntry::make('topic')->columnSpanFull(),
@@ -89,7 +91,7 @@ class AcademicOrderResource extends Resource
             ]),
             Section::make('Delivery')->columnSpan(1)->visible(fn (AcademicOrder $record): bool => $record->delivery_address !== null)->schema([
                 TextEntry::make('delivery_name')->label('Name'),
-                TextEntry::make('delivery_phone')->label('Mobile'),
+                TextEntry::make('delivery_phone')->label('Mobile')->formatStateUsing(fn (?string $state): string => Phone::display($state)),
                 TextEntry::make('delivery_address')->label('Address')
                     ->formatStateUsing(fn (AcademicOrder $record): string => "{$record->delivery_address}, {$record->delivery_city}, {$record->delivery_state} {$record->delivery_pincode}"),
                 TextEntry::make('tracking_number')->label('Tracking')

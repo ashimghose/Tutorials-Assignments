@@ -21,7 +21,7 @@ class LeadFactory extends Factory
             'kind' => LeadKind::Enquiry,
             'offering' => 'tuition',
             'name' => fake()->name(),
-            'mobile' => '98'.fake()->numerify('########'),
+            'mobile' => '+9198'.fake()->numerify('########'),
             'email' => fake()->safeEmail(),
             'interest' => 'General enquiry',
             'status' => LeadStatus::New,

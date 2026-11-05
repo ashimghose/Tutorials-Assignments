@@ -77,7 +77,7 @@ test('MUS-3 an adult music learner signs up directly, with no parent account', f
         ->and($user->marketing_opt_in_at)->not->toBeNull()
         ->and($learner->isMusicLearner())->toBeTrue()
         ->and($learner->first_name)->toBe('Rohan')
-        ->and($learner->mobile)->toBe('9876543210')
+        ->and($learner->mobile)->toBe('+919876543210')
         ->and($learner->adult_declared_at)->not->toBeNull()
         ->and($learner->awaitingGuardianConsent())->toBeFalse()
         ->and($user->consents()->sole()->purpose)->toBe(ConsentPurpose::MusicSelf);
