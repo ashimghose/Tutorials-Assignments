@@ -21,6 +21,8 @@ use Laravel\Fortify\Contracts\CreatesNewUsers;
  * Self sign-up for parents (AUTH-1), academic students (ACA-3) and music
  * learners (MUS-3). School students never sign up themselves; their parent
  * adds them. An under-18 music learner's parent approves by email.
+ * Someone joining with Google (AUTH-7) answers the same questions, without
+ * a password, and their email is already verified by Google.
  */
 class CreateNewUser implements CreatesNewUsers
 {
@@ -33,6 +35,24 @@ class CreateNewUser implements CreatesNewUsers
      */
     public function create(array $input): User
     {
+        return $this->register($input);
+    }
+
+    /**
+     * AUTH-7: the email and Google id come from Google, never from the form.
+     *
+     * @param  array<string, string>  $input
+     */
+    public function createFromGoogle(array $input, string $googleId, string $email): User
+    {
+        return $this->register([...$input, 'email' => $email], $googleId);
+    }
+
+    /**
+     * @param  array<string, string>  $input
+     */
+    private function register(array $input, ?string $googleId = null): User
+    {
         $type = $input['account_type'] ?? 'parent';
         $academic = $type === 'academic';
         $music = $type === 'music';
@@ -42,7 +62,7 @@ class CreateNewUser implements CreatesNewUsers
             'account_type' => ['required', Rule::in(Verticals::enabled('music') && config('features.batches') ? ['parent', 'academic', 'music'] : ['parent', 'academic'])],
             ...$this->profileRules(),
             'mobile' => $this->mobileRules(),
-            'password' => $this->passwordRules(),
+            'password' => $googleId === null ? $this->passwordRules() : [],
             'age_group' => $music ? ['required', 'in:adult,minor'] : ['prohibited'],
             'adult' => $academic || ($music && ! $minor) ? ['accepted'] : ['prohibited'],
             'guardian_email' => $minor ? ['required', 'string', 'lowercase', 'email', 'max:255', 'different:email'] : ['prohibited'],
@@ -59,13 +79,15 @@ class CreateNewUser implements CreatesNewUsers
             'mobile.regex' => __('Enter a 10-digit Indian mobile number.'),
         ])->validate();
 
-        $user = DB::transaction(function () use ($input, $academic, $music, $minor) {
+        $user = DB::transaction(function () use ($input, $academic, $music, $minor, $googleId) {
             $user = new User([
                 'name' => $input['name'],
                 'email' => $input['email'],
-                'password' => $input['password'],
+                ...($googleId === null ? ['password' => $input['password']] : []),
             ]);
             $user->forceFill([
+                'google_id' => $googleId,
+                'email_verified_at' => $googleId === null ? null : now(),
                 'role' => match (true) {
                     $academic => Role::AcademicStudent,
                     $music => Role::MusicStudent,

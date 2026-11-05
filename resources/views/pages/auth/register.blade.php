@@ -1,3 +1,5 @@
+{{-- AUTH-7: with $google set, someone back from Google answers the same questions without email or password. --}}
+@php($google ??= null)
 @php($musicOn = \App\Support\Verticals::enabled('music') && config('features.batches'))
 @php($accountType = $accountType === 'music' && ! $musicOn ? 'parent' : $accountType)
 @php($academic = $accountType === 'academic')
@@ -21,14 +23,25 @@
 
         <nav @class(['grid gap-1 rounded-lg bg-zinc-100 p-1 text-sm font-medium', 'grid-cols-3' => count($tabs) === 3, 'grid-cols-2' => count($tabs) === 2]) aria-label="{{ __('Account type') }}">
             @foreach ($tabs as $type => $label)
-                <a href="{{ route('register', $type === 'parent' ? [] : ['as' => $type]) }}" @class(['rounded-md px-2 py-2 text-center', 'bg-white text-brand-800 shadow-sm' => $accountType === $type, 'text-zinc-600' => $accountType !== $type]) @if ($accountType === $type) aria-current="page" @endif>{{ $label }}</a>
+                <a href="{{ route($google ? 'google.finish' : 'register', $type === 'parent' ? [] : ['as' => $type]) }}" @class(['rounded-md px-2 py-2 text-center', 'bg-white text-brand-800 shadow-sm' => $accountType === $type, 'text-zinc-600' => $accountType !== $type]) @if ($accountType === $type) aria-current="page" @endif>{{ $label }}</a>
             @endforeach
         </nav>
 
         <!-- Session Status -->
         <x-auth-session-status class="text-center" :status="session('status')" />
 
-        <form method="POST" action="{{ route('register.store') }}" class="flex flex-col gap-6">
+        @if ($google)
+            <p class="rounded-lg bg-brand-50 px-4 py-3 text-sm text-zinc-700">
+                {{ __('Signed in with Google as :email. Pick your account type above and answer a few questions to finish.', ['email' => $google['email']]) }}
+            </p>
+        @elseif (\App\Support\GoogleSignIn::enabled())
+            <x-google-button :href="route('google.redirect', ['as' => $accountType])" :label="__('Sign up with Google')" data-test="google-signup" />
+            <div class="flex items-center gap-3 text-xs uppercase text-zinc-500" aria-hidden="true">
+                <span class="h-px flex-1 bg-zinc-200"></span>{{ __('or use your email') }}<span class="h-px flex-1 bg-zinc-200"></span>
+            </div>
+        @endif
+
+        <form method="POST" action="{{ route($google ? 'google.finish.store' : 'register.store') }}" class="flex flex-col gap-6">
             @csrf
             <input type="hidden" name="account_type" value="{{ $accountType }}">
 
@@ -36,23 +49,25 @@
             <flux:input
                 name="name"
                 :label="$academic || $music ? __('Your full name') : __('Parent\'s full name')"
-                :value="old('name')"
+                :value="old('name', $google['name'] ?? '')"
                 type="text"
                 required
                 autofocus
                 autocomplete="name"
             />
 
-            <!-- Email Address -->
-            <flux:input
-                name="email"
-                :label="__('Email address')"
-                :value="old('email')"
-                type="email"
-                required
-                autocomplete="email"
-                placeholder="email@example.com"
-            />
+            @unless ($google)
+                <!-- Email Address -->
+                <flux:input
+                    name="email"
+                    :label="__('Email address')"
+                    :value="old('email')"
+                    type="email"
+                    required
+                    autocomplete="email"
+                    placeholder="email@example.com"
+                />
+            @endunless
 
             <!-- Mobile -->
             <flux:input
@@ -66,29 +81,31 @@
                 placeholder="98765 43210"
             />
 
-            <!-- Password -->
-            <flux:input
-                name="password"
-                :label="__('Password')"
-                type="password"
-                required
-                autocomplete="new-password"
-                :placeholder="__('Password')"
-                passwordrules="{{ \Illuminate\Validation\Rules\Password::defaults()->toPasswordRulesString() }}"
-                viewable
-            />
+            @unless ($google)
+                <!-- Password -->
+                <flux:input
+                    name="password"
+                    :label="__('Password')"
+                    type="password"
+                    required
+                    autocomplete="new-password"
+                    :placeholder="__('Password')"
+                    passwordrules="{{ \Illuminate\Validation\Rules\Password::defaults()->toPasswordRulesString() }}"
+                    viewable
+                />
 
-            <!-- Confirm Password -->
-            <flux:input
-                name="password_confirmation"
-                :label="__('Confirm password')"
-                type="password"
-                required
-                autocomplete="new-password"
-                :placeholder="__('Confirm password')"
-                passwordrules="{{ \Illuminate\Validation\Rules\Password::defaults()->toPasswordRulesString() }}"
-                viewable
-            />
+                <!-- Confirm Password -->
+                <flux:input
+                    name="password_confirmation"
+                    :label="__('Confirm password')"
+                    type="password"
+                    required
+                    autocomplete="new-password"
+                    :placeholder="__('Confirm password')"
+                    passwordrules="{{ \Illuminate\Validation\Rules\Password::defaults()->toPasswordRulesString() }}"
+                    viewable
+                />
+            @endunless
 
             @if ($academic)
                 <flux:field variant="inline">
@@ -155,7 +172,7 @@
 
             <div class="flex items-center justify-end">
                 <flux:button type="submit" variant="primary" class="w-full" data-test="register-user-button">
-                    {{ __('Create account') }}
+                    {{ $google ? __('Finish and create account') : __('Create account') }}
                 </flux:button>
             </div>
         </form>

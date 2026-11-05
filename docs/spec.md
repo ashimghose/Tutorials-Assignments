@@ -200,6 +200,13 @@ and it knows exactly what to build and test.
 - AUTH-6 Lock an account for 15 minutes after 5 failed logins; admin can
   deactivate any account.
 
+- AUTH-7 "Continue with Google" on the login and sign-up pages. A Google
+  account with a verified email logs in to the account with that email
+  (or the one already linked to it). Someone new answers the normal
+  sign-up questions (account type, mobile, 18+ or parent approval,
+  consent) before the account is made; no password needed. School
+  students keep their username login. Two-factor still applies.
+
 **Public site and content (CMS)**
 
 - CMS-1 Admin edits these without code: home page sections, subjects,

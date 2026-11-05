@@ -5,6 +5,13 @@
         <!-- Session Status -->
         <x-auth-session-status class="text-center" :status="session('status')" />
 
+        @if (\App\Support\GoogleSignIn::enabled())
+            <x-google-button :href="route('google.redirect')" :label="__('Continue with Google')" data-test="google-login" />
+            <div class="flex items-center gap-3 text-xs uppercase text-zinc-500" aria-hidden="true">
+                <span class="h-px flex-1 bg-zinc-200"></span>{{ __('or') }}<span class="h-px flex-1 bg-zinc-200"></span>
+            </div>
+        @endif
+
         <x-passkey-verify />
 
         <form method="POST" action="{{ route('login.store') }}" class="flex flex-col gap-6">

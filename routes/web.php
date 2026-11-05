@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ClassJoinController;
+use App\Http\Controllers\GoogleAuthController;
 use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\LeadController;
 use App\Http\Controllers\MessageAttachmentController;
@@ -104,6 +105,18 @@ Route::middleware(['feature:accounts', 'auth', 'verified'])->group(function () {
 
     // CLS-2, CLS-3: every Join click is checked on the server.
     Route::get('classes/{classSession}/join', ClassJoinController::class)->middleware('feature:batches')->name('classes.join');
+});
+
+// AUTH-7: log in or sign up with Google; new people finish the sign-up questions.
+Route::middleware('feature:accounts')->controller(GoogleAuthController::class)->group(function () {
+    Route::middleware('guest')->group(function () {
+        Route::get('auth/google', 'redirect')->middleware('throttle:google')->name('google.redirect');
+        Route::get('auth/google/finish', 'show')->name('google.finish');
+        Route::post('auth/google/finish', 'store')->middleware('throttle:account-forms')->name('google.finish.store');
+    });
+    // A Google-only account confirms "it's me" with Google instead of a password.
+    Route::get('auth/google/confirm', 'confirm')->middleware(['auth', 'throttle:google'])->name('google.confirm');
+    Route::get('auth/google/callback', 'callback')->middleware('throttle:google')->name('google.callback');
 });
 
 // AUTH-4: a teacher sets their password from the emailed, signed invitation link.

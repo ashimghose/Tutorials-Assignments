@@ -7,6 +7,11 @@
 
         <x-auth-session-status class="text-center" :status="session('status')" />
 
+        @if (auth()->user()->password === null && auth()->user()->google_id !== null && \App\Support\GoogleSignIn::enabled())
+            {{-- AUTH-7: someone who joined with Google confirms it is them with Google. --}}
+            <x-google-button :href="route('google.confirm')" :label="__('Confirm with Google')" data-test="google-confirm" />
+            <flux:error name="password" />
+        @else
         <x-passkey-verify
             options-route="passkey.confirm-options"
             submit-route="passkey.confirm"
@@ -32,5 +37,6 @@
                 {{ __('Confirm') }}
             </flux:button>
         </form>
+        @endif
     </div>
 </x-layouts::auth>
