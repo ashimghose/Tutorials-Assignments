@@ -16,7 +16,7 @@ use Filament\Tables\Table;
 /**
  * Everyone who can log in. Parents and academic students sign up
  * themselves, children are added by parents, and teachers are invited from
- * here (AUTH-4). Accounts are deactivated, never deleted (AUTH-6).
+ * here (AUTH-4). Accounts are deactivated (AUTH-6); only an unused one can be deleted (ADM-7).
  */
 class UserResource extends Resource
 {

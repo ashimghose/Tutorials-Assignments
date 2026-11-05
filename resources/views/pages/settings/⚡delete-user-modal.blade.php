@@ -15,9 +15,10 @@ new class extends Component {
      */
     public function deleteUser(Logout $logout): void
     {
+        // AUTH-7: someone who joined with Google has no password, so they type DELETE.
         $this->validate([
-            'password' => $this->currentPasswordRules(),
-        ]);
+            'password' => Auth::user()->password === null ? ['required', 'in:DELETE'] : $this->currentPasswordRules(),
+        ], ['password.in' => __('Type DELETE in capital letters to confirm.')]);
 
         tap(Auth::user(), $logout(...))->delete();
 
@@ -31,11 +32,19 @@ new class extends Component {
             <flux:heading size="lg">{{ __('Are you sure you want to delete your account?') }}</flux:heading>
 
             <flux:subheading>
-                {{ __('Once your account is deleted, all of its resources and data will be permanently deleted. Please enter your password to confirm you would like to permanently delete your account.') }}
+                @if (auth()->user()->password === null)
+                    {{ __('Once your account is deleted, all of its resources and data will be permanently deleted. Type DELETE to confirm you would like to permanently delete your account.') }}
+                @else
+                    {{ __('Once your account is deleted, all of its resources and data will be permanently deleted. Please enter your password to confirm you would like to permanently delete your account.') }}
+                @endif
             </flux:subheading>
         </div>
 
-        <flux:input wire:model="password" :label="__('Password')" type="password" viewable />
+        @if (auth()->user()->password === null)
+            <flux:input wire:model="password" :label="__('Type DELETE')" autocomplete="off" />
+        @else
+            <flux:input wire:model="password" :label="__('Password')" type="password" viewable />
+        @endif
 
         <div class="flex justify-end space-x-2 rtl:space-x-reverse">
             <flux:modal.close>

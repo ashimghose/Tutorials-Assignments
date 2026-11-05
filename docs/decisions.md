@@ -205,3 +205,7 @@ The owner asked for assignments (school to PhD) to be a main topic again. The ac
 - A verified Google email logs in to the account with that email and links it (`users.google_id`), which also verifies the email. A new person goes to the normal sign-up form without email and password fields, so the parent-account, 18+ and music-guardian rules (AUTH-1, ACA-3, MUS-3) are unchanged. Nothing is saved until they submit it; the Google profile waits in the session.
 - School students (username logins) can't use Google. Two-factor still applies. A Google-only account has no password, so "confirm it's you" before security settings is done by signing in to the same Google account again, and they can then set a password there without a current one.
 
+## 2026-11-05 · Admin can delete unused accounts (ADM-7)
+
+The owner made a test parent and could only deactivate it. Deactivation stays the rule (AUTH-6), so a real family's children, fees and messages can't be wiped by mistake. A **Delete** action now appears only for an account with nothing attached: a parent with no children, an academic student with no orders, a music learner with no enrolments, and no conversations; teachers, admins and school students never. The audit log keeps the id and role, not the name or email. Someone who joined with Google has no password, so deleting their own account in Settings asks them to type DELETE instead.
+

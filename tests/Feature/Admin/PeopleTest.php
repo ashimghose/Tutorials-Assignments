@@ -3,9 +3,13 @@
 use App\Enums\AccountStatus;
 use App\Filament\Resources\Users\Pages\ListUsers;
 use App\Filament\Resources\Users\Pages\ViewUser;
+use App\Models\AcademicOrder;
 use App\Models\AuditLog;
+use App\Models\Conversation;
+use App\Models\Student;
 use App\Models\User;
 use App\Notifications\TeacherInvitation;
+use Database\Seeders\AcademicCatalogueSeeder;
 use Illuminate\Support\Facades\Notification;
 use Livewire\Livewire;
 
@@ -65,6 +69,36 @@ test('AUTH-6 the admin unlocks a locked account', function () {
 test('the admin cannot deactivate their own account', function () {
     Livewire::test(ListUsers::class)->assertTableActionHidden('deactivate', $this->admin);
 });
+
+test('ADM-7 the admin deletes an unused account, such as a test sign-up, and it is audited', function () {
+    $parent = User::factory()->parent()->create();
+
+    Livewire::test(ViewUser::class, ['record' => $parent->getRouteKey()])
+        ->callAction('delete')
+        ->assertRedirect(route('filament.admin.resources.users.index'));
+
+    expect(User::find($parent->id))->toBeNull();
+    $log = AuditLog::where('action', 'user.deleted')->sole();
+    expect($log->subject_id)->toBe($parent->id)
+        ->and($log->properties)->toBe(['role' => 'parent'])
+        ->and($log->user_id)->toBe($this->admin->id);
+});
+
+test('ADM-7 AUTH-6 accounts with children, orders or messages, staff and the admin can only be deactivated', function (Closure $make) {
+    $user = $make();
+
+    Livewire::test(ListUsers::class)->assertTableActionHidden('delete', $user);
+    expect($this->admin->can('delete', $user))->toBeFalse();
+})->with([
+    'parent with a child' => [fn () => tap(User::factory()->parent()->create(), fn (User $u) => Student::factory()->for($u->parentProfile, 'parent')->create())],
+    'academic student with an order' => [fn () => tap(User::factory()->academicStudent()->create(), function (User $u) {
+        test()->seed(AcademicCatalogueSeeder::class);
+        AcademicOrder::factory()->for($u->academicStudent)->create();
+    })],
+    'parent with a conversation' => [fn () => tap(User::factory()->parent()->create(), fn (User $u) => Conversation::factory()->startedBy($u)->create())],
+    'teacher' => [fn () => User::factory()->teacher()->create()],
+    'the admin themself' => [fn () => test()->admin],
+]);
 
 test('the make-admin command creates an admin who can reach the panel', function () {
     $this->artisan('app:make-admin')

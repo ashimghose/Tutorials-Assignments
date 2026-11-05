@@ -101,10 +101,14 @@ class GoogleAuthController extends Controller
             return redirect()->route('register');
         }
 
-        return view('pages::auth.register', [
-            'accountType' => in_array($request->query('as'), ['academic', 'music'], true) ? $request->query('as') : 'parent',
-            'google' => $google,
-        ]);
+        $as = $request->query('as');
+
+        // Coming from the login page we don't know who they are yet, so ask first.
+        if (! in_array($as, GoogleSignIn::ACCOUNT_TYPES, true) || ($as === 'music' && ! GoogleSignIn::musicOpen())) {
+            return view('pages::auth.google-choose', ['google' => $google, 'musicOpen' => GoogleSignIn::musicOpen()]);
+        }
+
+        return view('pages::auth.register', ['accountType' => $as, 'google' => $google]);
     }
 
     public function store(Request $request, CreateNewUser $creator): RedirectResponse
