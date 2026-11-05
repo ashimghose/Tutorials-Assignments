@@ -135,6 +135,23 @@ test('AUTH-7 a new person must finish the sign-up questions before an account is
         ->assertDontSee('Confirm password');
 });
 
+test('AUTH-7 a new person coming from the login page is asked who they are first', function () {
+    config(['verticals.music.enabled' => true]);
+    $this->get(route('google.redirect'));
+    fakeGoogleUser();
+
+    $this->get(route('google.callback'))->assertRedirect(route('google.finish'));
+
+    $this->get(route('google.finish'))->assertOk()
+        ->assertSee('Who are you?')
+        ->assertSee(route('google.finish', ['as' => 'parent']), false)
+        ->assertSee(route('google.finish', ['as' => 'academic']), false)
+        ->assertSee(route('google.finish', ['as' => 'music']), false)
+        ->assertDontSee('Mobile number');
+
+    $this->get(route('google.finish', ['as' => 'parent']))->assertOk()->assertSee('Create a parent account')->assertSee('Mobile number');
+});
+
 test('AUTH-7 AUTH-1 a parent finishes Google sign-up with mobile and consent, already verified', function () {
     session([GoogleSignIn::SESSION_KEY => ['id' => '1234567890', 'name' => 'Asha Verma', 'email' => 'asha@example.com']]);
 
@@ -229,3 +246,15 @@ test('AUTH-7 confirming with a different Google account is refused', function ()
 
     expect(session('auth.password_confirmed_at'))->toBeNull();
 });
+
+test('AUTH-7 a Google-only account deletes itself by typing DELETE', function () {
+    $user = User::factory()->create(['password' => null]);
+    $this->actingAs($user);
+
+    Livewire::test('pages::settings.delete-user-modal')->set('password', 'yes')->call('deleteUser')->assertHasErrors('password');
+    expect($user->fresh())->not->toBeNull();
+
+    Livewire::test('pages::settings.delete-user-modal')->set('password', 'DELETE')->call('deleteUser')->assertHasNoErrors();
+    expect($user->fresh())->toBeNull();
+});
+

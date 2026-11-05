@@ -316,6 +316,11 @@ and it knows exactly what to build and test.
 
 - ADM-6 Audit log of admin actions (who changed what and when).
 
+- ADM-7 Admin can delete an unused account (a parent with no children,
+  an academic student with no orders, a music learner with no classes,
+  and no messages), such as a test sign-up. Everything else is
+  deactivated, never deleted (AUTH-6). Each delete is audited.
+
 **Notifications (NOT)**
 
 - NOT-1 Transactional emails: verify email, welcome, password reset,

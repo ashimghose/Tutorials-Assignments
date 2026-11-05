@@ -163,6 +163,23 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail, Pas
         return $this->role === Role::Student || $this->email_verified_at !== null;
     }
 
+    /**
+     * ADM-7: an account with nothing attached yet (a test or abandoned
+     * sign-up) may be deleted by the admin. Anything with children,
+     * orders, classes or messages is deactivated instead (AUTH-6).
+     */
+    public function isUnused(): bool
+    {
+        $empty = match ($this->role) {
+            Role::Parent => ! $this->parentProfile?->students()->exists(),
+            Role::AcademicStudent => ! $this->academicStudent?->orders()->exists(),
+            Role::MusicStudent => ! $this->student?->enrolments()->exists(),
+            default => false,
+        };
+
+        return $empty && ! $this->conversations()->exists();
+    }
+
     public function canAccessPanel(Panel $panel): bool
     {
         return $this->isAdmin() && $this->isActive();

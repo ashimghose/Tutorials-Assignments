@@ -67,6 +67,7 @@ class UsersTable
                 UserActions::unlock(),
                 UserActions::deactivate(),
                 UserActions::reactivate(),
+                UserActions::delete(),
             ]);
     }
 }

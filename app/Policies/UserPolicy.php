@@ -7,7 +7,8 @@ use App\Models\User;
 /**
  * The admin panel lists and views accounts. Accounts are never created,
  * edited or deleted there: people sign up, parents add children, admins
- * invite teachers, and deactivation replaces deletion (AUTH-6).
+ * invite teachers, and deactivation replaces deletion (AUTH-6), except for
+ * an unused account, such as a test sign-up (ADM-7).
  */
 class UserPolicy
 {
@@ -33,6 +34,6 @@ class UserPolicy
 
     public function delete(User $user, User $model): bool
     {
-        return false;
+        return $user->isAdmin() && $model->isNot($user) && $model->isUnused();
     }
 }

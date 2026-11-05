@@ -23,7 +23,7 @@
 
         <nav @class(['grid gap-1 rounded-lg bg-zinc-100 p-1 text-sm font-medium', 'grid-cols-3' => count($tabs) === 3, 'grid-cols-2' => count($tabs) === 2]) aria-label="{{ __('Account type') }}">
             @foreach ($tabs as $type => $label)
-                <a href="{{ route($google ? 'google.finish' : 'register', $type === 'parent' ? [] : ['as' => $type]) }}" @class(['rounded-md px-2 py-2 text-center', 'bg-white text-brand-800 shadow-sm' => $accountType === $type, 'text-zinc-600' => $accountType !== $type]) @if ($accountType === $type) aria-current="page" @endif>{{ $label }}</a>
+                <a href="{{ $google ? route('google.finish', ['as' => $type]) : route('register', $type === 'parent' ? [] : ['as' => $type]) }}" @class(['rounded-md px-2 py-2 text-center', 'bg-white text-brand-800 shadow-sm' => $accountType === $type, 'text-zinc-600' => $accountType !== $type]) @if ($accountType === $type) aria-current="page" @endif>{{ $label }}</a>
             @endforeach
         </nav>
 
@@ -32,7 +32,7 @@
 
         @if ($google)
             <p class="rounded-lg bg-brand-50 px-4 py-3 text-sm text-zinc-700">
-                {{ __('Signed in with Google as :email. Pick your account type above and answer a few questions to finish.', ['email' => $google['email']]) }}
+                {{ __('Signed in with Google as :email. Answer a few questions to finish.', ['email' => $google['email']]) }}
             </p>
         @elseif (\App\Support\GoogleSignIn::enabled())
             <x-google-button :href="route('google.redirect', ['as' => $accountType])" :label="__('Sign up with Google')" data-test="google-signup" />

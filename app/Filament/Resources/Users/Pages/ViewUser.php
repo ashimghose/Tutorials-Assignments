@@ -16,6 +16,7 @@ class ViewUser extends ViewRecord
             UserActions::unlock(),
             UserActions::deactivate(),
             UserActions::reactivate(),
+            UserActions::delete(),
         ];
     }
 }
