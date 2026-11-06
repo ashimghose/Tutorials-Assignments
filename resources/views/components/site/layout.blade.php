@@ -28,6 +28,10 @@
         ['label' => 'About', 'route' => 'about', 'href' => route('about')],
         ['label' => 'Contact', 'route' => 'contact', 'href' => route('contact')],
     ];
+    // HIR-1: the Careers pages, while the site's own forms are on.
+    if (config('features.cms')) {
+        array_splice($nav, -1, 0, [['label' => 'Careers', 'route' => 'careers.index', 'href' => route('careers.index')]]);
+    }
     $footerSections = [
         'tuition' => [['Fees', 'fees'], ['How it works', 'how-it-works'], ['Questions', 'faqs']],
         'academic' => [['Price list', 'prices'], ['How it works', 'how-it-works'], ['Questions', 'faqs']],

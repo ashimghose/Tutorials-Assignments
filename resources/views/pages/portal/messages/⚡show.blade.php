@@ -68,7 +68,8 @@ new #[Title('Messages')] class extends Component {
     #[Computed]
     public function staff(): Collection
     {
-        return User::query()->where('role', Role::Teacher)->where('status', 'active')->orderBy('name')->get();
+        // HIR-8: only approved teachers.
+        return User::query()->where('role', Role::Teacher)->where('status', 'active')->whereHas('teacher', fn ($query) => $query->whereNotNull('approved_at'))->orderBy('name')->get();
     }
 
     public function send(PostMessage $post): void

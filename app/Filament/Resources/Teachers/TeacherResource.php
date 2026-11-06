@@ -8,8 +8,12 @@ use App\Enums\OrderRateType;
 use App\Filament\Resources\Teachers\Pages\EditTeacher;
 use App\Filament\Resources\Teachers\Pages\ListTeachers;
 use App\Filament\Support\MoneyInput;
+use App\Models\AuditLog;
 use App\Models\Teacher;
+use App\Notifications\TeacherApproved;
+use App\Support\Phone;
 use BackedEnum;
+use Filament\Actions\Action;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\CheckboxList;
 use Filament\Forms\Components\DatePicker;
@@ -18,6 +22,7 @@ use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
@@ -30,7 +35,8 @@ use Filament\Tables\Table;
 
 /**
  * Teachers' and experts' work and public profiles (CMS-1). New teachers are
- * invited from People (AUTH-4).
+ * invited from People (AUTH-4) or sign up themselves and wait here for the
+ * admin's approval (HIR-8).
  */
 class TeacherResource extends Resource
 {
@@ -43,6 +49,39 @@ class TeacherResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedAcademicCap;
 
     protected static ?int $navigationSort = 2;
+
+    public static function getNavigationBadge(): ?string
+    {
+        $pending = Teacher::query()->whereNull('approved_at')->count();
+
+        return $pending > 0 ? (string) $pending : null;
+    }
+
+    public static function getNavigationBadgeTooltip(): ?string
+    {
+        return 'Waiting for approval';
+    }
+
+    /**
+     * HIR-8: approve a teacher who signed up themselves, after the checks.
+     */
+    public static function approveAction(): Action
+    {
+        return Action::make('approve')
+            ->label('Approve')
+            ->icon(Heroicon::OutlinedCheckBadge)
+            ->color('success')
+            ->visible(fn (Teacher $record): bool => ! $record->isApproved())
+            ->requiresConfirmation()
+            ->modalHeading(fn (Teacher $record): string => "Approve {$record->user->name}?")
+            ->modalDescription('Approve only after the checks: ID, references and, to teach children, police verification. They can then be given batches, orders and conversations.')
+            ->action(function (Teacher $record): void {
+                $record->forceFill(['approved_at' => now()])->save();
+                AuditLog::record('teacher.approved', $record->user);
+                $record->user->notify(new TeacherApproved);
+                Notification::make()->success()->title('Approved')->body("{$record->user->name} got an email saying so.")->send();
+            });
+    }
 
     public static function form(Schema $schema): Schema
     {
@@ -89,11 +128,15 @@ class TeacherResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('user.name')->label('Name')->searchable(),
+                TextColumn::make('approved_at')->label('Status')->badge()
+                    ->state(fn (Teacher $record): string => $record->isApproved() ? 'Approved' : 'Waiting for approval')
+                    ->color(fn (string $state): string => $state === 'Approved' ? 'success' : 'warning'),
+                TextColumn::make('mobile')->formatStateUsing(fn (?string $state): string => Phone::display($state))->placeholder('—')->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('offerings')->label('Works in')->state(fn (Teacher $record): string => $record->offeringLabels()),
                 TextColumn::make('subjects')->badge(),
                 IconColumn::make('show_on_site')->label('On website')->boolean(),
             ])
-            ->recordActions([EditAction::make()]);
+            ->recordActions([self::approveAction(), EditAction::make()]);
     }
 
     public static function getPages(): array

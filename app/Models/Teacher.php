@@ -17,7 +17,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
 
 /**
- * A teacher or academic expert, invited by an admin (AUTH-4).
+ * A teacher or academic expert, invited by an admin (AUTH-4) or signed up
+ * themselves and approved by an admin (HIR-8).
  *
  * @property list<string> $offerings the sections they work in (VRT-1)
  * @property list<string>|null $subjects
@@ -27,6 +28,8 @@ use Illuminate\Support\Carbon;
  * @property ClassRatePer $class_rate_per
  * @property OrderRateType|null $order_rate_type
  * @property int|null $order_rate
+ * @property Carbon|null $approved_at
+ * @property string|null $mobile
  */
 #[ObservedBy(AuditAdminChanges::class)]
 #[Fillable(['offerings', 'subjects', 'bio', 'photo_path', 'active_from', 'active_to', 'class_rate', 'class_rate_per', 'order_rate_type', 'order_rate'])]
@@ -46,7 +49,25 @@ class Teacher extends Model
             'class_rate_per' => ClassRatePer::class,
             'order_rate_type' => OrderRateType::class,
             'order_rate' => 'integer',
+            'approved_at' => 'datetime',
         ];
+    }
+
+    /**
+     * HIR-8: a teacher who signed up themselves can't be given batches,
+     * orders or conversations until the admin approves them.
+     */
+    public function isApproved(): bool
+    {
+        return $this->approved_at !== null;
+    }
+
+    /**
+     * @param  Builder<Teacher>  $query
+     */
+    public function scopeApproved(Builder $query): void
+    {
+        $query->whereNotNull('approved_at');
     }
 
     public function worksIn(Offering $offering): bool

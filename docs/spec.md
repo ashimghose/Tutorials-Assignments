@@ -191,7 +191,8 @@ and it knows exactly what to build and test.
   a child's password.
 
 - AUTH-4 Admin invites teachers by email; teacher sets their own
-  password from the link.
+  password from the link. Teachers may also sign up themselves and wait
+  for the admin's approval (HIR-8, owner's decision, 6 Nov 2026).
 
 - AUTH-5 Role-based access: each page and API checks the role (visitor,
   parent, student, teacher, admin) on the server, never only in the
@@ -517,6 +518,16 @@ and it knows exactly what to build and test.
 
 - HIR-7 Admin → Teachers and experts has a tab for each section
   (Academic, Tuition, Music) showing its teachers and how many.
+
+- HIR-8 Teachers and experts can also sign up themselves (Teacher tab on
+  the sign-up page, or Google): sections, subjects, mobile, 18+ and a
+  declaration (checks, police verification to teach children, no private
+  contact with students, no ghost-writing). The account waits for the
+  admin's approval: until then the teacher sees only a "waiting for
+  approval" page and can't be given batches, orders or conversations. The
+  business is emailed on sign-up; the admin approves at Admin → Teachers
+  and experts (tab "Waiting for approval", audited) and the teacher is
+  emailed. Invited teachers (AUTH-4) are approved from the start.
 
 Partner businesses (TEN-1 to 7) and partner payments (PAY-7 to 10) are
 deferred until Gate P; they are described in `docs/platform-plan.md` and

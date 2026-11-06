@@ -11,7 +11,7 @@ class GoogleSignIn
     /**
      * Account types someone can pick when they join with Google.
      */
-    public const ACCOUNT_TYPES = ['parent', 'academic', 'music'];
+    public const ACCOUNT_TYPES = ['parent', 'academic', 'music', 'teacher'];
 
     public const SESSION_KEY = 'google_signup';
 

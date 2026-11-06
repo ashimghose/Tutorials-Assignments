@@ -47,6 +47,10 @@
                 <li>We check your ID and references. Anyone teaching children also needs police verification.</li>
                 <li>We sign a simple freelance agreement, and you start.</li>
             </ol>
+            @if (config('features.accounts'))
+                {{-- HIR-8: teachers can also make an account now; we approve it after the checks. --}}
+                <p class="mt-6 text-slate-700">Want to set up your account now? <a href="{{ route('register', ['as' => 'teacher']) }}" class="font-semibold text-brand-700 underline">Sign up as a teacher</a>. We approve it after the same checks.</p>
+            @endif
         </div>
     </section>
 </x-site.layout>

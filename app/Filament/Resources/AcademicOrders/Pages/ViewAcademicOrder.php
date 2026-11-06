@@ -164,7 +164,7 @@ class ViewAcademicOrder extends ViewRecord
             ->fillForm(fn (): array => ['expert_id' => $this->record->expert_id])
             ->schema([
                 Select::make('expert_id')->label('Expert')->required()
-                    ->options(fn () => Teacher::query()->worksInOffering(Offering::Academic)->with('user')->get()
+                    ->options(fn () => Teacher::query()->approved()->worksInOffering(Offering::Academic)->with('user')->get()
                         ->mapWithKeys(fn (Teacher $teacher) => [$teacher->id => $teacher->user->name])),
             ])
             ->action(function (array $data): void {

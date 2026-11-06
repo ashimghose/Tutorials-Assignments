@@ -21,7 +21,7 @@ new #[Title('Teacher home')] class extends Component {
     {
         $teacher = Auth::user()->teacher;
 
-        return $teacher === null ? collect() : Batch::query()
+        return $teacher === null || ! $teacher->isApproved() ? collect() : Batch::query()
             ->whereBelongsTo($teacher)
             ->where('is_active', true)
             ->with(['enrolments' => fn ($query) => $query->withAccess()->with('student')])
@@ -50,7 +50,13 @@ new #[Title('Teacher home')] class extends Component {
         <flux:subheading>{{ __('Your batches and classes for the next two weeks.') }}</flux:subheading>
     </div>
 
-    @if (config('features.batches'))
+    @if (! auth()->user()->teacher?->isApproved())
+        {{-- HIR-8: signed up themselves; the admin approves after the checks. --}}
+        <flux:callout icon="clock" color="amber" data-test="teacher-pending">
+            <flux:callout.heading>{{ __('Your account is waiting for approval') }}</flux:callout.heading>
+            <flux:callout.text>{{ __('Thank you for signing up. We will call you on WhatsApp for a short chat and a paid demo, then check your ID and references (and police verification to teach children). Once we approve your account, your batches and orders will appear here.') }}</flux:callout.text>
+        </flux:callout>
+    @elseif (config('features.batches'))
         <x-portal.timetable :sessions="$this->sessions" />
 
         <div class="grid gap-4 md:grid-cols-2">

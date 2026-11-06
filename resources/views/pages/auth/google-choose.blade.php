@@ -3,6 +3,7 @@
     'academic' => [__('I am a college or university student'), __('Academic services: assignments, theses, editing and printing. For ages 18 and over.')],
     'parent' => [__('I am a parent'), __('Tuition for my child in classes 1 to 12. You add your child after signing up.')],
     'music' => $musicOpen ? [__('I want to learn music'), __('Singing or an instrument. Under 18? Your parent approves by email.')] : null,
+    'teacher' => [__('I want to teach with you'), __('Tuition, music or academic guidance. We approve your account after a few checks.')],
 ]))
 
 <x-layouts::auth :title="__('Who are you?')">

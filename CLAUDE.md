@@ -26,7 +26,7 @@ Logged-in roles:
 - **Student** – school student; login created by the parent; joins paid classes, watches recordings.
 - **Academic student** – adult (18+) self sign-up; orders academic services, tracks status.
 - **Music learner** – self sign-up, no parent account; an under-18 learner's parent approves by an emailed link (MUS-3). Joins music batches.
-- **Teacher / expert** – invited by admin; runs tuition batches and/or works on assigned academic orders.
+- **Teacher / expert** – invited by admin, or signs up and waits for admin approval (HIR-8); runs tuition batches and/or works on assigned academic orders.
 - **Admin** – manages people, batches, price lists, add-ons, order statuses, content, chat inbox, reports.
 
 Scale for v1: ≤ 1,000 visitors/month, ≤ 50 school students, ≤ 20 academic orders/month,

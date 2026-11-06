@@ -71,7 +71,7 @@ class BatchResource extends Resource
                     ->required(fn (Get $get): bool => ! self::isMusic($get('offering')))
                     ->options(array_combine([...$boards, 'Other'], [...$boards, 'Other'])),
                 Select::make('teacher_id')->label('Teacher')
-                    ->options(fn (Get $get) => Teacher::query()->worksInOffering(self::isMusic($get('offering')) ? Offering::Music : Offering::Tuition)->with('user')->get()
+                    ->options(fn (Get $get) => Teacher::query()->approved()->worksInOffering(self::isMusic($get('offering')) ? Offering::Music : Offering::Tuition)->with('user')->get()
                         ->mapWithKeys(fn (Teacher $teacher) => [$teacher->id => $teacher->user->name])),
                 MoneyInput::make('monthly_fee')->label('Monthly fee')->required(),
                 TextInput::make('max_seats')->label('Seats')->integer()->minValue(1)->maxValue(50)->default(15)->required(),
