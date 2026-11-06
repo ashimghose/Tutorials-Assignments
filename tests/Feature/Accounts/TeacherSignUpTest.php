@@ -12,6 +12,7 @@ use App\Models\Teacher;
 use App\Models\User;
 use App\Notifications\NewTeacherSignUp;
 use App\Notifications\TeacherApproved;
+use Database\Seeders\AcademicCatalogueSeeder;
 use Illuminate\Support\Facades\Notification;
 use Livewire\Livewire;
 
@@ -88,6 +89,7 @@ test('HIR-8 other account types can\'t send teacher fields', function () {
 
 test('HIR-8 an unapproved teacher can\'t open assigned orders, and can\'t be given work', function () {
     config(['features.academic_orders' => true]);
+    $this->seed(AcademicCatalogueSeeder::class);
     $pending = Teacher::factory()->pending()->create(['offerings' => ['academic', 'tuition']]);
 
     $this->actingAs($pending->user)->get(route('teacher.orders'))->assertRedirect(route('teacher.home'));
@@ -108,10 +110,11 @@ test('HIR-8 the admin sees teachers waiting for approval and approves one', func
     $this->actingAs($admin);
 
     Livewire::test(ListTeachers::class)
+        ->assertTableActionHidden('approve', $approved)
+        ->assertTableActionVisible('approve', $pending)
         ->set('activeTab', 'pending')
         ->assertCanSeeTableRecords([$pending])
         ->assertCanNotSeeTableRecords([$approved])
-        ->assertTableActionHidden('approve', $approved)
         ->callTableAction('approve', $pending);
 
     expect($pending->fresh()->isApproved())->toBeTrue()

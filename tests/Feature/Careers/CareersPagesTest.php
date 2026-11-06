@@ -141,7 +141,7 @@ test('HIR-5 applications are deleted after twelve months', function () {
 
 test('HIR-6 the menu and footer link to the careers page and the sitemap lists open jobs', function () {
     $this->get(route('home'))->assertSee(route('careers.index'))->assertSeeInOrder(['>About<', '>Careers<', '>Contact<'], false);
-    $this->get(route('careers.index'))->assertSee('aria-current="page">Careers<', false);
+    $this->get(route('careers.index'))->assertSeeInOrder(['aria-current="page"', 'Careers'], false);
 
     $this->get(route('sitemap'))
         ->assertSee(route('careers.index'))
