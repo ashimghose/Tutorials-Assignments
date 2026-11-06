@@ -31,7 +31,7 @@
         <flux:sidebar.item icon="home" :href="route('teacher.home')" :current="request()->routeIs('teacher.home')" wire:navigate>
             {{ __('Teacher home') }}
         </flux:sidebar.item>
-        @if (config('features.academic_orders'))
+        @if (config('features.academic_orders') && auth()->user()->teacher?->isApproved())
             <flux:sidebar.item icon="document-text" :href="route('teacher.orders')" :current="request()->routeIs('teacher.orders*')" wire:navigate>
                 {{ __('Assigned orders') }}
             </flux:sidebar.item>

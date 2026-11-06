@@ -4,6 +4,7 @@
 @php($accountType = $accountType === 'music' && ! $musicOn ? 'parent' : $accountType)
 @php($academic = $accountType === 'academic')
 @php($music = $accountType === 'music')
+@php($teacher = $accountType === 'teacher')
 @php($signUp = app(\App\Actions\Fortify\CreateNewUser::class))
 @php($rules = $signUp->rules($accountType, $music, (bool) $google))
 @php($messages = $signUp->messages($accountType))
@@ -12,20 +13,22 @@
     'parent' => __('Parent (tuition)'),
     'academic' => __('Academic student'),
     'music' => $musicOn ? __('Music learner') : null,
+    'teacher' => __('Teacher'),
 ]))
 
-<x-layouts::auth :title="match ($accountType) { 'academic' => __('Sign up for academic services'), 'music' => __('Sign up for music lessons'), default => __('Parent sign-up') }">
+<x-layouts::auth :title="match ($accountType) { 'academic' => __('Sign up for academic services'), 'music' => __('Sign up for music lessons'), 'teacher' => __('Teacher sign-up'), default => __('Parent sign-up') }">
     <div class="flex flex-col gap-6">
         <x-auth-header
-            :title="match ($accountType) { 'academic' => __('Create your academic account'), 'music' => __('Create your music account'), default => __('Create a parent account') }"
+            :title="match ($accountType) { 'academic' => __('Create your academic account'), 'music' => __('Create your music account'), 'teacher' => __('Create your teacher account'), default => __('Create a parent account') }"
             :description="match ($accountType) {
                 'academic' => __('For Bachelors, Masters and PhD students aged 18 or over.'),
                 'music' => __('For anyone learning music with us. Under 18? A parent approves your account by email.'),
+                'teacher' => __('For tuition teachers, music teachers and academic guidance experts. We approve your account after ID, reference and safety checks.'),
                 default => __('Parents sign up first, then add each child and create their login.'),
             }"
         />
 
-        <nav @class(['grid gap-1 rounded-lg bg-zinc-100 p-1 text-sm font-medium', 'grid-cols-3' => count($tabs) === 3, 'grid-cols-2' => count($tabs) === 2]) aria-label="{{ __('Account type') }}">
+        <nav @class(['grid gap-1 rounded-lg bg-zinc-100 p-1 text-sm font-medium', 'grid-cols-2 sm:grid-cols-4' => count($tabs) === 4, 'grid-cols-3' => count($tabs) === 3, 'grid-cols-2' => count($tabs) === 2]) aria-label="{{ __('Account type') }}">
             @foreach ($tabs as $type => $label)
                 <a href="{{ $google ? route('google.finish', ['as' => $type]) : route('register', $type === 'parent' ? [] : ['as' => $type]) }}" @class(['rounded-md px-2 py-2 text-center', 'bg-white text-brand-800 shadow-sm' => $accountType === $type, 'text-zinc-600' => $accountType !== $type]) @if ($accountType === $type) aria-current="page" @endif>{{ $label }}</a>
             @endforeach
@@ -52,7 +55,7 @@
             <!-- Name -->
             <flux:input
                 name="name"
-                :label="$academic || $music ? __('Your full name') : __('Parent\'s full name')"
+                :label="$academic || $music || $teacher ? __('Your full name') : __('Parent\'s full name')"
                 :value="old('name', $google['name'] ?? '')"
                 type="text"
                 autofocus
@@ -112,6 +115,43 @@
                     {{ __('Under 18?') }}
                     <flux:link :href="route('tuition')">{{ __('Our Tuition section is for school students') }}</flux:link>.
                 </p>
+            @endif
+
+            @if ($teacher)
+                {{-- HIR-8: the account waits for the admin's approval before any work. --}}
+                <fieldset class="flex flex-col gap-2">
+                    <legend class="mb-1 text-sm font-medium text-zinc-800">{{ __('Where do you want to teach?') }}</legend>
+                    @foreach (\App\Enums\Offering::sections() as $section)
+                        <label class="flex items-center gap-3 text-sm text-zinc-800">
+                            <input type="checkbox" name="offerings[]" value="{{ $section->value }}" @checked(in_array($section->value, (array) old('offerings', []), true)) class="size-4 accent-brand-700">
+                            {{ match ($section->value) { 'academic' => __('Academic guidance, editing and formatting'), 'music' => __('Music lessons'), default => __('School tuition, classes 1 to 12') } }}
+                        </label>
+                    @endforeach
+                    <flux:error name="offerings" />
+                    <flux:error name="offerings.*" />
+                </fieldset>
+
+                <flux:input
+                    name="subjects"
+                    :label="__('What do you teach?')"
+                    :description="__('Separate with commas.')"
+                    :value="old('subjects')"
+                    type="text"
+                    :placeholder="__('Maths, Science, Guitar, Thesis editing')"
+                    :attributes="$check('subjects')"
+                />
+
+                <flux:field variant="inline">
+                    <flux:checkbox name="adult" value="1" :checked="old('adult')" :attributes="$check('adult')" />
+                    <flux:label>{{ __('I am 18 or older') }}</flux:label>
+                    <flux:error name="adult" />
+                </flux:field>
+
+                <flux:field variant="inline">
+                    <flux:checkbox name="teacher_rules" value="1" :checked="old('teacher_rules')" :attributes="$check('teacher_rules')" />
+                    <flux:label>{{ __('I agree to ID and reference checks (and police verification to teach children), to never contact students privately, and to never write work for students to submit as their own.') }}</flux:label>
+                    <flux:error name="teacher_rules" />
+                </flux:field>
             @endif
 
             @if ($music)

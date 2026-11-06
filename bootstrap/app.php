@@ -4,6 +4,7 @@ use App\Http\Middleware\CaptureUtm;
 use App\Http\Middleware\EnsureAccountActive;
 use App\Http\Middleware\EnsureFeatureEnabled;
 use App\Http\Middleware\EnsureRole;
+use App\Http\Middleware\EnsureTeacherApproved;
 use App\Http\Middleware\ResolveVertical;
 use App\Http\Middleware\ThrottleAccountForms;
 use App\Support\Cloudflare;
@@ -36,6 +37,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'feature' => EnsureFeatureEnabled::class,
             'role' => EnsureRole::class,
+            'teacher.approved' => EnsureTeacherApproved::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

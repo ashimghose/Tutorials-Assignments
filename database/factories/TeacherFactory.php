@@ -21,6 +21,15 @@ class TeacherFactory extends Factory
             'user_id' => fn () => UserFactory::makeUserWithoutProfile(User::factory()->teacher())->id,
             'offerings' => [Offering::Tuition->value],
             'subjects' => ['Maths'],
+            'approved_at' => now(),
         ];
+    }
+
+    /**
+     * HIR-8: signed up themselves and not approved yet.
+     */
+    public function pending(): static
+    {
+        return $this->state(['approved_at' => null]);
     }
 }

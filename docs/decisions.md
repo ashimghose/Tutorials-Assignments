@@ -224,3 +224,9 @@ The owner made a test parent and could only deactivate it. Deactivation stays th
 - No CV uploads: applicants paste a link (Drive, YouTube, LinkedIn). That avoids storing strangers' files and checking their type and size.
 - Applying does not create a login. A teacher works with children, so the admin invites them (AUTH-4) from the application only after the checks; the invite action fills in their details and marks the application Hired.
 
+## 2026-11-06 · Teachers can sign up themselves (HIR-8)
+
+- The owner chose self sign-up over "apply, then the admin invites". A Teacher tab on the sign-up page creates a `Role::Teacher` account with a `teachers` row whose `approved_at` is empty. Invited teachers, and everyone who was already a teacher, are approved (the migration copies `created_at`).
+- Safeguarding stays on the server: an unapproved teacher reaches only the teacher home page (a "waiting for approval" notice; `teacher.approved` middleware on the other teacher pages), and the batch, order and conversation pickers list approved teachers only, so the admin can't give them work by mistake.
+- The admin approves from Teachers and experts after the checks; this is audited and emails the teacher. Rejecting someone uses the existing Deactivate/Delete on People.
+

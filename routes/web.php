@@ -96,7 +96,8 @@ Route::middleware(['feature:accounts', 'auth', 'verified'])->group(function () {
 
     Route::middleware('role:teacher')->prefix('teacher')->name('teacher.')->group(function () {
         Route::livewire('/', 'pages::portal.teacher.home')->name('home');
-        Route::middleware('feature:academic_orders')->group(function () {
+        // HIR-8: a self-signed-up teacher waits on the home page until approved.
+        Route::middleware(['feature:academic_orders', 'teacher.approved'])->group(function () {
             Route::livewire('orders', 'pages::portal.teacher.orders')->name('orders');
             Route::livewire('orders/{order}', 'pages::portal.teacher.order')->whereNumber('order')->name('orders.show');
         });

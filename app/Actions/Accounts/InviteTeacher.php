@@ -26,7 +26,8 @@ class InviteTeacher
         $user = DB::transaction(function () use ($name, $email, $offerings, $subjects) {
             $user = new User(['name' => $name, 'email' => $email]);
             $user->forceFill(['role' => Role::Teacher])->save();
-            $user->teacher()->create(['offerings' => $offerings, 'subjects' => $subjects]);
+            // Invited by the admin, so approved from the start (HIR-8).
+            $user->teacher()->make(['offerings' => $offerings, 'subjects' => $subjects])->forceFill(['approved_at' => now()])->save();
 
             AuditLog::record('teacher.invited', $user);
 
