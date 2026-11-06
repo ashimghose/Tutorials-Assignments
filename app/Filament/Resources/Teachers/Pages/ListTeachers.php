@@ -25,7 +25,7 @@ class ListTeachers extends ListRecords
         foreach (Offering::sections() as $offering) {
             $tabs[$offering->value] = Tab::make($offering->label())
                 ->badge(Teacher::query()->worksInOffering($offering)->count())
-                ->modifyQueryUsing(fn (Builder $query) => $query->worksInOffering($offering));
+                ->modifyQueryUsing(fn (Builder $query) => $query->whereJsonContains('offerings', $offering->value));
         }
 
         return $tabs;
