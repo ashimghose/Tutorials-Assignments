@@ -167,6 +167,10 @@
                             <li><a href="mailto:{{ config('site.contact.email') }}" class="hover:text-slate-900">{{ config('site.contact.email') }}</a></li>
                         @endif
                         <li>{{ config('site.contact.office_hours') }}</li>
+                        @if (config('features.cms'))
+                            {{-- HIR-1: the Careers pages. --}}
+                            <li><a href="{{ route('careers.index') }}" class="font-medium text-brand-800 hover:text-slate-900">Teach with us: we're hiring</a></li>
+                        @endif
                     </ul>
                 </div>
             </div>

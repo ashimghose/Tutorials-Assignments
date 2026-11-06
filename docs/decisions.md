@@ -216,3 +216,11 @@ The owner made a test parent and could only deactivate it. Deactivation stays th
 - Every mobile field (sign-up, Google sign-up, enquiries, order delivery) is two fields: a country (ISO code, India first, then UAE and Bangladesh) and the number. Both sides accept only a valid mobile for that country (`App\Support\Phone`, `App\Rules\MobileNumber`, `resources/js/phone.js`). Numbers are stored in E.164 (`+919876543210`); a migration adds +91 to the old 10-digit numbers. Admin screens show `+91 98765 43210` and WhatsApp links work for any country.
 - The Google library is about 580 KB, so it loads only when someone uses a form with a phone field; the country list (45 KB) loads when the dropdown is opened.
 - Browser checks come from the server's own rule arrays: `App\Support\ClientRules` turns them into `required`, `maxlength`, `min`, `data-pattern`, `data-phone`… with the validator's own messages, and `resources/js/form-checks.js` checks forms marked `data-checks` before sending. The server still checks everything; checks needing the database (unique email, current password, leaked passwords) stay server-only.
+
+## 2026-11-06 · Careers pages and job applications (HIR-1 to HIR-7)
+
+- The owner asked for job pages teachers can read and apply on, which he can promote and edit himself. Jobs are a `job_openings` table edited in Filament (Admin → Hiring), not site-section JSON, because each job needs its own address, open/closed state and Google job details. A migration adds the first round: two academic roles, two tuition roles and one guitar job with two places.
+- Applications are their own `job_applications` table, not leads: they hold different details (languages, qualifications, experience), must not reach the marketing list or lead reports, and are pruned after 12 months (`model:prune`, daily).
+- No CV uploads: applicants paste a link (Drive, YouTube, LinkedIn). That avoids storing strangers' files and checking their type and size.
+- Applying does not create a login. A teacher works with children, so the admin invites them (AUTH-4) from the application only after the checks; the invite action fills in their details and marks the application Hired.
+

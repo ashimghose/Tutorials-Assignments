@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CareersController;
 use App\Http\Controllers\ClassJoinController;
 use App\Http\Controllers\GoogleAuthController;
 use App\Http\Controllers\InvitationController;
@@ -59,6 +60,14 @@ Route::middleware('feature:cms')->controller(LeadController::class)->group(funct
 });
 
 // Phase 2 portal (M3). Each role reaches only its own pages (AUTH-5).
+// HIR-1 to HIR-3: Careers pages and job applications.
+Route::middleware('feature:cms')->controller(CareersController::class)->group(function () {
+    Route::get('careers', 'index')->name('careers.index');
+    Route::get('careers/thanks', 'thanks')->name('careers.thanks');
+    Route::get('careers/{job}', 'show')->where('job', '[a-z0-9-]+')->name('careers.show');
+    Route::post('careers/{job}', 'apply')->where('job', '[a-z0-9-]+')->middleware('throttle:leads')->name('careers.apply');
+});
+
 Route::middleware(['feature:accounts', 'auth', 'verified'])->group(function () {
     Route::get('dashboard', fn (Request $request) => redirect()->route($request->user()->homeRoute()))
         ->name('dashboard');
