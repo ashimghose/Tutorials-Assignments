@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\JobApplication;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schedule;
@@ -18,6 +19,9 @@ Schedule::command('app:prune-order-files')->dailyAt('03:00')->timezone(config('a
 
 // MUS-3: delete under-18 music accounts that a parent didn't approve in time.
 Schedule::command('app:prune-unapproved-music-learners')->dailyAt('03:15')->timezone(config('app.display_timezone'));
+
+// HIR-5: delete job applications after a year (privacy).
+Schedule::command('model:prune', ['--model' => [JobApplication::class]])->dailyAt('03:30')->timezone(config('app.display_timezone'));
 
 // M9: nightly encrypted database backup, kept 30 days, with an email if a
 // backup fails or is missing (spec: Security).

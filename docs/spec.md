@@ -483,6 +483,41 @@ and it knows exactly what to build and test.
 - MUS-6 Music needs "original sound" audio: teachers get Meet audio
   advice until the Phase 3 classroom offers a music mode.
 
+**Careers and hiring (HIR)** — added 6 Nov 2026
+
+- HIR-1 A Careers page (`/careers`) lists open jobs by section, and each
+  job has its own page (`/careers/{slug}`) with the description, where,
+  languages, pay, places and an apply form. The admin adds, edits and
+  closes jobs at Admin → Hiring → Job openings; a job shows between its
+  "show from" and optional "apply by" dates while it is open. Academic
+  jobs are for guidance, editing and formatting of students' own work and
+  say that the role never includes writing work for students to submit.
+
+- HIR-2 The apply form asks for name, mobile (with country code), email,
+  city, teaching languages, subjects or instruments, qualifications,
+  experience, availability, an optional video/CV link (no file uploads)
+  and a declaration: checks and police verification and no private
+  contact with students (tuition, music), or no ghost-writing (academic).
+  Validated on the server, rate-limited, with a honeypot.
+
+- HIR-3 Each application keeps the campaign the visitor came from (MKT-3)
+  and emails the business.
+
+- HIR-4 Admin → Hiring → Job applications lists applications with
+  filters; the admin marks them Shortlisted, Hired or Not selected
+  (audited) and invites a hired person as a teacher or expert in one step
+  (AUTH-4). Only admins see applications.
+
+- HIR-5 Applications are deleted automatically 12 months after they
+  arrive (privacy).
+
+- HIR-6 The footer links to the Careers page; the sitemap lists it and
+  every open job; job pages carry Google's JobPosting details (remote
+  work, the state or country applicants must live in).
+
+- HIR-7 Admin → Teachers and experts has a tab for each section
+  (Academic, Tuition, Music) showing its teachers and how many.
+
 Partner businesses (TEN-1 to 7) and partner payments (PAY-7 to 10) are
 deferred until Gate P; they are described in `docs/platform-plan.md` and
 move here when that work is approved.

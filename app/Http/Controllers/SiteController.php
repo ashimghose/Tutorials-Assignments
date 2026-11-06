@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\JobOpening;
 use App\Support\SiteContent;
 use App\Support\Verticals;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Collection;
 
 /**
  * Phase 0 marketing pages. They read no session or database so that
@@ -89,11 +91,28 @@ class SiteController extends Controller
                 ->merge(collect(SiteContent::articles())->map(fn (array $article) => [
                     'loc' => route('resources.show', $article['slug']),
                     'lastmod' => $article['published'],
-                ]));
+                ]))
+                ->merge($this->careersUrls());
 
         return response()
             ->view('site.sitemap', ['urls' => $urls])
             ->header('Content-Type', 'application/xml');
+    }
+
+    /**
+     * HIR-6: the Careers pages and each open job (FEATURE_CMS).
+     *
+     * @return Collection<int, array{loc: string, lastmod: string|null}>
+     */
+    private function careersUrls(): Collection
+    {
+        if (! config('features.cms')) {
+            return collect();
+        }
+
+        return collect([['loc' => route('careers.index'), 'lastmod' => null]])
+            ->merge(JobOpening::query()->acceptingApplications()->orderBy('sort_order')->get()
+                ->map(fn (JobOpening $job) => ['loc' => route('careers.show', $job), 'lastmod' => $job->updated_at?->toDateString()]));
     }
 
     /**
