@@ -28,6 +28,7 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Validation\Rule;
 
 /**
  * HIR-2 to HIR-4: applications from the Careers pages. The admin moves
@@ -156,7 +157,8 @@ class JobApplicationResource extends Resource
             ])
             ->schema([
                 TextInput::make('name')->required()->maxLength(255),
-                TextInput::make('email')->email()->required()->maxLength(255)->unique(User::class, 'email'),
+                // A plain rule: Filament's unique() would skip this application's id in the users table.
+                TextInput::make('email')->email()->required()->maxLength(255)->rules([Rule::unique(User::class, 'email')]),
                 CheckboxList::make('offerings')->label('Works in')->options(Offering::sectionOptions())->required(),
                 TagsInput::make('subjects')->placeholder('Maths, Physics, Guitar, Thesis editing…'),
             ])
