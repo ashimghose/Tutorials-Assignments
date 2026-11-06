@@ -5,7 +5,6 @@ use App\Filament\Resources\JobApplications\Pages\ListJobApplications;
 use App\Filament\Resources\JobApplications\Pages\ViewJobApplication;
 use App\Filament\Resources\JobOpenings\Pages\CreateJobOpening;
 use App\Filament\Resources\JobOpenings\Pages\EditJobOpening;
-use App\Filament\Resources\JobOpenings\Pages\ListJobOpenings;
 use App\Filament\Resources\Teachers\Pages\ListTeachers;
 use App\Models\AuditLog;
 use App\Models\JobApplication;

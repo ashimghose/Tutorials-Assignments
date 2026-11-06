@@ -4,10 +4,10 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Support\Facades\DB;
 
 /**
- * HIR-1: the owner's first hiring round (6 Nov 2026), two people for each
- * section: two academic roles, two tuition roles and two guitar teachers.
- * The admin edits or closes these at Admin → Hiring → Job openings. Skipped
- * when the admin already has job openings.
+ * HIR-1: the owner's first hiring round (6 Nov 2026) from
+ * resources/content/careers.php. After this the admin edits or closes them
+ * at Admin → Hiring → Job openings. Skipped when there are job openings
+ * already.
  */
 return new class extends Migration
 {
@@ -18,13 +18,15 @@ return new class extends Migration
         }
 
         $now = now();
-        $today = $now->toDateString();
 
-        foreach (self::jobs() as $index => $job) {
+        /** @var list<array<string, string|int>> $jobs */
+        $jobs = require resource_path('content/careers.php');
+
+        foreach ($jobs as $index => $job) {
             DB::table('job_openings')->insert([
                 ...$job,
                 'is_open' => true,
-                'posted_on' => $today,
+                'posted_on' => $now->toDateString(),
                 'sort_order' => $index * 10,
                 'created_at' => $now,
                 'updated_at' => $now,
@@ -35,183 +37,5 @@ return new class extends Migration
     public function down(): void
     {
         // Job openings are edited in /admin; nothing to undo.
-    }
-
-    /**
-     * @return list<array<string, string|int>>
-     */
-    public static function jobs(): array
-    {
-        $tuitionHiring = <<<'MD'
-            ## How hiring works
-
-            1. Send the form below. We reply within a few days.
-            2. A 15-minute phone call, partly in English, Hindi and Assamese.
-            3. A short **paid** demo class on Google Meet.
-            4. ID and reference checks, and police verification, because our students are children.
-            5. A simple freelance agreement, then your first batch.
-            MD;
-
-        $academicHiring = <<<'MD'
-            ## How hiring works
-
-            1. Send the form below. We reply within a few days.
-            2. A short **paid** test task: comment on and edit a two-page sample draft.
-            3. A 20-minute video call.
-            4. ID and reference checks, and a simple freelance agreement.
-            MD;
-
-        return [
-            [
-                'slug' => 'academic-guidance-expert',
-                'offering' => 'academic',
-                'title' => 'Academic guidance expert (research and thesis)',
-                'summary' => 'Guide Bachelors, Masters and PhD students through their own synopsis, research paper, thesis or dissertation. Part-time, work from home.',
-                'body' => <<<MD
-                    ## What you will do
-
-                    - Guide students on their topic, research questions, methodology and structure.
-                    - Read their drafts and give clear comments they can act on.
-                    - Explain similarity reports and how to cite sources properly.
-                    - Talk to students through our website's order messages, never privately.
-
-                    This role never includes writing assignments, papers or theses for students to submit as their own. We help students with their own work.
-
-                    ## Who we are looking for
-
-                    - A PhD, or a PhD in progress, or college teaching experience.
-                    - Excellent written English; Hindi is a plus.
-                    - Comfortable with MS Word, APA, MLA or Chicago styles, and similarity reports.
-                    - Experts from Delhi and North India are preferred.
-
-                    {$academicHiring}
-                    MD,
-                'location' => 'Work from home, anywhere in India (Delhi and North India preferred)',
-                'region' => 'India',
-                'languages' => 'English (excellent written English), Hindi',
-                'pay' => '40 to 50% of the service price for each order you guide, paid monthly once the order is finished.',
-                'openings' => 1,
-            ],
-            [
-                'slug' => 'academic-writer-editor',
-                'offering' => 'academic',
-                'title' => 'Academic writer and editor (editing and formatting)',
-                'summary' => 'Edit, proofread and format students\' own assignments, papers and theses, and coach them to write better. Part-time, work from home.',
-                'body' => <<<MD
-                    ## What you will do
-
-                    - Edit and proofread students' own drafts for language, clarity and flow.
-                    - Format documents, tables and references to the university's style.
-                    - Coach students with comments so they improve their own writing.
-                    - Talk to students through our website's order messages, never privately.
-
-                    This role never includes writing assignments, papers or theses for students to submit as their own. We help students with their own work.
-
-                    ## Who we are looking for
-
-                    - A Masters degree, ideally in English, journalism or a research subject.
-                    - Excellent written English; Hindi is a plus.
-                    - Strong MS Word skills and care with references (APA, MLA, Chicago).
-                    - Writers and editors from Delhi and North India are preferred.
-
-                    {$academicHiring}
-                    MD,
-                'location' => 'Work from home, anywhere in India (Delhi and North India preferred)',
-                'region' => 'India',
-                'languages' => 'English (excellent written English), Hindi',
-                'pay' => '40 to 50% of the service price for each order you work on, paid monthly once the order is finished.',
-                'openings' => 1,
-            ],
-            [
-                'slug' => 'maths-science-teacher-classes-8-10',
-                'offering' => 'tuition',
-                'title' => 'Maths and Science teacher (classes 8 to 10)',
-                'summary' => 'Teach small live online batches of school students in classes 8 to 10, CBSE and SEBA/ASSEB. Part-time, evenings, from anywhere in Assam.',
-                'body' => <<<MD
-                    ## What you will do
-
-                    - Teach live online classes on Google Meet to batches of up to 15 students.
-                    - Follow the CBSE or SEBA/ASSEB syllabus, with homework and short tests.
-                    - Explain in English, Hindi or Assamese, whichever helps the student.
-                    - Keep parents informed through our website's messages, where parents can always see the conversation.
-
-                    ## Who we are looking for
-
-                    - A degree in Maths or Science; a B.Ed from any college is a plus.
-                    - Teaching or home tuition experience with classes 8 to 10.
-                    - Good English, Hindi and Assamese.
-                    - A laptop or tablet, a steady internet connection, and a pen tablet or a camera on your notebook.
-
-                    {$tuitionHiring}
-                    MD,
-                'location' => 'Online, from anywhere in Assam',
-                'region' => 'Assam',
-                'languages' => 'English, Hindi and Assamese',
-                'pay' => 'About 50 to 55% of each batch\'s monthly fees, paid monthly. A batch of 8 students pays you about ₹4,000 a month per subject.',
-                'openings' => 1,
-            ],
-            [
-                'slug' => 'english-teacher-classes-1-10',
-                'offering' => 'tuition',
-                'title' => 'English teacher (classes 1 to 10)',
-                'summary' => 'Teach English grammar, reading and writing to small live online batches of school students. Part-time, evenings, from anywhere in Assam.',
-                'body' => <<<MD
-                    ## What you will do
-
-                    - Teach live online classes on Google Meet to batches of up to 15 students.
-                    - Cover grammar, reading, writing and the school syllabus (CBSE or SEBA/ASSEB).
-                    - Explain in Hindi or Assamese when a student needs it.
-                    - Keep parents informed through our website's messages, where parents can always see the conversation.
-
-                    ## Who we are looking for
-
-                    - A degree in English; a B.Ed or D.El.Ed from any college is a plus.
-                    - Teaching or home tuition experience with school students.
-                    - Excellent spoken English, and good Hindi and Assamese.
-                    - A laptop or tablet and a steady internet connection.
-
-                    {$tuitionHiring}
-                    MD,
-                'location' => 'Online, from anywhere in Assam',
-                'region' => 'Assam',
-                'languages' => 'English, Hindi and Assamese',
-                'pay' => 'About 50% of each batch\'s monthly fees, paid monthly. A batch of 8 students in classes 1 to 7 pays you about ₹2,800 a month.',
-                'openings' => 1,
-            ],
-            [
-                'slug' => 'guitar-teacher',
-                'offering' => 'music',
-                'title' => 'Guitar teacher (online group classes)',
-                'summary' => 'Teach beginner and improver guitar to small online groups of children and adults. Part-time, evenings and weekends, from anywhere in Assam.',
-                'body' => <<<MD
-                    ## What you will do
-
-                    - Teach live online guitar group classes on Google Meet, about 8 learners in a group.
-                    - Teach chords, strumming, simple songs (Hindi, Assamese and English) and how to practise.
-                    - Give each learner short feedback and practice tasks.
-                    - Talk to learners and parents only through our website or WhatsApp group, never privately with a child.
-
-                    ## Who we are looking for
-
-                    - You play acoustic guitar confidently; graded exams (Trinity, Rockschool) or a music diploma are a plus, not a must.
-                    - Patience with beginners, including children.
-                    - Good English, Hindi and Assamese.
-                    - A laptop or phone with a good microphone and a steady internet connection.
-
-                    ## How hiring works
-
-                    1. Send the form below with a link to a short video of you playing (YouTube, Instagram or Google Drive).
-                    2. A live audition on Google Meet to check your playing and your sound online.
-                    3. A short **paid** demo group class with real learners.
-                    4. ID and reference checks, and police verification, because many learners are children.
-                    5. A simple freelance agreement, then your first group.
-                    MD,
-                'location' => 'Online, from anywhere in Assam',
-                'region' => 'Assam',
-                'languages' => 'English, Hindi and Assamese',
-                'pay' => '50 to 60% of your group\'s fees, paid monthly. A group of 8 learners at ₹1,000 each pays you ₹4,000 to ₹4,800 a month for about 8 classes.',
-                'openings' => 2,
-            ],
-        ];
     }
 };
