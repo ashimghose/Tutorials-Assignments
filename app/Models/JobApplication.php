@@ -45,7 +45,7 @@ class JobApplication extends Model
      */
     public function prunable(): Builder
     {
-        return self::query()->where('created_at', '<', now()->subMonths(self::KEEP_MONTHS));
+        return JobApplication::query()->where('created_at', '<', now()->subMonths(self::KEEP_MONTHS));
     }
 
     /**
