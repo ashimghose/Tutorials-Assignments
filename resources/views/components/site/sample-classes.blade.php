@@ -1,21 +1,23 @@
 @props(['samples', 'accent' => 'tuition'])
 
-{{-- MKT-1: sample class clips. Shorts (and clips marked upright) are tall
-     cards, two across on a phone; wide videos take two columns. Like the
-     explainer videos, nothing loads from YouTube until the visitor taps
-     play (resources/js/site.js), and only the video id is used. Each card
-     carries its class and subject, ready for a filter by class later. --}}
+{{-- MKT-1: sample class clips. Every card in a row has the same height, and
+     its width follows the video's shape: Shorts (and clips marked upright)
+     are narrow 9:16 cards, wide videos 16:9, so a row stays tidy whatever
+     the mix. Each card shows the video's own still picture from YouTube's
+     image server (a plain image, no cookies); the player itself loads only
+     after the visitor taps play (resources/js/site.js). Each card carries
+     its class and subject, ready for a filter by class later. --}}
 @php($classes = \App\Filament\Resources\SiteSections\SiteSectionResource::classOptions())
-<div class="grid grid-cols-2 items-start gap-4 sm:gap-6 md:grid-cols-4">
+<div class="flex flex-wrap gap-4 [--card-h:17rem] sm:gap-6 sm:[--card-h:18rem]">
     @foreach ($samples as $sample)
         @php($id = \App\Support\YouTube::id($sample['url'] ?? ''))
         @if ($id !== null)
             @php($tall = \App\Support\YouTube::isShort($sample['url']) || ! empty($sample['tall']))
             @php($class = $classes[(string) ($sample['class'] ?? 'all')] ?? $classes['all'])
             <figure @class([
-                'overflow-hidden rounded-xl border border-slate-200 bg-white',
-                'col-span-1' => $tall,
-                'col-span-2' => ! $tall,
+                'max-w-full overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm',
+                'w-[calc(var(--card-h)*9/16)]' => $tall,
+                'w-[calc(var(--card-h)*16/9)]' => ! $tall,
             ]) data-class="{{ $sample['class'] ?? 'all' }}">
                 <div @class([
                     'relative',
@@ -27,10 +29,13 @@
                     'bg-brand-800' => $accent === 'brand',
                 ])>
                     <a href="https://www.youtube.com/watch?v={{ $id }}" target="_blank" rel="noopener" data-youtube="{{ $id }}" data-title="{{ $sample['title'] }}"
-                       class="absolute inset-0 flex flex-col items-center justify-center gap-3 text-white"
+                       class="group absolute inset-0 grid place-items-center overflow-hidden text-white"
                        aria-label="Play: {{ $sample['title'] }}">
+                        <img src="https://i.ytimg.com/vi/{{ $id }}/{{ $tall ? 'hqdefault' : 'mqdefault' }}.jpg" alt="" loading="lazy" decoding="async" onerror="this.remove()"
+                             class="absolute inset-0 size-full object-cover transition duration-300 group-hover:scale-105">
+                        <span class="absolute inset-0 bg-gradient-to-t from-black/50 via-black/10 to-black/10" aria-hidden="true"></span>
                         <span @class([
-                            'grid size-14 place-items-center rounded-full bg-white/95 shadow-lg sm:size-16',
+                            'relative grid size-14 place-items-center rounded-full bg-white/95 shadow-lg transition group-hover:scale-110 sm:size-16',
                             'text-tuition-800' => $accent === 'tuition',
                             'text-academic-800' => $accent === 'academic',
                             'text-music-800' => $accent === 'music',
@@ -38,7 +43,6 @@
                         ]) aria-hidden="true">
                             <svg class="ml-1 size-6 sm:size-7" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
                         </span>
-                        <span class="text-sm font-medium text-white/90" aria-hidden="true">Tap to play</span>
                     </a>
                 </div>
                 <figcaption class="p-3 sm:p-4">
