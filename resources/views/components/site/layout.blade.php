@@ -11,6 +11,10 @@
     // VRT-5: a section's pages can carry its own brand name and logo.
     $brand = \App\Support\Verticals::brand($section);
     $appName = $brand['name'];
+    // Text saved already escaped (students&#39;) would show the code on Google, so
+    // decode it here and let Blade escape it once.
+    $title = filled($title) ? html_entity_decode((string) $title, ENT_QUOTES | ENT_HTML5, 'UTF-8') : $title;
+    $description = html_entity_decode((string) $description, ENT_QUOTES | ENT_HTML5, 'UTF-8');
     $fullTitle = filled($title) ? $title.' | '.$appName : $appName;
     // VRT-3: shared pages reached on a section's own domain point Google at the main domain.
     $hostSection = \App\Support\Verticals::forHost(request()->getHost());

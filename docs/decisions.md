@@ -231,6 +231,11 @@ The owner made a test parent and could only deactivate it. Deactivation stays th
 - The admin approves from Teachers and experts after the checks; this is audited and emails the teacher. Rejecting someone uses the existing Deactivate/Delete on People.
 
 
+## 2026-11-14 · Home page leads with Academic for Google (MKT-1)
+
+- The owner wants Google's result for the home page to put Academic first, then Tuition, then Music. The home title, description, headline, intro and footer line now lead with assignment and thesis guidance; a migration updates the live text only where it still holds what we shipped.
+- The page layout decodes HTML entities in the title and description before Blade escapes them, so text saved already escaped (`students&#39;`) never shows as code in search results.
+
 ## 2026-11-14 · Sample class videos on /tuition (MKT-1)
 
 - The owner chose a "Sample classes" block on /tuition over a separate page for now. It is its own list (`samples` in the tuition section JSON, Admin → Pages → Tuition → Sample classes), apart from the "how it works" explainer videos, and sits just above the fees with a demo button.

@@ -8,8 +8,8 @@
 return [
 
     'hero' => [
-        'title' => 'Learning support for school and beyond',
-        'lead' => 'Live online classes for school children, and expert help for college students to make their own research work clearer, correctly formatted and ready to submit.',
+        'title' => 'Guidance for your own assignments and research, school to PhD',
+        'lead' => 'We help you make your own assignments, synopsis, thesis or dissertation clearer, correctly formatted and ready to submit. We also run live online tuition for classes 1 to 12, and guitar classes.',
     ],
 
     'offerings' => [
@@ -44,8 +44,8 @@ return [
     // Headings, buttons and other short text around the sections above.
     // 'footer' and the 'guides_' lines also appear on other pages.
     'text' => [
-        'seo_title' => 'Online tuition for classes 1 to 12, and thesis and dissertation help',
-        'seo_description' => 'Live online tuition for classes 1 to 12 in small batches, and guidance, editing, formatting and printing for Bachelors, Masters and PhD students\' research work.',
+        'seo_title' => 'Assignment and thesis guidance, plus tuition and music',
+        'seo_description' => 'Guidance, editing and formatting for your own assignments, theses and dissertations, school to PhD. Plus live tuition for classes 1 to 12 and guitar lessons.',
         'tuition_button' => 'Explore tuition',
         'academic_button' => 'Explore academic services',
         'music_button' => 'Explore guitar classes',
@@ -56,7 +56,7 @@ return [
         'help_title' => 'Not sure where to start?',
         'help_body' => 'Message us on WhatsApp and tell us what you need. We reply during office hours.',
         'help_button' => 'Message us on WhatsApp',
-        'footer' => 'Live online tuition for classes 1 to 12, and academic guidance, editing and printing for college students.',
+        'footer' => 'Academic guidance, editing and printing for your own work, school to PhD, plus live online tuition for classes 1 to 12 and music lessons.',
     ],
 
 ];
