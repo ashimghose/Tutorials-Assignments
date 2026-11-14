@@ -230,3 +230,8 @@ The owner made a test parent and could only deactivate it. Deactivation stays th
 - Safeguarding stays on the server: an unapproved teacher reaches only the teacher home page (a "waiting for approval" notice; `teacher.approved` middleware on the other teacher pages), and the batch, order and conversation pickers list approved teachers only, so the admin can't give them work by mistake.
 - The admin approves from Teachers and experts after the checks; this is audited and emails the teacher. Rejecting someone uses the existing Deactivate/Delete on People.
 
+
+## 2026-11-14 · Home page leads with Academic for Google (MKT-1)
+
+- The owner wants Google's result for the home page to put Academic first, then Tuition, then Music. The home title, description, headline, intro and footer line now lead with assignment and thesis guidance; a migration updates the live text only where it still holds what we shipped.
+- The page layout decodes HTML entities in the title and description before Blade escapes them, so text saved already escaped (`students&#39;`) never shows as code in search results.
