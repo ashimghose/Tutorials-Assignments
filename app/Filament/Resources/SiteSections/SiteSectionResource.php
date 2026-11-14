@@ -541,13 +541,15 @@ class SiteSectionResource extends Resource
     }
 
     /**
-     * @return array<string, string>
+     * 'all' or the class number (PHP keeps '1'…'12' as integer keys).
+     *
+     * @return array<int|string, string>
      */
     public static function classOptions(): array
     {
         $options = ['all' => 'All classes'];
         foreach (range(1, 12) as $class) {
-            $options[(string) $class] = "Class {$class}";
+            $options[$class] = "Class {$class}";
         }
 
         return $options;

@@ -74,7 +74,7 @@ test('MKT-1 the admin adds a sample class with its class and subject', function 
 
     expect($tuition->fresh()->content['samples'][0])
         ->url->toBe('https://youtube.com/shorts/Yzcf6-dT8ow')
-        ->class->toBe('8')
+        ->class->toEqual('8')
         ->subject->toBe('Science');
     $this->get(route('tuition'))->assertSee('data-youtube="Yzcf6-dT8ow"', false)->assertSee('Class 8 · Science');
 });
