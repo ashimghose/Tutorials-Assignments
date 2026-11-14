@@ -4,7 +4,7 @@ use App\Models\User;
 use App\Support\SiteContent;
 
 dataset('public pages', [
-    'home' => ['/', 'Learning support for school and beyond'],
+    'home' => ['/', 'Guidance for your own assignments and research, school to PhD'],
     'tuition' => ['/tuition', 'Live online tuition for classes 1 to 12'],
     'academic' => ['/academic', 'Assignments, thesis, dissertation and research paper support'],
     'resources' => ['/resources', 'Free guides'],
@@ -29,7 +29,7 @@ test('CMS-2 CMS-4 public pages load with a title, description and canonical link
 
 test('CMS-4 the home page title names both offerings and describes the organisation for Google', function () {
     $response = $this->get('/')
-        ->assertSee('<title>Online tuition for classes 1 to 12, and thesis and dissertation help | '.config('app.name').'</title>', false)
+        ->assertSee('<title>Assignment and thesis guidance, plus tuition and music | '.config('app.name').'</title>', false)
         ->assertSee('"@type":"EducationalOrganization"', false);
 
     preg_match('#<script type="application/ld\+json">\s*(\{.*?"@graph".*?\})\s*</script>#s', $response->getContent(), $match);

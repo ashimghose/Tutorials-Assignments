@@ -12,7 +12,7 @@
                     'url' => route('home'),
                     'logo' => url('/apple-touch-icon.png'),
                     'image' => url('/images/social/share.png'),
-                    'description' => $content['text']['seo_description'],
+                    'description' => html_entity_decode((string) $content['text']['seo_description'], ENT_QUOTES | ENT_HTML5, 'UTF-8'),
                     'email' => config('site.contact.email'),
                     'areaServed' => ['@type' => 'Country', 'name' => 'India'],
                     'address' => filled(config('site.contact.city'))
