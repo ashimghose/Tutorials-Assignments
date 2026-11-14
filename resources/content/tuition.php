@@ -76,6 +76,12 @@ return [
     // admin; the section stays hidden while the list is empty.
     'videos' => [],
 
+    // Sample classes (MKT-1): short clips from real lessons, to show parents
+    // how a class feels. Each is ['title' => '', 'url' => 'YouTube link',
+    // 'class' => 'all' or '1'…'12', 'subject' => '', 'tall' => false].
+    // Shorts links show as tall cards. Hidden while the list is empty.
+    'samples' => [],
+
     // Add real teacher profiles here: ['name' => '', 'subjects' => '', 'bio' => ''].
     // The section stays hidden while this list is empty.
     'teachers' => [],
@@ -148,6 +154,10 @@ return [
         'steps_title' => 'From enquiry to first class',
         'videos_eyebrow' => 'Watch',
         'videos_title' => 'See how it works',
+        'samples_eyebrow' => 'Sample classes',
+        'samples_title' => 'Watch a real class',
+        'samples_lead' => 'Short clips from our live lessons, so you can see how our teachers explain before you book.',
+        'samples_button' => 'Book a free demo class',
         'people_eyebrow' => 'Teachers',
         'people_title' => 'Meet the teachers',
         'testimonials_eyebrow' => 'Parents say',
