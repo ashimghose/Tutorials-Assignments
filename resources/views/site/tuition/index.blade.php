@@ -32,6 +32,18 @@
         <x-site.photo-row :photos="$content['photos'] ?? []" :defaults="['tuition-girl-online-class', 'tuition-teacher-whiteboard', 'tuition-child-video-call']" />
     </section>
 
+    @if (($content['samples'] ?? []) !== [])
+        <section id="sample-classes" class="mx-auto max-w-6xl px-4 pb-16 sm:px-6">
+            <x-site.section-heading :eyebrow="$text['samples_eyebrow']" :title="$text['samples_title']" :lead="$text['samples_lead']" />
+            <div class="mt-8">
+                <x-site.sample-classes :samples="$content['samples']" accent="tuition" />
+            </div>
+            <div class="mt-8">
+                <x-site.form-link form="tuition" section="tuition" :page="$page" interest="Free demo class (after sample videos)" variant="tuition">{{ $text['samples_button'] }}</x-site.form-link>
+            </div>
+        </section>
+    @endif
+
     <section id="fees" class="border-y border-slate-200 bg-slate-50">
         <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6">
             <x-site.section-heading :eyebrow="$text['fees_eyebrow']" :title="$text['fees_title']" :lead="$text['fees_lead']" />

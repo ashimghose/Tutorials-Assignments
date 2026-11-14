@@ -230,3 +230,9 @@ The owner made a test parent and could only deactivate it. Deactivation stays th
 - Safeguarding stays on the server: an unapproved teacher reaches only the teacher home page (a "waiting for approval" notice; `teacher.approved` middleware on the other teacher pages), and the batch, order and conversation pickers list approved teachers only, so the admin can't give them work by mistake.
 - The admin approves from Teachers and experts after the checks; this is audited and emails the teacher. Rejecting someone uses the existing Deactivate/Delete on People.
 
+
+## 2026-11-14 · Sample class videos on /tuition (MKT-1)
+
+- The owner chose a "Sample classes" block on /tuition over a separate page for now. It is its own list (`samples` in the tuition section JSON, Admin → Pages → Tuition → Sample classes), apart from the "how it works" explainer videos, and sits just above the fees with a demo button.
+- Each clip stores its class (1–12 or all) and optional subject, so a separate page with a class filter can be added later without re-entering anything.
+- `youtube.com/shorts/` links (and clips the admin marks as upright) show as 9:16 cards, two across on a phone; wide videos take two columns. Like the explainer videos, nothing loads from YouTube until the visitor taps play.

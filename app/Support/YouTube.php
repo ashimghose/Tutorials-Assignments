@@ -21,4 +21,12 @@ final class YouTube
 
         return preg_match($pattern, $link, $match) === 1 ? $match[1] : null;
     }
+
+    /**
+     * Shorts are filmed upright (9:16), so the page shows them as tall cards.
+     */
+    public static function isShort(string $link): bool
+    {
+        return preg_match('~^https?://(?:www\.|m\.)?youtube\.com/shorts/~', trim($link)) === 1;
+    }
 }

@@ -16,9 +16,11 @@ use Closure;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
@@ -153,6 +155,7 @@ class SiteSectionResource extends Resource
                 ]),
                 self::stepsTab(),
                 self::videosTab(),
+                self::samplesTab(),
                 self::faqsTab(),
                 self::waitlistTab(),
                 self::textTab([
@@ -173,6 +176,10 @@ class SiteSectionResource extends Resource
                     'steps_title' => 'How it works: heading',
                     'videos_eyebrow' => 'Videos: small heading',
                     'videos_title' => 'Videos: heading',
+                    'samples_eyebrow' => 'Sample classes: small heading',
+                    'samples_title' => 'Sample classes: heading',
+                    'samples_lead' => 'Sample classes: intro',
+                    'samples_button' => 'Sample classes: button',
                     'people_eyebrow' => 'Teachers: small heading',
                     'people_title' => 'Teachers: heading',
                     'testimonials_eyebrow' => 'Testimonials: small heading',
@@ -501,6 +508,49 @@ class SiteSectionResource extends Resource
                 ->itemLabel(fn (array $state): ?string => $state['title'] ?? null)
                 ->collapsible()->reorderable()->maxItems(6),
         ]);
+    }
+
+    /**
+     * MKT-1: sample class clips for /tuition. Each keeps its class and
+     * subject, so a page per class can filter them later.
+     */
+    private static function samplesTab(): Tab
+    {
+        return Tab::make('Sample classes')->schema([
+            Repeater::make('content.samples')->label('Sample class videos')
+                ->helperText('Short clips from real lessons. Upload to YouTube (public or unlisted) and paste the link. Shorts show as tall cards. The section is hidden while this list is empty.')
+                ->schema([
+                    TextInput::make('title')->required()->maxLength(80)
+                        ->placeholder('Fractions made easy'),
+                    TextInput::make('url')->label('YouTube link')->required()->maxLength(255)
+                        ->rule(fn () => function (string $attribute, mixed $value, Closure $fail): void {
+                            if (YouTube::id((string) $value) === null) {
+                                $fail('Paste a YouTube video link, for example https://youtu.be/…');
+                            }
+                        }),
+                    Grid::make(2)->schema([
+                        Select::make('class')->options(self::classOptions())->default('all')->required()->native(false),
+                        TextInput::make('subject')->label('Subject (optional)')->maxLength(40)->placeholder('Maths'),
+                    ]),
+                    Toggle::make('tall')->label('Filmed upright on a phone')
+                        ->helperText('Shorts links are shown tall anyway. Turn this on for other upright videos.'),
+                ])
+                ->itemLabel(fn (array $state): ?string => $state['title'] ?? null)
+                ->collapsible()->reorderable()->maxItems(24),
+        ]);
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public static function classOptions(): array
+    {
+        $options = ['all' => 'All classes'];
+        foreach (range(1, 12) as $class) {
+            $options[(string) $class] = "Class {$class}";
+        }
+
+        return $options;
     }
 
     /**
