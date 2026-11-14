@@ -54,10 +54,13 @@ test('MKT-1 sample classes show before the fees, Shorts as tall cards, and play 
         ->assertDontSee('<iframe', false)
         ->assertDontSee('Not a YouTube link');
 
-    // Wide video spans two columns; the Short and the upright clip are tall.
+    // The wide video is 16:9; the Short and the upright clip are tall 9:16
+    // cards. Each shows the video's still picture, not the player.
     $html = $response->getContent();
     expect(substr_count($html, 'aspect-[9/16]'))->toBe(2)
-        ->and($html)->toContain('col-span-2');
+        ->and(substr_count($html, 'aspect-video'))->toBe(1)
+        ->and($html)->toContain('https://i.ytimg.com/vi/mPaxGO480bY/mqdefault.jpg')
+        ->and($html)->toContain('https://i.ytimg.com/vi/Yzcf6-dT8ow/hqdefault.jpg');
 });
 
 test('MKT-1 the admin adds a sample class with its class and subject', function () {

@@ -240,4 +240,5 @@ The owner made a test parent and could only deactivate it. Deactivation stays th
 
 - The owner chose a "Sample classes" block on /tuition over a separate page for now. It is its own list (`samples` in the tuition section JSON, Admin → Pages → Tuition → Sample classes), apart from the "how it works" explainer videos, and sits just above the fees with a demo button.
 - Each clip stores its class (1–12 or all) and optional subject, so a separate page with a class filter can be added later without re-entering anything.
-- `youtube.com/shorts/` links (and clips the admin marks as upright) show as 9:16 cards, two across on a phone; wide videos take two columns. Like the explainer videos, nothing loads from YouTube until the visitor taps play.
+- `youtube.com/shorts/` links (and clips the admin marks as upright) show as 9:16 cards, two across on a phone; wide videos are 16:9. Every card in a row has the same height, so a mix of shapes stays tidy.
+- Unlike the explainer videos, each card shows the video's still picture from `i.ytimg.com` (a plain image, no cookies), because plain coloured boxes looked empty to the owner. The player itself still loads only after a tap.
