@@ -120,11 +120,13 @@ test('MKT-1 the admin adds a PDF sample and a video sample', function () {
             return $state;
         })->call('save')->assertHasNoFormErrors();
 
-    $samples = $academic->fresh()->content['samples'];
-    expect($samples[0])->kind->toBe('video')->url->toBe('https://youtu.be/mPaxGO480bY')
-        ->and($samples[1]['kind'])->toBe('pdf')
-        ->and($samples[1]['file'])->toStartWith(SiteMedia::SAMPLES_DIRECTORY.'/');
-    Storage::disk('media-test')->assertExists($samples[1]['file']);
+    $samples = collect($academic->fresh()->content['samples'])->keyBy('kind');
+    expect($samples)->toHaveCount(2)
+        ->and($samples['video']['url'])->toBe('https://youtu.be/mPaxGO480bY')
+        ->and($samples['video']['title'])->toBe('Formatting a thesis chapter')
+        ->and($samples['pdf']['title'])->toBe('Class 12 Physics: worked solutions')
+        ->and($samples['pdf']['file'])->toStartWith(SiteMedia::SAMPLES_DIRECTORY.'/');
+    Storage::disk('media-test')->assertExists($samples['pdf']['file']);
 });
 
 test('MKT-1 a video sample needs a YouTube link', function () {
