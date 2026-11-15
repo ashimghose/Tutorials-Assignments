@@ -242,3 +242,10 @@ The owner made a test parent and could only deactivate it. Deactivation stays th
 - Each clip stores its class (1–12 or all) and optional subject, so a separate page with a class filter can be added later without re-entering anything.
 - `youtube.com/shorts/` links (and clips the admin marks as upright) show as 9:16 cards, two across on a phone; wide videos are 16:9. Every card in a row has the same height, so a mix of shapes stays tidy.
 - Unlike the explainer videos, each card shows the video's still picture from `i.ytimg.com` (a plain image, no cookies), because plain coloured boxes looked empty to the owner. The player itself still loads only after a tap.
+
+## 2026-11-15 · Guidance samples and testimonial screenshots on /academic (MKT-1, CMS-1)
+
+- The owner chose two sections on /academic, Samples and Testimonials, over a separate products page. Samples are their own list (`samples` in the academic section JSON, Admin → Pages → Academic → Samples); each is a YouTube video or a PDF, with optional level, subject and one-line note. The first three show, and the rest open under a "See all samples" button (`<details>`, no extra page and no JavaScript).
+- Samples show guidance (worked examples, formatting, editing, similarity checks), never finished work for a student to submit or a student's name (ACA rules, UGC 2018). The admin tab says so. The owner's first upload of finished handwritten files and customer chats was not published for that reason, and for privacy (DPDP).
+- Sample PDFs go to the site media disk (R2 in production) under `site-media/samples` and are served by `/samples/{name}.pdf`. That route only reads that folder, only serves files that start with `%PDF-`, and runs without a session, so Cloudflare can cache it.
+- A testimonial can now carry a screenshot of the message (new nullable `image` column). The upload is shrunk to a WebP copy no wider than 720 px, never cropped, so the whole message stays readable. The quote stays required, because it is the text Google and screen readers get. The admin is told to cover names, photos, numbers, UPI IDs, amounts and file names before uploading.

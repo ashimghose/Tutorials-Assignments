@@ -9,6 +9,7 @@ use App\Http\Controllers\MessageAttachmentController;
 use App\Http\Controllers\MusicGuardianConsentController;
 use App\Http\Controllers\OrderFileController;
 use App\Http\Controllers\SiteController;
+use App\Http\Controllers\SampleFileController;
 use App\Http\Controllers\SiteMediaController;
 use App\Http\Controllers\UnsubscribeController;
 use App\Support\LeadForms;
@@ -35,9 +36,15 @@ Route::controller(SiteController::class)->group(function () {
 // CMS-1: photos uploaded in the admin. No session or cookies, so Cloudflare
 // can cache them.
 Route::get('media/{path}', SiteMediaController::class)
-    ->where('path', '[A-Za-z0-9_-]+-(640|1200)\.webp')
+    ->where('path', '[A-Za-z0-9_-]+-(640|1200|shot)\.webp')
     ->withoutMiddleware([StartSession::class, ShareErrorsFromSession::class, PreventRequestForgery::class, EncryptCookies::class, AddQueuedCookiesToResponse::class])
     ->name('media');
+
+// MKT-1: guidance sample PDFs on /academic, uploaded in the admin.
+Route::get('samples/{name}', SampleFileController::class)
+    ->where('name', '[A-Za-z0-9_-]+\.pdf')
+    ->withoutMiddleware([StartSession::class, ShareErrorsFromSession::class, PreventRequestForgery::class, EncryptCookies::class, AddQueuedCookiesToResponse::class])
+    ->name('samples.show');
 
 // Text pages: a title, intro and Markdown body each (CMS-1).
 Route::view('about', 'site.page', ['key' => 'about'])->name('about');

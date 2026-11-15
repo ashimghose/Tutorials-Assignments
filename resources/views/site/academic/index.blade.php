@@ -125,6 +125,16 @@
         </section>
     @endif
 
+    @if (($content['samples'] ?? []) !== [])
+        {{-- MKT-1: guidance samples, never finished work to hand in. --}}
+        <section id="samples" class="mx-auto max-w-6xl px-4 pb-16 sm:px-6">
+            <x-site.section-heading :eyebrow="$text['samples_eyebrow']" :title="$text['samples_title']" :lead="$text['samples_lead']" />
+            <div class="mt-8">
+                <x-site.academic-samples :samples="$content['samples']" :more-label="$text['samples_more']" :open-label="$text['samples_open']" />
+            </div>
+        </section>
+    @endif
+
     @if ($content['experts'] !== [])
         <section id="experts" class="mx-auto max-w-6xl px-4 pb-16 sm:px-6">
             <x-site.section-heading :eyebrow="$text['people_eyebrow']" :title="$text['people_title']" />
@@ -135,7 +145,7 @@
     @endif
 
     @if ($content['testimonials'] !== [])
-        <section class="mx-auto max-w-6xl px-4 pb-16 sm:px-6">
+        <section id="testimonials" class="mx-auto max-w-6xl px-4 pb-16 sm:px-6">
             <x-site.section-heading :eyebrow="$text['testimonials_eyebrow']" :title="$text['testimonials_title']" />
             <div class="mt-8">
                 <x-site.testimonials :testimonials="$content['testimonials']" />

@@ -7,8 +7,10 @@ use App\Filament\Resources\Testimonials\Pages\EditTestimonial;
 use App\Filament\Resources\Testimonials\Pages\ListTestimonials;
 use App\Filament\Support\OfferingOptions;
 use App\Models\Testimonial;
+use App\Support\SiteMedia;
 use BackedEnum;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -38,7 +40,17 @@ class TestimonialResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema->columns(1)->components([
-            Textarea::make('quote')->required()->rows(4)->maxLength(600),
+            Textarea::make('quote')->required()->rows(4)->maxLength(600)
+                ->helperText('With a screenshot, type the main line of the message here too: Google and screen readers read this text.'),
+            FileUpload::make('image')->label('Screenshot (optional)')
+                ->helperText('A screenshot of their message. Before uploading, cover their name, photo, phone number, UPI ID, payment amounts and file names. JPG, PNG or WebP up to 8 MB.')
+                ->image()
+                ->disk(fn (): string => config('site.media_disk'))
+                ->directory(SiteMedia::DIRECTORY.'/testimonials')
+                ->visibility('private')
+                ->getUploadedFileUsing(fn (string $file): ?array => SiteMedia::shotPreview($file))
+                ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                ->maxSize(8192),
             Grid::make(2)->schema([
                 TextInput::make('name')->label('Name as shown')->required()->maxLength(80)->helperText('A first name and initial is enough.'),
                 TextInput::make('detail')->maxLength(120)->placeholder('Parent of a Class 8 student'),
@@ -58,6 +70,8 @@ class TestimonialResource extends Resource
             ->reorderable('sort')
             ->columns([
                 TextColumn::make('quote')->limit(80)->wrap(),
+                IconColumn::make('image')->label('Screenshot')->boolean()
+                    ->getStateUsing(fn (Testimonial $record): bool => filled($record->image)),
                 TextColumn::make('name'),
                 TextColumn::make('offering')->label('Section')->badge(),
                 IconColumn::make('is_published')->label('Published')->boolean(),

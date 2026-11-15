@@ -219,7 +219,7 @@ final class SiteContent
     }
 
     /**
-     * @return list<array{quote: string, name: string, detail: string}>
+     * @return list<array{quote: string, name: string, detail: string, image: string|null}>
      */
     private static function testimonials(string $offering): array
     {
@@ -232,6 +232,7 @@ final class SiteContent
                 'quote' => $testimonial->quote,
                 'name' => $testimonial->name,
                 'detail' => (string) $testimonial->detail,
+                'image' => filled($testimonial->image) ? SiteMedia::shotUrl((string) $testimonial->image) : null,
             ])->all());
     }
 }

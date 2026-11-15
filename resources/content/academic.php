@@ -139,6 +139,14 @@ return [
     // admin; the section stays hidden while the list is empty.
     'videos' => [],
 
+    // Guidance samples (MKT-1): YouTube videos or PDFs that show how we
+    // guide, format and check work. Each is ['title' => '', 'kind' => 'video'
+    // or 'pdf', 'url' => 'YouTube link', 'file' => 'uploaded PDF',
+    // 'level' => '', 'subject' => '', 'note' => '', 'tall' => false]. The
+    // first three show; the rest open under "See all samples". Never show a
+    // finished assignment for a student to submit, or a student's name.
+    'samples' => [],
+
     // Add real expert profiles here: ['name' => '', 'subjects' => '', 'bio' => ''].
     // The section stays hidden while this list is empty.
     'experts' => [],
@@ -218,6 +226,11 @@ return [
         'steps_title' => 'From enquiry to delivery',
         'videos_eyebrow' => 'Watch',
         'videos_title' => 'See how it works',
+        'samples_eyebrow' => 'Samples',
+        'samples_title' => 'See how we guide',
+        'samples_lead' => 'Worked examples, formatting and editing samples, so you can see our help before you ask. Your work stays your own.',
+        'samples_more' => 'See all samples',
+        'samples_open' => 'Open the PDF',
         'people_eyebrow' => 'Experts',
         'people_title' => 'Meet the experts',
         'testimonials_eyebrow' => 'Students say',

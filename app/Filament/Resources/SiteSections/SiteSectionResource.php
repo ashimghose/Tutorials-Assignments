@@ -23,6 +23,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Components\Tabs\Tab;
@@ -339,6 +340,7 @@ class SiteSectionResource extends Resource
                 ]),
                 self::stepsTab(),
                 self::videosTab(),
+                self::academicSamplesTab(),
                 self::faqsTab(),
                 self::waitlistTab(),
                 self::textTab([
@@ -364,6 +366,11 @@ class SiteSectionResource extends Resource
                     'steps_title' => 'How it works: heading',
                     'videos_eyebrow' => 'Videos: small heading',
                     'videos_title' => 'Videos: heading',
+                    'samples_eyebrow' => 'Samples: small heading',
+                    'samples_title' => 'Samples: heading',
+                    'samples_lead' => 'Samples: intro',
+                    'samples_more' => 'Samples: button that shows the rest',
+                    'samples_open' => 'Samples: link on a PDF card',
                     'people_eyebrow' => 'Experts: small heading',
                     'people_title' => 'Experts: heading',
                     'testimonials_eyebrow' => 'Testimonials: small heading',
@@ -537,6 +544,52 @@ class SiteSectionResource extends Resource
                 ])
                 ->itemLabel(fn (array $state): ?string => $state['title'] ?? null)
                 ->collapsible()->reorderable()->maxItems(24),
+        ]);
+    }
+
+    /**
+     * MKT-1: guidance samples for /academic, a YouTube video or a PDF each.
+     * PDFs are kept on the site media disk and served by /samples/... .
+     */
+    private static function academicSamplesTab(): Tab
+    {
+        return Tab::make('Samples')->schema([
+            Text::make('Show how we guide, format, edit and check work. Do not show a finished assignment for a student to hand in, or any student\'s name, roll number, university or phone number. The first three samples show on the page; drag the best ones to the top.'),
+            Repeater::make('content.samples')->label('Samples')
+                ->schema([
+                    TextInput::make('title')->required()->maxLength(100)
+                        ->placeholder('Class 12 Physics: worked solutions'),
+                    Select::make('kind')->label('Type')->options(['video' => 'YouTube video', 'pdf' => 'PDF file'])
+                        ->default('video')->required()->live()->native(false),
+                    TextInput::make('url')->label('YouTube link')->maxLength(255)
+                        ->visible(fn (Get $get): bool => $get('kind') !== 'pdf')
+                        ->required(fn (Get $get): bool => $get('kind') !== 'pdf')
+                        ->rule(fn () => function (string $attribute, mixed $value, Closure $fail): void {
+                            if (YouTube::id((string) $value) === null) {
+                                $fail('Paste a YouTube video link, for example https://youtu.be/…');
+                            }
+                        }),
+                    Toggle::make('tall')->label('Filmed upright on a phone')
+                        ->visible(fn (Get $get): bool => $get('kind') !== 'pdf')
+                        ->helperText('Shorts links are shown tall anyway.'),
+                    FileUpload::make('file')->label('PDF file (up to 10 MB)')
+                        ->visible(fn (Get $get): bool => $get('kind') === 'pdf')
+                        ->required(fn (Get $get): bool => $get('kind') === 'pdf')
+                        ->disk(fn (): string => config('site.media_disk'))
+                        ->directory(SiteMedia::SAMPLES_DIRECTORY)
+                        ->visibility('private')
+                        ->getUploadedFileUsing(fn (string $file): ?array => SiteMedia::samplePreview($file))
+                        ->acceptedFileTypes(['application/pdf'])
+                        ->maxSize(10240),
+                    Grid::make(2)->schema([
+                        TextInput::make('level')->label('Level (optional)')->maxLength(40)->placeholder('Class 12, Bachelors, PhD…'),
+                        TextInput::make('subject')->label('Subject (optional)')->maxLength(40)->placeholder('Physics'),
+                    ]),
+                    TextInput::make('note')->label('One line about it (optional)')->maxLength(160)
+                        ->placeholder('Ten practice questions with step-by-step answers'),
+                ])
+                ->itemLabel(fn (array $state): ?string => $state['title'] ?? null)
+                ->collapsible()->reorderable()->maxItems(30),
         ]);
     }
 
