@@ -414,7 +414,10 @@ and it knows exactly what to build and test.
   with its own hero, services and prices, how it works, teachers or
   experts, testimonials, FAQs and call to action, all editable by the
   admin. A tuition fee plan may show a physical classroom fee next to
-  its online fee.
+  its online fee. /academic also has guidance samples (YouTube videos or
+  PDFs: worked examples, formatting, editing; never finished work to
+  submit), and testimonials there may include a screenshot of the
+  student's message with personal details covered.
 
 - MKT-2 Admin creates campaign landing pages (headline, offer, form,
   expiry) for each offering, for example "Free synopsis review for PhD

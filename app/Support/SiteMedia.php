@@ -18,6 +18,12 @@ class SiteMedia
 
     public const WIDTHS = [640, 1200];
 
+    /** MKT-1: guidance sample PDFs for /academic. */
+    public const SAMPLES_DIRECTORY = self::DIRECTORY.'/samples';
+
+    /** CMS-1: testimonial screenshots keep their shape, up to this width. */
+    public const SHOT_WIDTH = 720;
+
     /** Width => height of each 4:3 copy. */
     private const SIZES = [640 => 480, 1200 => 900];
 
@@ -91,6 +97,95 @@ class SiteMedia
             imagewebp($copy, null, 72);
             $disk->put(self::variant($image, $target), (string) ob_get_clean());
         }
+    }
+
+    /** MKT-1: the public link to an uploaded sample PDF. */
+    public static function sampleUrl(string $file): string
+    {
+        return route('samples.show', ['name' => basename($file)]);
+    }
+
+    /**
+     * MKT-1: what the admin's upload field shows for a saved sample PDF.
+     *
+     * @return array{name: string, size: int, type: string, url: string}|null
+     */
+    public static function samplePreview(string $file): ?array
+    {
+        $disk = self::disk();
+        if (! $disk->exists($file)) {
+            return null;
+        }
+
+        return [
+            'name' => basename($file),
+            'size' => $disk->size($file),
+            'type' => 'application/pdf',
+            'url' => self::sampleUrl($file),
+        ];
+    }
+
+    /** CMS-1: the WebP copy of a testimonial screenshot, e.g. site-media/abc-shot.webp. */
+    public static function shotVariant(string $image): string
+    {
+        return self::DIRECTORY.'/'.pathinfo($image, PATHINFO_FILENAME).'-shot.webp';
+    }
+
+    public static function shotUrl(string $image): string
+    {
+        return route('media', ['path' => basename(self::shotVariant($image))]);
+    }
+
+    /**
+     * CMS-1: what the admin's upload field shows for a saved screenshot.
+     *
+     * @return array{name: string, size: int, type: string, url: string}|null
+     */
+    public static function shotPreview(string $image): ?array
+    {
+        $variant = self::shotVariant($image);
+        $disk = self::disk();
+        if (! $disk->exists($variant)) {
+            return null;
+        }
+
+        return [
+            'name' => basename($image),
+            'size' => $disk->size($variant),
+            'type' => 'image/webp',
+            'url' => self::shotUrl($image),
+        ];
+    }
+
+    /**
+     * CMS-1: a WebP copy of a testimonial screenshot, no wider than
+     * SHOT_WIDTH and never cropped, so the whole message stays readable.
+     */
+    public static function processShot(string $image): void
+    {
+        $disk = self::disk();
+        if ($disk->exists(self::shotVariant($image))) {
+            return;
+        }
+
+        $bytes = $disk->get($image);
+        $source = $bytes === null ? false : @imagecreatefromstring($bytes);
+        if ($source === false) {
+            throw new RuntimeException('The picture could not be read. Please upload a JPG, PNG or WebP image.');
+        }
+
+        $source = self::upright($source, $bytes);
+        $width = imagesx($source);
+        $height = imagesy($source);
+        $target = min($width, self::SHOT_WIDTH);
+        $targetHeight = max(1, (int) round($height * $target / $width));
+
+        $copy = imagecreatetruecolor($target, $targetHeight);
+        imagecopyresampled($copy, $source, 0, 0, 0, 0, $target, $targetHeight, $width, $height);
+
+        ob_start();
+        imagewebp($copy, null, 80);
+        $disk->put(self::shotVariant($image), (string) ob_get_clean());
     }
 
     /** Phone photos store their rotation in EXIF; turn the pixels to match. */
