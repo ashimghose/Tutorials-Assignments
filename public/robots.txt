@@ -10,6 +10,8 @@ Disallow: /order-files/
 Disallow: /message-files/
 Disallow: /classes/
 Disallow: /invitation/
-Disallow: /enquire/thanks
+Disallow: /enquire/
+Disallow: /auth/
+Disallow: /cdn-cgi/
 
 Sitemap: https://indianassignments.com/sitemap.xml

@@ -13,7 +13,7 @@ test('MKT-1 the tuition page offers the Assam board and names it for Google', fu
         ->assertOk()
         ->assertSee('Boards: CBSE, ICSE, Assam Board (ASSEB)')
         ->assertSee('formerly SEBA and AHSEC')
-        ->assertSee('<title>Online tuition for classes 1 to 12: CBSE, ICSE, Assam Board | '.config('app.name').'</title>', false)
+        ->assertSee('<title>Online tuition for classes 1 to 12: CBSE, ICSE, Assam Board</title>', false)
         ->assertSee('CBSE, ICSE and Assam Board (SEBA/AHSEC) syllabus', false);
 });
 

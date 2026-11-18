@@ -85,7 +85,7 @@ test('VRT-5 a section can show its own brand name and logo', function () {
     musicOn(['brand' => ['name' => 'Sur Academy', 'logo' => '/images/brand/sur-academy.svg']]);
 
     $this->get('/music')
-        ->assertSee('<title>Online guitar classes in small groups, ₹1,000 a month | Sur Academy</title>', false)
+        ->assertSee('<meta property="og:site_name" content="Sur Academy">', false)
         ->assertSee('<img src="/images/brand/sur-academy.svg" alt="Sur Academy"', false);
 
     // Other pages keep the main brand.

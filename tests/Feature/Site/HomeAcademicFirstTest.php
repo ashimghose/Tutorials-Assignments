@@ -12,7 +12,7 @@ test('MKT-1 the home page title, description and headline lead with Academic', f
     $text = SiteContent::sectionFile('home')['text'];
 
     $this->get('/')->assertOk()
-        ->assertSee('<title>Assignment and thesis guidance, plus tuition and music | ', false)
+        ->assertSee('<title>Assignment and thesis guidance, plus tuition and music</title>', false)
         ->assertSee('<meta name="description" content="Guidance, editing and formatting for your own assignments', false)
         ->assertSee('<meta property="og:description" content="Guidance, editing and formatting for your own assignments', false)
         ->assertSeeInOrder(['assignments', 'tuition', 'guitar'])
@@ -52,7 +52,7 @@ test('MKT-1 the live home page gets the Academic-first text, also when saved esc
         expect(data_get($row->fresh()->content, $path))->toBe($new);
     }
 
-    $this->get('/')->assertSee('<title>'.$migration::CHANGES['text.seo_title'][1].' | ', false);
+    $this->get('/')->assertSee('<title>'.$migration::CHANGES['text.seo_title'][1].'</title>', false);
 });
 
 test('MKT-1 home text the admin has since changed is left alone', function () {

@@ -15,7 +15,12 @@
     // decode it here and let Blade escape it once.
     $title = filled($title) ? html_entity_decode((string) $title, ENT_QUOTES | ENT_HTML5, 'UTF-8') : $title;
     $description = html_entity_decode((string) $description, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    // SEO: Google cuts titles at about 60 characters, so the brand is added
+    // only when it still fits (Google shows the site name on its own anyway).
     $fullTitle = filled($title) ? $title.' | '.$appName : $appName;
+    if (filled($title) && mb_strlen($fullTitle) > 60) {
+        $fullTitle = $title;
+    }
     // VRT-3: shared pages reached on a section's own domain point Google at the main domain.
     $hostSection = \App\Support\Verticals::forHost(request()->getHost());
     $canonical = $hostSection !== null && request()->path() !== '/'
@@ -90,6 +95,9 @@
         @endif
     </head>
     <body class="flex min-h-screen flex-col bg-white font-sans text-slate-800 antialiased">
+        {{-- Cloudflare would turn email addresses into /cdn-cgi/l/email-protection links,
+             which site checkers (and some browsers without JavaScript) see as broken. --}}
+        <!--email_off-->
         <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:bg-white focus:px-4 focus:py-2">Skip to content</a>
 
         @if (filled($banner['text'] ?? null))
@@ -202,5 +210,6 @@
         @if ($gaId)
             <x-site.cookie-consent :measurement-id="$gaId" />
         @endif
+        <!--/email_off-->
     </body>
 </html>
