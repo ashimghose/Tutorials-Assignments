@@ -29,7 +29,7 @@ test('CMS-2 CMS-4 public pages load with a title, description and canonical link
 
 test('CMS-4 the home page title names both offerings and describes the organisation for Google', function () {
     $response = $this->get('/')
-        ->assertSee('<title>Assignment and thesis guidance, plus tuition and music | '.config('app.name').'</title>', false)
+        ->assertSee('<title>Assignment and thesis guidance, plus tuition and music</title>', false)
         ->assertSee('"@type":"EducationalOrganization"', false);
 
     preg_match('#<script type="application/ld\+json">\s*(\{.*?"@graph".*?\})\s*</script>#s', $response->getContent(), $match);
@@ -63,11 +63,24 @@ test('robots.txt points to the sitemap and keeps the portal out of search', func
     expect($robots)->toContain('Sitemap: https://indianassignments.com/sitemap.xml')
         ->toContain('Disallow: /admin')
         ->toContain('Disallow: /my-orders')
+        ->toContain('Disallow: /enquire/')
+        ->toContain('Disallow: /auth/')
         ->not->toContain("Disallow: /\n");
 });
 
 test('log-in and portal pages ask search engines not to index them', function () {
-    $this->get(route('login'))->assertSee('<meta name="robots" content="noindex, nofollow" />', false);
+    $this->get(route('login'))
+        ->assertSee('<meta name="robots" content="noindex" />', false)
+        ->assertSee('<meta name="description" content="', false);
+});
+
+test('SEO a short page title ends with the brand, a long one is kept under Google\'s limit', function () {
+    $this->get(route('about'))->assertSee('<title>About us | '.config('app.name').'</title>', false);
+    $this->get('/')->assertSee('<title>Assignment and thesis guidance, plus tuition and music</title>', false);
+});
+
+test('SEO Cloudflare is told not to turn email addresses into broken-looking links', function () {
+    $this->get('/')->assertSeeInOrder(['<!--email_off-->', '<!--/email_off-->'], false);
 });
 
 test('public pages stay exportable as static HTML: no forms or CSRF tokens', function (string $path) {
