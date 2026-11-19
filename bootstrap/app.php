@@ -5,6 +5,7 @@ use App\Http\Middleware\EnsureAccountActive;
 use App\Http\Middleware\EnsureFeatureEnabled;
 use App\Http\Middleware\EnsureRole;
 use App\Http\Middleware\EnsureTeacherApproved;
+use App\Http\Middleware\RedirectWwwToMainDomain;
 use App\Http\Middleware\ResolveVertical;
 use App\Http\Middleware\ThrottleAccountForms;
 use App\Support\Cloudflare;
@@ -22,6 +23,9 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         // The live site sits behind Cloudflare, which passes on the visitor's IP and HTTPS.
         $middleware->trustProxies(at: Cloudflare::IPS);
+
+        // SEO: www.<domain> moves to the main domain (one copy of each page).
+        $middleware->prepend(RedirectWwwToMainDomain::class);
 
         // VRT-1, VRT-3: switched-off sections and sections on their own domain.
         $middleware->web(prepend: [
