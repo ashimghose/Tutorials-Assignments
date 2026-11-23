@@ -249,3 +249,8 @@ The owner made a test parent and could only deactivate it. Deactivation stays th
 - Samples show guidance (worked examples, formatting, editing, similarity checks), never finished work for a student to submit or a student's name (ACA rules, UGC 2018). The admin tab says so. The owner's first upload of finished handwritten files and customer chats was not published for that reason, and for privacy (DPDP).
 - Sample PDFs go to the site media disk (R2 in production) under `site-media/samples` and are served by `/samples/{name}.pdf`. That route only reads that folder, only serves files that start with `%PDF-`, and runs without a session, so Cloudflare can cache it.
 - A testimonial can now carry a screenshot of the message (new nullable `image` column). The upload is shrunk to a WebP copy no wider than 720 px, never cropped, so the whole message stays readable. The quote stays required, because it is the text Google and screen readers get. The admin is told to cover names, photos, numbers, UPI IDs, amounts and file names before uploading.
+
+## 2026-11-23 — Music fee plans can be priced by quote (MUS-1)
+
+- A music fee plan whose fee is left empty in Admin → Website → Pages → Music → Fees shows "Fee on request", a "Get a quote" button (enquiry form, interest "Quote: <plan name>") and a WhatsApp link to the Music number. The words are in the Text tab. The first such plan is "Dedicated (one-to-one) class", because the number of classes a week, and so the price, differs per learner.
+- The group plan now says the monthly fee is for one class a week. A migration changes the live wording only where it is still the shipped text, and adds the one-to-one card once.

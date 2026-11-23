@@ -209,11 +209,12 @@ class SiteSectionResource extends Resource
                 Tab::make('Fees')->schema([
                     TagsInput::make('content.styles')->label('Instruments and singing styles')->required(),
                     Repeater::make('content.plans')->label('Fee plans')
+                        ->helperText('Leave the fee empty for a plan priced by quote, such as one-to-one classes: the card then shows a "Get a quote" button.')
                         ->schema([
                             TextInput::make('name')->required()->maxLength(80),
                             Grid::make(2)->schema([
-                                MoneyInput::make('price')->label('Fee')->required(),
-                                TextInput::make('period')->required()->maxLength(60),
+                                MoneyInput::make('price')->label('Fee (empty = get a quote)'),
+                                TextInput::make('period')->label('Words under the fee')->required()->maxLength(80),
                             ]),
                             TagsInput::make('subjects'),
                             TagsInput::make('features')->label('Ticked points'),
@@ -254,6 +255,9 @@ class SiteSectionResource extends Resource
                     'fees_lead' => 'Fees: intro',
                     'subjects_label' => 'Word before each plan\'s subjects',
                     'plan_button' => 'Button on each fee plan',
+                    'quote_label' => 'Shown instead of a fee on a quote plan',
+                    'quote_button' => 'Button on a quote plan',
+                    'quote_whatsapp' => 'WhatsApp link under a quote plan\'s button',
                     'steps_eyebrow' => 'How it works: small heading',
                     'steps_title' => 'How it works: heading',
                     'videos_eyebrow' => 'Videos: small heading',

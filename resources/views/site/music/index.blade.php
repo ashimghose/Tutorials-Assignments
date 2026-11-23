@@ -55,20 +55,34 @@
     <section id="fees" class="border-y border-slate-200 bg-slate-50">
         <div class="mx-auto max-w-6xl px-4 py-16 sm:px-6">
             <x-site.section-heading :eyebrow="$text['fees_eyebrow']" :title="$text['fees_title']" :lead="$text['fees_lead']" />
-            <div class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                @foreach ($content['plans'] as $plan)
-                    <article class="flex flex-col rounded-xl border border-slate-200 bg-white p-5">
+            @php($plans = array_values(array_filter((array) ($content['plans'] ?? []), fn (mixed $plan) => is_array($plan) && filled($plan['name'] ?? null))))
+            <div class="mt-8 grid gap-4 {{ \App\Support\SiteContent::planColumns(count($plans)) }}">
+                @foreach ($plans as $plan)
+                    {{-- MUS-1: a plan without a fee (one-to-one classes) is priced by quote. --}}
+                    @php($priced = is_numeric($plan['price'] ?? null))
+                    <article class="flex flex-col rounded-xl border border-slate-200 bg-white p-5" data-plan="{{ $priced ? 'priced' : 'quote' }}">
                         <h3 class="font-semibold text-slate-900">{{ $plan['name'] }}</h3>
-                        <p class="mt-3"><span class="text-3xl font-bold text-slate-900">{{ \App\Support\Money::format($plan['price']) }}</span></p>
-                        <p class="text-sm text-slate-500">{{ $plan['period'] }}</p>
+                        @if ($priced)
+                            <p class="mt-3"><span class="text-3xl font-bold text-slate-900">{{ \App\Support\Money::format((int) $plan['price']) }}</span></p>
+                        @else
+                            <p class="mt-3"><span class="text-2xl font-bold text-slate-900">{{ $text['quote_label'] }}</span></p>
+                        @endif
+                        <p class="text-sm text-slate-500">{{ $plan['period'] ?? '' }}</p>
                         <ul class="mt-4 space-y-1.5 text-sm text-slate-600">
-                            @foreach ($plan['features'] as $feature)
+                            @foreach ($plan['features'] ?? [] as $feature)
                                 <li class="flex gap-2"><span aria-hidden="true" class="text-music-700">&#10003;</span> {{ $feature }}</li>
                             @endforeach
                         </ul>
-                        <p class="mt-4 text-sm text-slate-500"><span class="font-medium text-slate-700">{{ $text['subjects_label'] }}:</span> {{ implode(', ', $plan['subjects']) }}</p>
+                        @if (($plan['subjects'] ?? []) !== [])
+                            <p class="mt-4 text-sm text-slate-500"><span class="font-medium text-slate-700">{{ $text['subjects_label'] }}:</span> {{ implode(', ', $plan['subjects']) }}</p>
+                        @endif
                         <div class="mt-auto pt-5">
-                            <x-site.form-link form="music" section="music" :page="$page" :interest="'Free trial: '.$plan['name']" variant="outline" class="w-full">{{ $text['plan_button'] }}</x-site.form-link>
+                            @if ($priced)
+                                <x-site.form-link form="music" section="music" :page="$page" :interest="'Free trial: '.$plan['name']" variant="outline" class="w-full">{{ $text['plan_button'] }}</x-site.form-link>
+                            @else
+                                <x-site.form-link form="music" section="music" :page="$page" :interest="'Quote: '.$plan['name']" variant="music" class="w-full">{{ $text['quote_button'] }}</x-site.form-link>
+                                <a href="{{ \App\Support\SiteLinks::whatsapp('music') }}" target="_blank" rel="noopener" data-whatsapp="music" class="mt-3 block text-center text-sm font-semibold text-music-700 underline">{{ $text['quote_whatsapp'] }}</a>
+                            @endif
                         </div>
                     </article>
                 @endforeach
